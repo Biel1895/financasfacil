@@ -1,49 +1,223 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="light">
-  <!-- @include layout/head.html -->
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0c172c" />
+    <meta name="referrer" content="no-referrer" />
+    <title>FinançasFácil | Controle suas finanças pessoais</title>
+    <meta
+      name="description"
+      content="Registre gastos por texto ou voz, organize suas parcelas e veja o que já está previsto para os próximos meses."
+    />
+    <meta property="og:title" content="FinançasFácil | Controle suas finanças pessoais" />
+    <meta
+      property="og:description"
+      content="Registre gastos por texto ou voz, organize suas parcelas e planeje os próximos meses."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FinançasFácil" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- @share-url -->
+    <link rel="icon" type="image/svg+xml" sizes="any" href="assets/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="landing.css" />
+    <script src="landing.js"></script>
+  </head>
   <body>
-    <a class="skip-link" href="#mainContent">Pular para o conteúdo</a>
-    <div id="bootMessage" class="boot-message" role="status">Preparando suas finanças…</div>
-    <!-- @include screens/login.html -->
-
-    <div id="appWrapper" hidden>
-      <!-- @include layout/sidebar.html -->
-      <div class="app-main">
-        <!-- @include layout/topbar.html -->
-        <main id="mainContent" class="content" tabindex="-1">
-          <!-- @include layout/page-heading.html -->
-          <!-- @include layout/period-toolbar.html -->
-
-          <!-- @include screens/home.html -->
-
-          <!-- @include screens/transactions.html -->
-
-          <!-- @include screens/bills.html -->
-
-          <!-- @include screens/reports.html -->
-          <!-- @include layout/footer.html -->
-        </main>
+    <a class="landing-skip" href="#conteudo">Pular para o conteúdo</a>
+    <header class="landing-top">
+      <div class="landing-container landing-header">
+        <a class="landing-brand" href="./index.html" aria-label="FinançasFácil, página inicial">
+          <img src="assets/favicon.svg" width="38" height="38" alt="" />
+          <span>FinançasFácil</span>
+        </a>
+        <nav class="landing-nav" aria-label="Navegação principal">
+          <a href="#recursos">Recursos</a>
+          <a href="#planos">Planos</a>
+        </nav>
+        <a class="landing-button landing-button-outline" href="login.html"
+          >Entrar <span aria-hidden="true">↗</span></a
+        >
       </div>
-      <button class="mobile-fab" data-action="new" aria-label="Novo lançamento">
-        <span data-icon="plus"></span>
-      </button>
-      <!-- @include layout/mobile-navigation.html -->
-    </div>
+    </header>
 
-    <!-- @include dialogs/transaction.html -->
+    <main id="conteudo" tabindex="-1">
+      <div class="hero-background">
+        <section class="landing-container landing-hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="landing-kicker">Controle financeiro pessoal</p>
+            <h1 id="hero-title">Organize hoje.<br /><span>Planeje o próximo mês.</span></h1>
+            <p class="hero-description">
+              Registre gastos do seu jeito, acompanhe o que falta pagar e veja quanto sobra em cada
+              mês.
+            </p>
+            <div class="hero-actions">
+              <a class="landing-button landing-button-primary" href="#planos"
+                >Conhecer os planos <span aria-hidden="true">↓</span></a
+              >
+              <a class="landing-text-link" href="#recursos"
+                >Ver como funciona <span aria-hidden="true">↗</span></a
+              >
+            </div>
+          </div>
 
-    <!-- @include dialogs/settings.html -->
+          <figure class="dashboard-preview">
+            <figcaption>
+              <span><span class="preview-dot" aria-hidden="true"></span> Visão geral</span>
+              <small>Exemplo ilustrativo</small>
+            </figcaption>
+            <div class="preview-metrics">
+              <div class="preview-balance">
+                <span>Saldo do mês</span><strong>R$ 1.240,00</strong>
+              </div>
+              <div><span>Entradas</span><strong>R$ 4.500,00</strong></div>
+              <div><span>Saídas</span><strong>R$ 3.260,00</strong></div>
+            </div>
+            <div class="preview-chart">
+              <div class="preview-chart-header">
+                <strong>Entradas e saídas</strong>
+                <span class="preview-legend"><span>Entradas</span><span>Saídas</span></span>
+              </div>
+              <svg viewBox="0 0 360 126" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0 12h360M0 48h360M0 84h360M0 120h360" fill="none" stroke="#e8eef6" />
+                <g fill="#2563eb">
+                  <rect x="20" y="46" width="20" height="74" rx="4" />
+                  <rect x="92" y="53" width="20" height="67" rx="4" />
+                  <rect x="164" y="36" width="20" height="84" rx="4" />
+                  <rect x="236" y="43" width="20" height="77" rx="4" />
+                  <rect x="308" y="20" width="20" height="100" rx="4" />
+                </g>
+                <g fill="#53be9e">
+                  <rect x="43" y="72" width="13" height="48" rx="3" />
+                  <rect x="115" y="66" width="13" height="54" rx="3" />
+                  <rect x="187" y="77" width="13" height="43" rx="3" />
+                  <rect x="259" y="58" width="13" height="62" rx="3" />
+                  <rect x="331" y="48" width="13" height="72" rx="3" />
+                </g>
+              </svg>
+              <div class="preview-months" aria-hidden="true">
+                <span>Jul</span><span>Ago</span><span>Set</span><span>Out</span><span>Nov</span>
+              </div>
+            </div>
+            <div class="preview-installment">
+              <span class="preview-installment-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 10h18m-14 5h3" />
+                </svg>
+              </span>
+              <div><strong>Compra parcelada</strong><span>PS5 · 5 parcelas</span></div>
+              <strong>R$ 560,00 <small>/ parcela</small></strong>
+            </div>
+          </figure>
+        </section>
+      </div>
+      <section
+        id="recursos"
+        class="landing-container landing-resources"
+        aria-labelledby="resources-title"
+      >
+        <p class="landing-kicker">Como funciona</p>
+        <h2 id="resources-title">Do primeiro gasto ao planejamento do mês.</h2>
+        <div class="resource-grid">
+          <article class="resource-card">
+            <span class="resource-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H4l1.8-3.7A7.5 7.5 0 1 1 20 11.5Z" />
+                <path d="M8 11.5h8M8 14.5h4" />
+              </svg>
+            </span>
+            <h3>Registre do seu jeito</h3>
+            <p>
+              Escreva “gastei 42 reais no mercado”, use o microfone ou preencha os campos. Confira a
+              prévia antes de salvar.
+            </p>
+          </article>
+          <article class="resource-card">
+            <span class="resource-icon resource-icon-green" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4m8-4v4m-8 8h2m4 0h2" />
+              </svg>
+            </span>
+            <h3>Divida e acompanhe parcelas</h3>
+            <p>
+              Informe o valor total e o número de vezes. O FinançasFácil calcula as parcelas e
+              organiza os vencimentos.
+            </p>
+          </article>
+          <article class="resource-card">
+            <span class="resource-icon resource-icon-violet" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 4v16h16M7 15l5-5 3 2 5-6m-5 0h5v5" />
+              </svg>
+            </span>
+            <h3>Veja o mês e o que vem depois</h3>
+            <p>
+              Consulte o saldo total, confira o resultado de cada mês e veja as contas previstas
+              para os próximos meses.
+            </p>
+          </article>
+        </div>
+      </section>
 
-    <!-- @include dialogs/confirmation.html -->
-    <!-- @include dialogs/payment.html -->
-    <!-- @include dialogs/refund.html -->
-    <!-- @include dialogs/purchase.html -->
-    <!-- @include dialogs/cancellation.html -->
-    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
-    <noscript
-      ><p class="inline-alert danger">
-        Ative o JavaScript no navegador para usar o FinançasFácil.
-      </p></noscript
-    >
+      <section id="planos" class="landing-plans" aria-labelledby="plans-title">
+        <div class="landing-container plans-layout">
+          <div class="plans-intro">
+            <p class="landing-kicker">Assinaturas</p>
+            <h2 id="plans-title">Escolha como quer assinar.</h2>
+            <p>
+              As duas modalidades de assinatura estão previstas para o lançamento. Os valores serão
+              divulgados quando as assinaturas estiverem disponíveis.
+            </p>
+          </div>
+          <div class="plans-grid">
+            <article class="plan-card">
+              <span class="plan-badge">Em breve</span>
+              <h3>Mensal</h3>
+              <p>Cobrança mês a mês.</p>
+            </article>
+            <article class="plan-card plan-card-annual">
+              <span class="plan-badge">Em breve</span>
+              <h3>Anual</h3>
+              <p>Uma cobrança a cada 12 meses.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="landing-footer">
+      <div class="landing-container landing-footer-inner">
+        <a class="landing-brand" href="./index.html" aria-label="FinançasFácil, página inicial">
+          <img src="assets/favicon.svg" width="32" height="32" alt="" />
+          <span>FinançasFácil</span>
+        </a>
+        <a class="landing-text-link" href="login.html"
+          >Já tem conta? Entrar <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </footer>
   </body>
 </html>

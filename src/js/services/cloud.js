@@ -6,6 +6,7 @@ import { account, sessionLifecycle, state } from '../state/store.js';
 import { toast } from '../ui/feedback.js';
 import { render, renderSettings, renderSync } from '../ui/views.js';
 import { readSupabaseConfig } from './cloud-config.js';
+import { callbackKeys, readAuthReturn } from './auth-return.js';
 
 const TABLE = 'ff_finance_records';
 const PAGE_SIZE = 500;
@@ -22,12 +23,13 @@ const Cloud = {
 
 let rememberSession = null;
 const sessionMemory = new Map();
+const rememberRedirectKey = 'ff-auth-remember';
 const authStorage = {
   getItem(key) {
     return sessionMemory.get(key) ?? localStorage.getItem(key);
   },
   setItem(key, value) {
-    if (rememberSession ?? localStorage.getItem(key) !== null) {
+    if (key.endsWith('-code-verifier') || (rememberSession ?? localStorage.getItem(key) !== null)) {
       localStorage.setItem(key, value);
       sessionMemory.delete(key);
     } else {
@@ -52,7 +54,7 @@ async function connectCloud() {
         import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm'),
       );
       Cloud.client = createClient(config.url, config.publishableKey, {
-        auth: { storage: authStorage, detectSessionInUrl: false },
+        auth: { storage: authStorage, detectSessionInUrl: false, flowType: 'pkce' },
       });
       return Cloud.client;
     })().finally(() => {
@@ -64,26 +66,143 @@ async function connectCloud() {
 
 async function resumeCloudUser() {
   const client = await connectCloud();
+  const url = new URL(location.href);
+  const { code, flowId, redirectError } = readAuthReturn(url);
+  if (code || redirectError) {
+    for (const key of callbackKeys) {
+      url.searchParams.delete(key);
+    }
+    if (redirectError) {
+      url.hash = '';
+    }
+    history.replaceState(null, '', url.href);
+    const keep = sessionStorage.getItem(rememberRedirectKey) === 'yes';
+    sessionStorage.removeItem(rememberRedirectKey);
+    if (redirectError) {
+      throw new Error('O link não pôde ser usado. Tente entrar ou solicite um novo link.');
+    }
+    // A sessão de recuperação deve viver apenas nesta página.
+    rememberSession = false;
+    const { data, error } = await deadline(
+      client.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined),
+    );
+    if (error || !data.user || !data.session) {
+      throw new Error('Link expirado ou aberto em outro navegador. Solicite um novo link.');
+    }
+    const recovery = data.redirectType === 'recovery';
+    if (!recovery && keep) {
+      rememberSession = true;
+      for (const [key, value] of [...sessionMemory]) {
+        authStorage.setItem(key, value);
+      }
+    }
+    return { user: data.user, recovery };
+  }
   const { data, error } = await deadline(client.auth.getSession());
   if (error) {
     throw error;
   }
   if (!data.session) {
-    return null;
+    return { user: null, recovery: false };
   }
   const verified = await deadline(client.auth.getUser());
   if (verified.error) {
     throw verified.error;
   }
-  return verified.data.user;
+  return { user: verified.data.user, recovery: false };
 }
 
 async function signInCloud(email, password, remember) {
   const client = await connectCloud();
   rememberSession = remember;
   const { data, error } = await client.auth.signInWithPassword({ email, password });
+  if (error?.code === 'email_not_confirmed') {
+    throw new Error('Confirme seu e-mail pelo link recebido e tente entrar novamente.');
+  }
   if (error || !data.user) {
     throw new Error('Confira seu e-mail e sua senha do Supabase e tente novamente.');
+  }
+  return data.user;
+}
+
+function redirectToApp(remember) {
+  sessionStorage.setItem(rememberRedirectKey, remember ? 'yes' : 'no');
+  return location.protocol === 'file:'
+    ? new URL('index.html', location.href).href
+    : location.origin + '/';
+}
+
+function cloudAuthError(error, fallback) {
+  const messages = {
+    signup_disabled: 'O cadastro está fechado no momento. Entre com uma conta existente.',
+    weak_password: 'Escolha uma senha mais forte e tente novamente.',
+    email_address_not_authorized:
+      'O serviço de e-mail ainda não está disponível para este endereço.',
+    over_email_send_rate_limit: 'Limite de e-mails atingido. Aguarde e tente novamente.',
+    over_request_rate_limit: 'Muitas tentativas. Aguarde um pouco antes de repetir.',
+    same_password: 'Escolha uma senha diferente da atual.',
+    invalid_credentials: 'Confira sua senha atual e tente novamente.',
+    current_password_required: 'Informe a senha atual ou use a recuperação pelo e-mail.',
+    reauthentication_needed: 'Entre novamente na sua conta antes de alterar a senha.',
+  };
+  return new Error(Object.hasOwn(messages, error?.code) ? messages[error.code] : fallback);
+}
+
+async function signUpCloud(email, password, name, remember) {
+  const client = await connectCloud();
+  rememberSession = remember;
+  const { data, error } = await client.auth.signUp({
+    email,
+    password,
+    options: { data: { display_name: name }, emailRedirectTo: redirectToApp(remember) },
+  });
+  if (error) {
+    throw cloudAuthError(error, 'Não foi possível criar a conta agora. Tente novamente.');
+  }
+  return data.session ? data.user : null;
+}
+
+async function sendCloudReset(email) {
+  const client = await connectCloud();
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectToApp(false),
+  });
+  if (error) {
+    throw cloudAuthError(error, 'Não foi possível enviar o link agora. Tente novamente.');
+  }
+}
+
+function cloudProviderEnabled(provider) {
+  return (
+    Cloud.configured &&
+    (provider === 'google' || provider === 'apple') &&
+    window.FF_SUPABASE_CONFIG.authProviders?.[provider] === true
+  );
+}
+
+async function signInWithCloudProvider(provider, remember) {
+  if (!cloudProviderEnabled(provider)) {
+    throw new Error('Este método de entrada está indisponível.');
+  }
+  const client = await connectCloud();
+  const { error } = await client.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: redirectToApp(remember) },
+  });
+  if (error) {
+    throw new Error('Não foi possível abrir o login deste provedor. Tente novamente.');
+  }
+}
+
+async function updateCloudUser(attributes, expectedOwner) {
+  const client = await connectCloud();
+  const { data: identity, error: identityError } = await deadline(client.auth.getUser());
+  if (identityError || identity.user?.id !== expectedOwner) {
+    throw new Error('Sua sessão mudou ou expirou. Entre novamente para continuar.');
+  }
+  const { data, error } = await client.auth.updateUser(attributes);
+  if (error) {
+    throw cloudAuthError(error, 'Não foi possível atualizar sua conta agora. Tente novamente.');
   }
   return data.user;
 }
@@ -101,10 +220,18 @@ function bindCloudUser(user, onSessionEnd) {
     }
   });
   Cloud.subscription = data.subscription;
+  const name =
+    user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name;
   return {
     accountKey: ['sb', project, user.id.replaceAll('-', '')].join('_'),
     identifier: user.email,
-    displayName: String(user.email || 'Minha conta').split('@')[0],
+    displayName:
+      String(name || '')
+        .trim()
+        .slice(0, 60) || String(user.email || 'Minha conta').split('@')[0],
+    needsCurrentPassword:
+      (user.identities ?? []).some((identity) => identity.provider === 'email') ||
+      user.app_metadata?.provider === 'email',
   };
 }
 
@@ -291,10 +418,15 @@ async function syncCloud(explicit = false) {
 export {
   Cloud,
   bindCloudUser,
+  cloudProviderEnabled,
   queueCloudSync,
   resumeCloudUser,
+  sendCloudReset,
   signInCloud,
+  signInWithCloudProvider,
   signOutCloud,
+  signUpCloud,
   stopCloudSession,
   syncCloud,
+  updateCloudUser,
 };

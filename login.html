@@ -1,0 +1,976 @@
+<!doctype html>
+<!-- GERADO por npm run build. Edite src/html/, não este arquivo. -->
+<html lang="pt-BR" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Entrar | FinançasFácil</title>
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="assets/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="config.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+
+  <body>
+    <a id="skipContentLink" class="skip-link" href="#authTitle">Pular para o conteúdo</a>
+    <div id="bootMessage" class="boot-message" role="status">Preparando suas finanças…</div>
+    <section id="authScreen" class="auth-screen" hidden aria-labelledby="authTitle">
+      <div class="auth-brand">
+        <img src="assets/favicon.svg" width="42" height="42" alt="" />
+        <span>FinançasFácil</span>
+      </div>
+      <div class="auth-card">
+        <button
+          id="authThemeButton"
+          class="icon-button auth-theme"
+          aria-label="Alternar tema"
+          type="button"
+        >
+          <span data-icon="sun"></span>
+        </button>
+        <h1 id="authTitle" tabindex="-1">Entre na sua conta</h1>
+        <p id="authSubtitle" class="muted">Informe seus dados de acesso.</p>
+        <div id="authAlert" class="inline-alert danger" role="alert" hidden></div>
+        <div id="authNotice" class="inline-alert auth-success" role="status" hidden></div>
+        <form id="authForm">
+          <label id="registerNameGroup" hidden
+            >Seu nome
+            <input
+              id="authName"
+              autocomplete="name"
+              maxlength="60"
+              placeholder="Como podemos chamar você?"
+            />
+          </label>
+          <label
+            ><span id="authIdentifierLabel">E-mail ou usuário</span>
+            <input
+              id="authIdentifier"
+              autocomplete="username"
+              maxlength="80"
+              required
+              placeholder="Seu e-mail ou usuário"
+            />
+          </label>
+          <label
+            >Senha<span class="password-field">
+              <input
+                id="authPassword"
+                type="password"
+                autocomplete="current-password"
+                minlength="4"
+                maxlength="128"
+                required
+                placeholder="Sua senha"
+              />
+              <button
+                id="btnTogglePassword"
+                type="button"
+                class="icon-button"
+                aria-label="Mostrar senha"
+              >
+                <span data-icon="eye"></span>
+              </button> </span
+          ></label>
+          <div class="auth-form-options">
+            <label class="checkbox"
+              ><input id="authRememberMe" type="checkbox" checked />Manter conectado</label
+            >
+            <button id="btnForgotPassword" class="text-button" type="button" hidden>
+              Esqueci a senha
+            </button>
+          </div>
+          <button id="btnAuthSubmit" type="submit" class="button primary wide">
+            <span id="authSubmitText">Entrar</span><span data-icon="arrow-right"></span>
+          </button>
+        </form>
+        <form id="forgotPasswordForm" hidden>
+          <label
+            >E-mail<input
+              id="forgotEmail"
+              type="email"
+              autocomplete="email"
+              maxlength="80"
+              required
+              placeholder="voce@exemplo.com"
+          /></label>
+          <button id="btnSendReset" class="button primary wide" type="submit">
+            Enviar link de recuperação
+          </button>
+          <button class="text-button auth-back" id="btnBackToLogin" type="button">
+            Voltar para entrar
+          </button>
+        </form>
+        <form id="resetPasswordForm" hidden>
+          <label
+            >Nova senha<input
+              id="resetPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="128"
+              required
+          /></label>
+          <label
+            >Repita a nova senha<input
+              id="resetPasswordAgain"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="128"
+              required
+          /></label>
+          <button id="btnResetPassword" class="button primary wide" type="submit">
+            Salvar nova senha
+          </button>
+          <button class="text-button auth-back" id="btnCancelReset" type="button">
+            Voltar para entrar
+          </button>
+        </form>
+        <div id="authSocial" class="auth-social" hidden>
+          <div class="auth-divider">ou continue com</div>
+          <div class="auth-providers">
+            <button id="btnAuthGoogle" class="button secondary" type="button" hidden>
+              <svg viewBox="0 0 48 48" class="auth-provider-icon" aria-hidden="true">
+                <path
+                  fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.71 1.22 9.2 3.6l6.85-6.86C35.91 2.38 30.51 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.27 5.48-4.8 7.17l7.73 6C44.4 38 46.98 31.85 46.98 24.55Z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.97-6.19a24 24 0 0 0 0 21.56Z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M24 48c6.48 0 11.93-2.13 15.91-5.81l-7.73-6c-2.15 1.45-4.92 2.31-8.18 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"
+                />
+              </svg>
+              Google
+            </button>
+            <button id="btnAuthApple" class="button secondary" type="button" hidden>
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="auth-provider-icon"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17.1 12.5c0-1.7.8-3 2.4-4-1-1.4-2.5-2.1-4.1-2.2-1.6-.1-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.2 1-4.1 2.5-1.8 3.1-.5 7.7 1.2 10.2.9 1.2 1.9 2.6 3.2 2.5 1.3 0 1.8-.8 3.4-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5.6-.9 1-1.8 1.4-2.8-1.7-.7-2.8-2.3-2.8-3.7ZM14.5 4.7c.7-.9 1.2-2.1 1.1-3.2-1.1.1-2.4.8-3.2 1.7-.7.8-1.2 2-1.1 3.1 1.2.1 2.4-.6 3.2-1.6Z"
+                />
+              </svg>
+              Apple
+            </button>
+          </div>
+        </div>
+        <div id="authAccountLinks" class="auth-account-links">
+          <p id="authRegisterLink">
+            Ainda não tem conta?
+            <button id="tabRegisterBtn" class="text-button" type="button">Criar conta</button>
+          </p>
+          <p id="authLoginLink" hidden>
+            Já tem conta?
+            <button id="tabLoginBtn" class="text-button" type="button">Entrar</button>
+          </p>
+        </div>
+        <p class="fine-print auth-footnote" id="authStorageHint">Conta local deste navegador.</p>
+      </div>
+      <a class="auth-home-link" href="index.html">
+        <span aria-hidden="true">←</span> Voltar para a página inicial
+      </a>
+    </section>
+
+    <div id="appWrapper" hidden>
+      <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="#inicio"
+          ><span class="brand-mark" data-icon="wallet"></span
+          ><span>Finanças<span class="brand-light">Fácil</span></span></a
+        >
+        <span class="sidebar-label">SEU ESPAÇO FINANCEIRO</span>
+        <nav class="main-nav">
+          <a href="#inicio" data-view="inicio"><span data-icon="home"></span><span>Início</span></a>
+          <a href="#lancamentos" data-view="lancamentos"
+            ><span data-icon="list"></span><span>Lançamentos</span></a
+          >
+          <a href="#contas" data-view="contas"
+            ><span data-icon="calendar"></span><span>Contas</span
+            ><span id="dueBadge" class="nav-badge" hidden></span
+          ></a>
+          <a href="#relatorios" data-view="relatorios"
+            ><span data-icon="chart"></span><span>Relatórios</span></a
+          >
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="small-note">
+            <span data-icon="sparkles"></span>
+            <p>Um passo de cada vez.<br /><strong>Seu futuro agradece.</strong></p>
+          </div>
+          <button class="nav-setting" data-action="settings">
+            <span data-icon="settings"></span>Dados e preferências
+          </button>
+        </div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <a class="brand mobile-brand" href="#inicio"
+            ><span class="brand-mark" data-icon="wallet"></span><span>FinançasFácil</span></a
+          >
+          <button
+            id="dbStatusBadge"
+            class="sync-status"
+            data-action="settings"
+            title="Ver salvamento e backup"
+          >
+            <span class="status-dot"></span><span id="syncStatusText">Salvo neste aparelho</span>
+          </button>
+          <div class="topbar-actions">
+            <button
+              id="privacyButton"
+              class="icon-button"
+              aria-label="Ocultar valores"
+              aria-pressed="false"
+            >
+              <span data-icon="eye"></span></button
+            ><button id="themeButton" class="icon-button" aria-label="Alternar tema">
+              <span data-icon="sun"></span></button
+            ><button
+              class="profile-button"
+              data-action="settings"
+              aria-label="Abrir dados da conta"
+            >
+              <span id="userAvatar">F</span><span id="loggedUserDisplay"></span>
+            </button>
+          </div>
+        </header>
+
+        <main id="mainContent" class="content" tabindex="-1">
+          <div class="page-heading">
+            <div>
+              <p id="pageEyebrow" class="eyebrow">SEU DINHEIRO, COM CLAREZA</p>
+              <h1 id="pageTitle">Visão geral</h1>
+              <p id="pageSubtitle" class="muted">Um olhar tranquilo para as suas finanças.</p>
+            </div>
+            <button class="button primary desktop-new" data-action="new">
+              <span data-icon="plus"></span>Novo lançamento
+            </button>
+          </div>
+
+          <div class="period-toolbar">
+            <div class="month-picker" aria-label="Selecionar mês">
+              <button id="btnPrevMonth" class="icon-button" aria-label="Mês anterior">
+                <span data-icon="chevron-left"></span></button
+              ><span id="currentMonthLabel" aria-live="polite"></span
+              ><button id="btnNextMonth" class="icon-button" aria-label="Próximo mês">
+                <span data-icon="chevron-right"></span>
+              </button>
+            </div>
+            <button id="btnCurrentMonth" class="text-button">Voltar para este mês</button
+            ><span id="periodHint" class="period-hint">Movimentações realizadas</span>
+          </div>
+
+          <section id="view-inicio" class="view" aria-label="Visão geral">
+            <div id="summaryCards" class="summary-grid"></div>
+            <section class="monthly-balance-panel" aria-labelledby="monthlyBalanceTitle">
+              <div>
+                <h2 id="monthlyBalanceTitle">Saldo do mês</h2>
+                <p id="monthlyBalancePeriod" class="muted"></p>
+              </div>
+              <div class="monthly-balance-amount">
+                <strong id="monthlyBalanceValue" class="money" aria-live="polite"></strong>
+                <p id="monthlyBalanceFormula" class="muted"></p>
+              </div>
+            </section>
+            <div class="home-grid">
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <span class="eyebrow">OLHE PARA FRENTE</span>
+                    <h2>Próximas contas</h2>
+                  </div>
+                  <a class="text-button" href="#contas"
+                    >Ver todas <span data-icon="arrow-right"></span
+                  ></a>
+                </div>
+                <div id="homeBills"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <span class="eyebrow">SEU DIA A DIA</span>
+                    <h2>Últimos lançamentos</h2>
+                  </div>
+                  <a class="text-button" href="#lancamentos"
+                    >Ver todos <span data-icon="arrow-right"></span
+                  ></a>
+                </div>
+                <div id="homeTransactions"></div>
+              </section>
+            </div>
+            <div id="homeInsight" class="insight-banner"></div>
+          </section>
+
+          <section id="view-lancamentos" class="view" hidden aria-label="Lançamentos">
+            <div class="panel statement-panel">
+              <div class="statement-toolbar">
+                <div>
+                  <h2>Seu extrato</h2>
+                  <p id="transactionsCountLabel" class="muted small"></p>
+                </div>
+                <label class="search-box"
+                  ><span data-icon="search"></span
+                  ><input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Buscar descrição ou categoria"
+                    aria-label="Buscar lançamento"
+                /></label>
+              </div>
+              <div
+                id="typeFilterTabs"
+                class="filter-tabs"
+                role="group"
+                aria-label="Filtrar lançamentos"
+              >
+                <button data-filter="all" class="active">Todos</button
+                ><button data-filter="expense">Despesas</button
+                ><button data-filter="income">Receitas</button
+                ><button data-filter="investment">Investimentos</button>
+              </div>
+              <div id="transactionsListContainer"></div>
+            </div>
+          </section>
+
+          <section id="view-contas" class="view" hidden aria-label="Contas e parcelas">
+            <div id="billSummary" class="bill-summary"></div>
+            <section class="panel">
+              <div class="statement-toolbar">
+                <div>
+                  <h2>Contas e parcelas</h2>
+                  <p class="muted small">
+                    Pendências seguem o vencimento. Pagamentos aparecem no mês em que o dinheiro foi
+                    movimentado.
+                  </p>
+                </div>
+                <button class="button secondary" data-action="new-bill">
+                  <span data-icon="plus"></span>Agendar conta
+                </button>
+              </div>
+              <div id="billFilterTabs" class="filter-tabs" role="group" aria-label="Filtrar contas">
+                <button data-bill-filter="pending" class="active">A vencer</button
+                ><button data-bill-filter="overdue">Atrasadas</button
+                ><button data-bill-filter="paid">Pagas / recebidas</button
+                ><button data-bill-filter="cancelled">Canceladas</button
+                ><button data-bill-filter="all">Todas</button>
+              </div>
+              <div id="billsList"></div>
+            </section>
+            <section class="panel recurrence-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Compras e recorrências</h2>
+                  <p class="muted small">
+                    Gerencie parcelas pendentes, pagas, concluídas ou canceladas.
+                  </p>
+                </div>
+              </div>
+              <div id="rulesList"></div>
+            </section>
+            <section class="panel forecast-panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Previsão dos próximos meses</h2>
+                  <p class="muted small">Entradas, compromissos e resultado de cada mês.</p>
+                </div>
+                <label class="report-span-label"
+                  ><span class="sr-only">Meses de previsão</span
+                  ><select id="forecastSpan">
+                    <option value="6">6 meses</option>
+                    <option value="12">12 meses</option>
+                  </select></label
+                >
+              </div>
+              <div id="forecastCards" class="forecast-grid"></div>
+              <p id="forecastNote" class="forecast-note"></p>
+            </section>
+          </section>
+
+          <section id="view-relatorios" class="view" hidden aria-label="Relatórios financeiros">
+            <div id="reportInsights" class="report-insights"></div>
+            <section class="panel chart-panel">
+              <div class="panel-heading">
+                <div>
+                  <span id="reportEyebrow" class="eyebrow">OS ÚLTIMOS SEIS MESES</span>
+                  <h2>Como seu dinheiro se movimenta</h2>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="dot income"></i>Receitas</span
+                  ><span><i class="dot expense"></i>Despesas</span
+                  ><span><i class="dot investment"></i>Investimentos</span>
+                </div>
+              </div>
+              <div class="report-toolbar">
+                <div
+                  class="report-period-nav"
+                  role="group"
+                  aria-label="Navegar pelo período do gráfico"
+                >
+                  <button
+                    id="reportPrev"
+                    class="icon-button"
+                    data-action="report-period-prev"
+                    aria-label="Período anterior"
+                  >
+                    <span data-icon="chevron-left"></span></button
+                  ><span id="reportRangeLabel" aria-live="polite"></span
+                  ><button
+                    id="reportNext"
+                    class="icon-button"
+                    data-action="report-period-next"
+                    aria-label="Próximo período"
+                  >
+                    <span data-icon="chevron-right"></span>
+                  </button>
+                </div>
+                <label class="report-span-label"
+                  ><span class="sr-only">Período do gráfico</span
+                  ><select id="reportSpan">
+                    <option value="6">6 meses</option>
+                    <option value="12">12 meses</option>
+                  </select></label
+                ><button id="reportToday" class="text-button" data-action="report-today">
+                  Mês atual</button
+                ><button class="text-button report-export" data-action="export-report">
+                  <span data-icon="download"></span>Exportar período
+                </button>
+              </div>
+              <div id="reportPeriodTotals" class="report-period-totals"></div>
+              <p class="chart-instruction">
+                Toque em um mês para ver os detalhes. O período do gráfico permanece no lugar.
+              </p>
+              <div id="trendChart" class="trend-chart"></div>
+              <div id="reportSelection" class="report-selection" aria-live="polite"></div>
+              <details class="chart-details">
+                <summary>Ver os valores em tabela</summary>
+                <div id="trendTable" class="table-scroll"></div>
+              </details>
+            </section>
+            <div class="report-grid">
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Onde você gastou</h2>
+                    <p class="muted small">Despesas por categoria</p>
+                  </div>
+                  <strong id="panelExpenseTotalBadge" class="money"></strong>
+                </div>
+                <div id="expenseBreakdownList" class="breakdown-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <div>
+                    <h2>Seus investimentos</h2>
+                    <p class="muted small">Aportes separados dos gastos</p>
+                  </div>
+                  <strong id="panelInvestTotalBadge" class="money"></strong>
+                </div>
+                <div id="investBreakdownList" class="breakdown-list"></div>
+              </section>
+            </div>
+          </section>
+
+          <footer class="page-footer">
+            <span>FinançasFácil · Mais clareza para o seu dia.</span
+            ><button class="text-button" data-action="settings">
+              <span data-icon="shield"></span
+              ><span id="backupFooter">Ver backup e proteção dos dados</span>
+            </button>
+          </footer>
+        </main>
+      </div>
+      <button class="mobile-fab" data-action="new" aria-label="Novo lançamento">
+        <span data-icon="plus"></span>
+      </button>
+      <nav class="bottom-nav" aria-label="Navegação no celular">
+        <a href="#inicio" data-view="inicio"><span data-icon="home"></span>Início</a
+        ><a href="#lancamentos" data-view="lancamentos"><span data-icon="list"></span>Lançamentos</a
+        ><a href="#contas" data-view="contas"><span data-icon="calendar"></span>Contas</a
+        ><a href="#relatorios" data-view="relatorios"><span data-icon="chart"></span>Relatórios</a>
+      </nav>
+    </div>
+
+    <dialog id="composerDialog" class="dialog composer" aria-labelledby="composerTitle">
+      <div class="dialog-heading">
+        <div>
+          <span class="eyebrow">DO SEU JEITO</span>
+          <h2 id="composerTitle">Novo lançamento</h2>
+        </div>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <div id="composerTabs" class="segmented" role="group" aria-label="Como registrar">
+        <button data-compose="text" class="active"><span data-icon="message"></span>Digitar</button
+        ><button data-compose="manual"><span data-icon="edit"></span>Preencher</button>
+      </div>
+      <div id="assistantPane">
+        <p id="composerHelp" class="muted">
+          Digite ou use o microfone para contar o que aconteceu. Confira antes de salvar.
+        </p>
+        <div id="recordingBanner" class="recording-banner" hidden role="status">
+          <span class="recording-dot"></span>Estou ouvindo…<button
+            id="btnStopVoiceBanner"
+            class="text-button"
+            type="button"
+          >
+            Parar e conferir
+          </button>
+        </div>
+        <form id="commandForm">
+          <label for="commandInput" class="sr-only">Descreva seu lançamento</label
+          ><textarea
+            id="commandInput"
+            rows="3"
+            maxlength="2000"
+            placeholder="Ex.: Comprei um PS5 por 2800 em 5x"
+          ></textarea>
+          <div class="composer-actions">
+            <button id="btnMic" type="button" class="button secondary">
+              <span id="micIcon" data-icon="mic"></span
+              ><span id="micButtonLabel">Usar microfone</span></button
+            ><button id="btnSubmitCommand" class="button primary" type="submit">
+              Conferir <span data-icon="arrow-right"></span>
+            </button>
+          </div>
+        </form>
+        <div class="quick-examples">
+          <span>Experimente:</span
+          ><button data-example="Gastei 89,90 no supermercado hoje">Mercado</button
+          ><button data-example="Recebi 4500 de salário">Salário</button
+          ><button data-example="Comprei um PS5 por 2800 em 5x">Compra parcelada</button
+          ><button data-example="Investi 500 no Tesouro Selic">Investimento</button>
+        </div>
+        <section id="previewPanel" class="preview-panel" hidden aria-labelledby="previewTitle">
+          <div class="preview-heading">
+            <div>
+              <span class="eyebrow">CONFIRA ANTES DE SALVAR</span>
+              <h3 id="previewTitle">Foi isso que você quis dizer?</h3>
+            </div>
+            <span id="previewSource" class="tag"></span>
+          </div>
+          <div id="draftList"></div>
+          <div class="dialog-actions">
+            <button id="cancelPreview" class="button quiet" type="button">Descartar prévia</button
+            ><button id="confirmPreview" class="button primary" type="button">
+              <span data-icon="check"></span>Confirmar lançamento
+            </button>
+          </div>
+        </section>
+      </div>
+      <form id="manualForm" hidden>
+        <input type="hidden" id="editTransactionId" /><input type="hidden" id="editBillId" />
+        <div class="type-options" role="group" aria-label="Tipo">
+          <label
+            ><input type="radio" name="manualType" value="expense" checked /><span
+              >Despesa</span
+            ></label
+          ><label><input type="radio" name="manualType" value="income" /><span>Receita</span></label
+          ><label
+            ><input type="radio" name="manualType" value="investment" /><span
+              >Investimento</span
+            ></label
+          >
+        </div>
+        <label
+          >Descrição<input
+            id="manualDescription"
+            required
+            maxlength="140"
+            placeholder="Ex.: Aluguel, salário, compra no cartão"
+        /></label>
+        <div class="form-grid">
+          <label
+            ><span id="amountLabel">Valor (R$)</span
+            ><input
+              id="manualAmount"
+              type="text"
+              inputmode="decimal"
+              required
+              placeholder="0,00"
+              maxlength="20"
+              aria-describedby="amountHelp" /></label
+          ><label
+            ><span id="dateLabel">Data</span
+            ><input id="manualDate" type="date" required min="1900-01-01" max="2200-12-31"
+          /></label>
+        </div>
+        <p id="amountHelp" class="field-hint">Use vírgula para os centavos.</p>
+        <label>Categoria<select id="manualCategory" required></select></label>
+        <div id="scheduleFields" class="schedule-fields">
+          <div class="form-grid">
+            <label
+              >Repetição<select id="manualFrequency">
+                <option value="once">Só desta vez</option>
+                <option value="monthly">Todo mês</option>
+                <option value="installment">Compra parcelada</option>
+              </select></label
+            ><label id="installmentField" hidden
+              >Quantidade de parcelas<input
+                id="manualInstallments"
+                type="number"
+                min="2"
+                max="120"
+                value="3"
+            /></label>
+          </div>
+          <p id="scheduleHint" class="field-hint" hidden></p>
+          <label id="manualCardField" hidden
+            >Cartão (opcional)<input
+              id="manualCardName"
+              maxlength="60"
+              placeholder="Ex.: Nubank, Itaú"
+          /></label>
+        </div>
+        <label id="paymentStatusField"
+          >Situação<select id="manualStatus">
+            <option value="paid">Já foi pago / recebido</option>
+            <option value="pending">Pendente — registrar nas contas</option>
+            <option id="manualCancelledOption" value="cancelled" hidden>Cancelada</option>
+          </select></label
+        >
+        <div id="manualActualFields" class="form-grid" hidden>
+          <label
+            >Data do pagamento / recebimento<input
+              id="manualPaymentDate"
+              type="date"
+              min="1900-01-01"
+              max="2200-12-31" /></label
+          ><label id="manualSettledField" hidden
+            >Valor efetivamente pago (R$)<input
+              id="manualPaidAmount"
+              inputmode="decimal"
+              placeholder="0,00"
+          /></label>
+        </div>
+        <div id="manualDuplicateWarning" class="inline-alert" hidden></div>
+        <div class="dialog-actions">
+          <button type="button" class="button quiet" data-close>Cancelar</button
+          ><button type="submit" id="manualSaveButton" class="button primary">
+            <span data-icon="check"></span>Salvar lançamento
+          </button>
+        </div>
+        <div class="editor-extra-actions">
+          <button id="refundEditedTransaction" class="text-button" type="button" hidden>
+            <span data-icon="undo"></span>Estornar lançamento</button
+          ><button id="manageEditedPurchase" class="text-button" type="button" hidden>
+            <span data-icon="list"></span>Gerenciar compra / recorrência</button
+          ><button
+            id="deleteEditedTransaction"
+            class="text-button danger-text"
+            type="button"
+            hidden
+          >
+            <span data-icon="trash"></span>Excluir este lançamento
+          </button>
+        </div>
+      </form>
+      <div id="composerError" class="inline-alert danger" role="alert" hidden></div>
+    </dialog>
+
+    <dialog id="settingsDialog" class="dialog" aria-labelledby="settingsTitle">
+      <div class="dialog-heading">
+        <div>
+          <span class="eyebrow">SEU ESPAÇO</span>
+          <h2 id="settingsTitle">Dados e preferências</h2>
+        </div>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <div class="account-card">
+        <span class="avatar" id="settingsAvatar">F</span>
+        <div>
+          <strong id="settingsName"></strong>
+          <p id="settingsIdentifier" class="muted small"></p>
+        </div>
+        <button id="btnLogout" class="button quiet">Sair</button>
+      </div>
+      <section class="settings-section profile-section">
+        <h3>Minha conta</h3>
+        <form id="profileForm" class="profile-form">
+          <label
+            >Nome de exibição<input id="profileName" autocomplete="name" maxlength="60" required
+          /></label>
+          <button id="btnSaveProfile" class="button secondary" type="submit">Salvar nome</button>
+        </form>
+        <button id="btnChangePassword" class="text-button" type="button">Alterar senha</button>
+      </section>
+      <div class="form-grid">
+        <label
+          >Aparência<select id="themeSelect">
+            <option value="auto">Automática, como meu aparelho</option>
+            <option value="light">Clara</option>
+            <option value="dark">Escura</option>
+          </select></label
+        ><label
+          >Cálculo do saldo<select id="balanceModeSelect">
+            <option value="independent">Receitas menos despesas</option>
+            <option value="integrated">Descontar também os aportes</option>
+          </select></label
+        >
+      </div>
+      <section class="settings-section">
+        <h3><span data-icon="cloud"></span>Salvamento e sincronização</h3>
+        <p id="syncDetail" class="muted"></p>
+        <p id="lastSyncLabel" class="small muted"></p>
+        <button id="btnForceSyncNow" class="button secondary">
+          <span data-icon="refresh"></span>Tentar sincronizar
+        </button>
+      </section>
+      <section class="settings-section">
+        <h3><span data-icon="shield"></span>Seus dados, protegidos</h3>
+        <p class="muted">
+          Mantemos até 7 cópias diárias neste navegador. Para guardar uma cópia fora do aparelho,
+          exporte seu backup.
+        </p>
+        <div class="settings-buttons">
+          <button id="btnExportJSON" class="button primary">
+            <span data-icon="download"></span>Exportar backup</button
+          ><label class="button secondary file-label"
+            ><span data-icon="upload"></span>Restaurar backup<input
+              id="inputImportJSON"
+              type="file"
+              accept="application/json,.json"
+              hidden /></label
+          ><button id="btnExportCSV" class="button quiet">Exportar extrato CSV</button>
+        </div>
+        <p id="lastExportLabel" class="muted small"></p>
+        <div id="snapshotsList" class="snapshots-list"></div>
+      </section>
+      <p class="fine-print">
+        As cópias deste navegador não substituem um arquivo de backup. Se você limpar os dados do
+        navegador, as cópias locais também serão apagadas.
+      </p>
+    </dialog>
+
+    <dialog id="changePasswordDialog" class="dialog" aria-labelledby="changePasswordTitle">
+      <div class="dialog-heading">
+        <div>
+          <span class="eyebrow">MINHA CONTA</span>
+          <h2 id="changePasswordTitle">Alterar senha</h2>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <form id="changePasswordForm">
+        <div id="changePasswordAlert" class="inline-alert danger" role="alert" hidden></div>
+        <label id="currentPasswordGroup"
+          >Senha atual<input
+            id="currentPassword"
+            type="password"
+            autocomplete="current-password"
+            maxlength="128"
+        /></label>
+        <label
+          >Nova senha<input
+            id="newPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            required
+        /></label>
+        <label
+          >Repita a nova senha<input
+            id="newPasswordAgain"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            required
+        /></label>
+        <div class="dialog-actions">
+          <button class="button secondary" type="button" data-close>Cancelar</button>
+          <button id="btnSavePassword" class="button primary" type="submit">Salvar senha</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirmDialog" class="dialog confirm-dialog" aria-labelledby="confirmTitle">
+      <div class="dialog-heading">
+        <h2 id="confirmTitle">Confirmar ação</h2>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <p id="confirmMessage" class="muted"></p>
+      <div class="dialog-actions">
+        <button id="confirmCancel" class="button quiet">Cancelar</button
+        ><button id="confirmAccept" class="button primary">Confirmar</button>
+      </div>
+    </dialog>
+
+    <dialog id="settlementDialog" class="dialog" aria-labelledby="settlementTitle">
+      <div class="dialog-heading">
+        <h2 id="settlementTitle">Confirmar pagamento</h2>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <form id="settlementForm">
+        <div id="settlementItems" class="operation-items"></div>
+        <label
+          >Data em que o dinheiro entrou ou saiu<input
+            id="settlementDate"
+            type="date"
+            required
+            min="1900-01-01" /></label
+        ><label id="settlementDiscountField" hidden
+          >Desconto total na antecipação (R$)<input
+            id="settlementDiscount"
+            inputmode="decimal"
+            value="0,00"
+        /></label>
+        <p id="settlementSummary" class="inline-alert"></p>
+        <p class="field-hint">
+          O vencimento original fica preservado. O saldo muda apenas no mês da data escolhida.
+        </p>
+        <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="button quiet" data-close>Voltar</button
+          ><button id="confirmSettlement" type="submit" class="button primary">
+            Confirmar pagamento
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="refundDialog" class="dialog" aria-labelledby="refundTitle">
+      <div class="dialog-heading">
+        <h2 id="refundTitle">Estornar lançamento</h2>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <p id="refundDescription" class="muted"></p>
+      <form id="refundForm">
+        <div class="form-grid">
+          <label
+            >Valor do estorno (R$)<input id="refundAmount" inputmode="decimal" required /></label
+          ><label
+            >Data da devolução<input id="refundDate" type="date" required min="1900-01-01"
+          /></label>
+        </div>
+        <label
+          >Descrição (opcional)<input
+            id="refundNote"
+            maxlength="140"
+            placeholder="Ex.: Produto devolvido" /></label
+        ><label id="refundCancelField" class="checkbox" hidden
+          ><input id="refundCancelRemaining" type="checkbox" />Cancelar também as parcelas pendentes
+          desta compra</label
+        >
+        <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button quiet" type="button" data-close>Voltar</button
+          ><button id="confirmRefund" class="button primary" type="submit">
+            Confirmar estorno
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="purchaseDialog" class="dialog" aria-labelledby="purchaseTitle">
+      <div class="dialog-heading">
+        <h2 id="purchaseTitle">Gerenciar compra</h2>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <p id="purchaseInfo" class="muted"></p>
+      <form id="purchaseForm">
+        <label>Descrição<input id="purchaseDescription" maxlength="140" required /></label
+        ><label>Categoria<select id="purchaseCategory"></select></label>
+        <div id="purchaseStructure">
+          <div class="form-grid">
+            <label>Valor total (R$)<input id="purchaseAmount" inputmode="decimal" /></label
+            ><label
+              >Quantidade de parcelas<input id="purchaseCount" type="number" min="2" max="120"
+            /></label>
+          </div>
+          <label
+            >Primeiro vencimento<input
+              id="purchaseStart"
+              type="date"
+              min="1900-01-01"
+              max="2200-12-31"
+          /></label>
+        </div>
+        <p id="purchaseEditHint" class="field-hint"></p>
+        <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button type="submit" id="savePurchase" class="button secondary">
+            Salvar alterações da compra
+          </button>
+        </div>
+      </form>
+      <div id="purchaseBills" class="purchase-bills"></div>
+      <div class="dialog-actions">
+        <button id="purchaseAdvance" type="button" class="button primary">Antecipar parcelas</button
+        ><button id="purchaseCancel" type="button" class="button quiet danger-text">
+          Cancelar compra / programação
+        </button>
+      </div>
+    </dialog>
+
+    <dialog id="cancelPurchaseDialog" class="dialog" aria-labelledby="cancelPurchaseTitle">
+      <div class="dialog-heading">
+        <h2 id="cancelPurchaseTitle">Cancelar compra</h2>
+        <button class="icon-button" data-close aria-label="Fechar">
+          <span data-icon="x"></span>
+        </button>
+      </div>
+      <p id="cancelPurchaseText" class="muted"></p>
+      <form id="cancelPurchaseForm">
+        <label
+          >Data do cancelamento<input
+            id="cancelPurchaseDate"
+            type="date"
+            required
+            min="1900-01-01" /></label
+        ><label id="cancelPurchaseRefundField" class="checkbox"
+          ><input id="cancelPurchaseRefund" type="checkbox" /><span
+            id="cancelPurchaseRefundLabel"
+          ></span
+        ></label>
+        <p class="field-hint">
+          Registre o estorno apenas se o valor já foi devolvido. Caso ainda esteja aguardando,
+          mantenha a opção desmarcada.
+        </p>
+        <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" class="button quiet" data-close>Voltar</button
+          ><button type="submit" id="confirmCancelPurchase" class="button danger">
+            Confirmar cancelamento
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <noscript
+      ><p class="inline-alert danger">
+        Ative o JavaScript no navegador para usar o FinançasFácil.
+      </p></noscript
+    >
+  </body>
+</html>

@@ -155,7 +155,7 @@ async function waitDialogClosed() {
     db.close();
     return { today: iso(now), month: iso(date).slice(0, 7) };
   });
-  await page.goto(url + '/index.html');
+  await page.goto(url + '/login.html');
   await page.locator('#appWrapper').waitFor({ state: 'visible' });
   await count(6);
   assert.equal(await page.evaluate(async () => (await FF_LocalDB.open()).version), 4);
@@ -494,10 +494,10 @@ async function waitDialogClosed() {
   const filePage = await fileContext.newPage();
   const fileErrors = [];
   filePage.on('pageerror', (e) => fileErrors.push(e.message));
-  await filePage.goto('file:///' + path.join(siteDir, 'index.html').replace(/\\/g, '/'));
+  await filePage.goto('file:///' + path.join(siteDir, 'login.html').replace(/\\/g, '/'));
   await filePage.locator('#authScreen').waitFor({ state: 'visible' });
   assert.equal(fileErrors.length, 0);
-  pass('Abertura direta do index.html funciona sem servidor');
+  pass('Abertura direta do login.html funciona sem servidor');
   await fileContext.close();
   fs.writeFileSync(
     path.join(siteDir, 'test-results.json'),

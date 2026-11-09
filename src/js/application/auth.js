@@ -3,34 +3,121 @@ import { ensurePlannedBills, loadAccountData } from '../data/repository.js';
 import {
   derivePbkdf2Hash,
   generateRandomSaltHex,
-  sha256Hash,
+  passwordMatches,
 } from '../infrastructure/credentials.js';
 import { DB, STORE } from '../infrastructure/database.js';
 import {
   Cloud,
   bindCloudUser,
+  cloudProviderEnabled,
   resumeCloudUser,
+  sendCloudReset,
   signInCloud,
+  signInWithCloudProvider,
   signOutCloud,
+  signUpCloud,
   stopCloudSession,
   syncCloud,
+  updateCloudUser,
 } from '../services/cloud.js';
 import { account, sessionLifecycle, state } from '../state/store.js';
-import { $ } from '../ui/dom.js';
+import { $, icon } from '../ui/dom.js';
 import { toast } from '../ui/feedback.js';
 import { applyTheme } from '../ui/theme.js';
 import { render, setView } from '../ui/views.js';
 import { Voice } from '../ui/voice.js';
+import { validateNewPassword } from './profile.js';
+
+const authCopy = {
+  login: ['Entre na sua conta', 'Informe seus dados de acesso.', 'Entrar'],
+  register: ['Crie sua conta', 'Preencha seus dados para criar seu acesso.', 'Criar conta'],
+  recover: [
+    'Recupere o acesso',
+    'Informe o e-mail cadastrado para receber um link.',
+    'Enviar link',
+  ],
+  reset: [
+    'Defina uma nova senha',
+    'Escolha uma senha com pelo menos 8 caracteres.',
+    'Salvar senha',
+  ],
+};
+let recoveryOwner = null;
+let authBusy = false;
+
+function authMessage(message, success = false) {
+  const alert = $('authAlert');
+  const notice = $('authNotice');
+  alert.hidden = success || !message;
+  notice.hidden = !success || !message;
+  (success ? notice : alert).textContent = message;
+}
+
+async function runAuth(button, action) {
+  if (authBusy) {
+    return;
+  }
+  authBusy = true;
+  const controls = [
+    'tabLoginBtn',
+    'tabRegisterBtn',
+    'btnAuthSubmit',
+    'btnForgotPassword',
+    'btnAuthGoogle',
+    'btnAuthApple',
+    'btnBackToLogin',
+    'btnCancelReset',
+  ];
+  for (const id of controls) {
+    $(id).disabled = true;
+  }
+  button.disabled = true;
+  authMessage('');
+  try {
+    await action();
+  } catch (error) {
+    authMessage(error.message || 'Não foi possível concluir. Tente novamente.');
+  } finally {
+    authBusy = false;
+    for (const id of controls) {
+      $(id).disabled = false;
+    }
+    button.disabled = false;
+    $('authSubmitText').textContent = authCopy[state.authMode][2];
+  }
+}
 
 function switchAuthTab(mode) {
+  const [title, subtitle, submit] = authCopy[mode];
+  const register = mode === 'register';
+  const normal = mode === 'login' || register;
   state.authMode = mode;
-  $('registerNameGroup').hidden = mode !== 'register';
-  $('tabRegisterBtn').classList.toggle('active', mode === 'register');
-  $('tabLoginBtn').classList.toggle('active', mode === 'login');
-  $('authSubmitText').textContent =
-    mode === 'register' ? 'Criar minha conta' : 'Entrar na minha conta';
-  $('authPassword').autocomplete = mode === 'register' ? 'new-password' : 'current-password';
-  $('authAlert').hidden = true;
+  $('authTitle').textContent = title;
+  $('authSubtitle').textContent = subtitle;
+  $('authAccountLinks').hidden = !normal;
+  $('authRegisterLink').hidden = mode !== 'login';
+  $('authLoginLink').hidden = !register;
+  $('authForm').hidden = !normal;
+  $('forgotPasswordForm').hidden = mode !== 'recover';
+  $('resetPasswordForm').hidden = mode !== 'reset';
+  $('registerNameGroup').hidden = !register;
+  $('authName').required = register && Cloud.configured;
+  $('authSubmitText').textContent = submit;
+  $('authPassword').value = '';
+  $('authPassword').type = 'password';
+  $('authPassword').autocomplete = register ? 'new-password' : 'current-password';
+  $('authPassword').minLength = register && Cloud.configured ? 8 : 4;
+  $('authPassword').placeholder =
+    register && Cloud.configured ? 'Pelo menos 8 caracteres' : 'Sua senha';
+  $('btnTogglePassword').setAttribute('aria-label', 'Mostrar senha');
+  $('btnTogglePassword').innerHTML = icon('eye');
+  $('btnForgotPassword').hidden = mode !== 'login' || !Cloud.configured;
+  const google = cloudProviderEnabled('google');
+  const apple = cloudProviderEnabled('apple');
+  $('btnAuthGoogle').hidden = !google;
+  $('btnAuthApple').hidden = !apple;
+  $('authSocial').hidden = !normal || (!google && !apple);
+  authMessage('');
 }
 
 async function enterAccount() {
@@ -50,6 +137,8 @@ async function enterAccount() {
   await ensurePlannedBills();
   $('authScreen').hidden = true;
   $('appWrapper').hidden = false;
+  $('skipContentLink').href = '#mainContent';
+  document.title = 'Painel | FinançasFácil';
   $('bootMessage').hidden = true;
   setView(location.hash.slice(1) || 'inicio', false);
   render();
@@ -103,6 +192,8 @@ async function clearAccount() {
   $('searchInput').value = '';
   $('appWrapper').hidden = true;
   $('authScreen').hidden = false;
+  $('skipContentLink').href = '#authTitle';
+  document.title = 'Entrar | FinançasFácil';
   switchAuthTab('login');
   history.replaceState(null, '', location.pathname + location.search);
   $('authIdentifier').focus();
@@ -115,24 +206,82 @@ async function enterOnlineAccount(user) {
 }
 
 async function restoreOnlineSession() {
-  $('tabLoginBtn').parentElement.hidden = true;
   $('authIdentifierLabel').textContent = 'E-mail';
   $('authIdentifier').type = 'email';
-  $('authIdentifier').placeholder = 'Seu e-mail cadastrado no Supabase';
-  $('authStorageHint').textContent =
-    'Entre com a conta criada no Supabase para sincronizar seus lançamentos.';
+  $('authIdentifier').placeholder = 'voce@exemplo.com';
+  $('authStorageHint').hidden = true;
   try {
-    const user = await resumeCloudUser();
-    if (user) {
+    const { user, recovery } = await resumeCloudUser();
+    if (user && recovery) {
+      recoveryOwner = user.id;
+      switchAuthTab('reset');
+    } else if (user) {
       await enterOnlineAccount(user);
     }
   } catch (error) {
     stopCloudSession();
     state.loggedAccount = null;
-    $('authAlert').textContent =
-      'Não foi possível retomar a sessão online. Tente entrar novamente.';
-    $('authAlert').hidden = false;
+    authMessage(
+      error instanceof Error
+        ? error.message
+        : 'Não foi possível retomar a sessão online. Tente entrar novamente.',
+    );
     console.warn(error);
+  }
+}
+
+function bindAuthRecovery() {
+  $('btnForgotPassword').addEventListener('click', () => {
+    $('forgotEmail').value = $('authIdentifier').value;
+    switchAuthTab('recover');
+    $('forgotEmail').focus();
+  });
+  $('btnBackToLogin').addEventListener('click', () => {
+    $('authIdentifier').value = $('forgotEmail').value;
+    switchAuthTab('login');
+    $('authIdentifier').focus();
+  });
+  $('forgotPasswordForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    void runAuth($('btnSendReset'), async () => {
+      await sendCloudReset($('forgotEmail').value.trim());
+      authMessage(
+        'Se esse e-mail estiver cadastrado, você receberá um link. Abra-o neste mesmo navegador.',
+        true,
+      );
+    });
+  });
+  $('resetPasswordForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    void runAuth($('btnResetPassword'), async () => {
+      if (!recoveryOwner) {
+        throw new Error('Solicite um novo link de recuperação.');
+      }
+      const password = validateNewPassword($('resetPassword').value, $('resetPasswordAgain').value);
+      const user = await updateCloudUser({ password }, recoveryOwner);
+      recoveryOwner = null;
+      $('resetPasswordForm').reset();
+      switchAuthTab('login');
+      await enterOnlineAccount(user);
+      toast('Sua senha foi redefinida.');
+    });
+  });
+  $('btnCancelReset').addEventListener('click', () => {
+    void runAuth($('btnCancelReset'), async () => {
+      await signOutCloud();
+      recoveryOwner = null;
+      $('resetPasswordForm').reset();
+      switchAuthTab('login');
+      $('authIdentifier').focus();
+    });
+  });
+  for (const [id, provider] of [
+    ['btnAuthGoogle', 'google'],
+    ['btnAuthApple', 'apple'],
+  ]) {
+    $(id).addEventListener('click', () => {
+      void runAuth($(id), () => signInWithCloudProvider(provider, $('authRememberMe').checked));
+    });
   }
 }
 
@@ -185,7 +334,6 @@ async function addUniqueLocalAccount(user) {
 
 async function handleAuth(event) {
   event.preventDefault();
-  $('authAlert').hidden = true;
   if (Date.now() < state.lockoutUntil) {
     $('authAlert').textContent = 'Aguarde alguns segundos antes de tentar novamente.';
     $('authAlert').hidden = false;
@@ -197,11 +345,28 @@ async function handleAuth(event) {
   if (!loginId || loginId.length > 80 || password.length < 4 || password.length > 128) {
     return;
   }
-  $('btnAuthSubmit').disabled = true;
-  $('authSubmitText').textContent = 'Aguarde…';
-  try {
+  await runAuth($('btnAuthSubmit'), async () => {
+    $('authSubmitText').textContent = 'Aguarde…';
     if (Cloud.configured) {
-      const user = await signInCloud(loginId, password, $('authRememberMe').checked);
+      const remember = $('authRememberMe').checked;
+      let user;
+      if (state.authMode === 'register') {
+        const name = $('authName').value.trim();
+        if (!name || password.length < 8) {
+          throw new Error('Informe seu nome e uma senha com pelo menos 8 caracteres.');
+        }
+        user = await signUpCloud(loginId, password, name, remember);
+        if (!user) {
+          switchAuthTab('login');
+          authMessage(
+            'Confira seu e-mail e abra o link de confirmação neste navegador. Depois, entre com sua senha.',
+            true,
+          );
+          return;
+        }
+      } else {
+        user = await signInCloud(loginId, password, remember);
+      }
       await enterOnlineAccount(user);
       $('authPassword').value = '';
       toast('Você entrou na sua conta online.');
@@ -231,12 +396,8 @@ async function handleAuth(event) {
           'Conta não encontrada. Confira o usuário ou crie sua conta neste aparelho.',
         );
       }
-      const key = existing.accountKey,
-        candidate =
-          existing.kdf === 'PBKDF2-SHA256'
-            ? await derivePbkdf2Hash(password, `${key}::${existing.salt}`)
-            : await sha256Hash(`${key}::${password}`);
-      if (candidate !== existing.passwordHash) {
+      const key = existing.accountKey;
+      if (!(await passwordMatches(existing, password))) {
         state.failedLoginAttempts++;
         if (state.failedLoginAttempts >= 5) {
           state.lockoutUntil = Date.now() + 15000;
@@ -265,14 +426,7 @@ async function handleAuth(event) {
     await enterAccount();
     $('authPassword').value = '';
     toast(`Bem-vindo(a), ${state.loggedAccount.displayName.split(' ')[0]}.`);
-  } catch (error) {
-    $('authAlert').textContent = error.message || 'Não foi possível entrar. Tente novamente.';
-    $('authAlert').hidden = false;
-  } finally {
-    $('btnAuthSubmit').disabled = false;
-    $('authSubmitText').textContent =
-      state.authMode === 'register' ? 'Criar minha conta' : 'Entrar na minha conta';
-  }
+  });
 }
 
-export { enterAccount, handleAuth, logout, restoreOnlineSession, switchAuthTab };
+export { bindAuthRecovery, enterAccount, handleAuth, logout, restoreOnlineSession, switchAuthTab };

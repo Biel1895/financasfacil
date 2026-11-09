@@ -4,7 +4,7 @@ Controle financeiro pessoal em JavaScript, HTML e CSS. Inclui lançamentos por t
 
 ## Usar o sistema
 
-Abra `index.html`, mantendo `app.js`, `style.css` e `config.js` na mesma pasta. O uso normal não exige Node.js nem instalação de pacotes. Consulte [LEIA-ME.md](LEIA-ME.md).
+Abra `index.html` para ver a página inicial e clique em **Entrar**. Para ir direto ao acesso, abra `login.html`. Mantenha os arquivos gerados, `config.js` e a pasta `assets/` juntos. O uso normal dispensa Node.js. Consulte [LEIA-ME.md](LEIA-ME.md).
 
 Mantenha a pasta original, o navegador e a conta para continuar usando os dados existentes. Uma cópia do código não contém os registros financeiros guardados pelo navegador; exporte também o backup JSON pelo sistema.
 
@@ -35,7 +35,7 @@ npm run verify
 | `npm run format:check` | Conferir a formatação sem alterar arquivos.                        |
 | `npm run lint`         | Apontar problemas e padrões inconsistentes em JavaScript.          |
 | `npm test`             | Testar regras financeiras, interpretação e limites de arquitetura. |
-| `npm run build`        | Gerar `index.html`, `app.js` e `style.css`.                        |
+| `npm run build`        | Gerar as duas páginas, seus scripts e estilos.                     |
 | `npm run build:check`  | Verificar se os arquivos gerados correspondem às fontes atuais.    |
 | `npm run check`        | Formatação, análise, testes unitários e conferência da geração.    |
 | `npm run test:e2e`     | Executar os fluxos completos no Chromium.                          |
@@ -69,9 +69,9 @@ assets/            Ícone da aba, ícone do iPhone e capa de compartilhamento.
 backups/           Cópias de versões anteriores do código.
 ```
 
-**Edite `src/` e `config.js`.** O comando `npm run build` gera `index.html`, `app.js` e `style.css` a partir das fontes separadas.
+**Edite `src/` e `config.js`.** A página pública está em `src/html/index.html` e usa `src/css/landing.css`. Os cartões mensal e anual estão nessa página.
 
-O HTML de desenvolvimento está em `src/html/index.html`, com os arquivos de cada tela em `src/html/screens/`, os diálogos em `src/html/dialogs/` e a navegação e estrutura em `src/html/layout/`. O comando de geração reúne esses arquivos no `index.html` pronto para abrir. Nenhuma busca de fragmentos pela internet é necessária durante o uso.
+`src/html/login.html` reúne a tela de acesso e o painel financeiro. As telas ficam em `src/html/screens/`, os diálogos em `src/html/dialogs/` e a navegação em `src/html/layout/`. A geração produz os dois HTMLs completos para abertura direta no navegador.
 
 ## Antes de alterar regras
 

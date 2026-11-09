@@ -5,5 +5,8 @@ backups/
 tests/fixtures/previous-version/
 app.js
 /index.html
+/login.html
+/landing.js
+/landing.css
 style.css
 package-lock.json

@@ -35,9 +35,9 @@ Os ouvintes são internos e síncronos. Tarefas em segundo plano tratam suas pr�
 
 ## Interface e estilos
 
-O HTML de desenvolvimento é modular. `src/html/index.html` contém a estrutura geral e diretivas como `<!-- @include screens/home.html -->`. As telas ficam em `screens/`, os formulários e diálogos em `dialogs/` e as partes de navegação em `layout/`. Os caminhos das diretivas são relativos a `src/html/`.
+O HTML de desenvolvimento é modular. `src/html/index.html` é a página pública. `src/html/login.html` contém o acesso ao painel e usa diretivas como `<!-- @include screens/home.html -->`. As telas ficam em `screens/`, os formulários e diálogos em `dialogs/` e as partes de navegação em `layout/`. Os caminhos das diretivas são relativos a `src/html/`.
 
-`scripts/html.mjs` reúne os fragmentos durante a geração. Arquivos ausentes, caminhos externos e inclusões circulares interrompem a operação. O navegador recebe um `index.html` completo, sem precisar carregar fragmentos com `fetch`, preservando a abertura local e a ordem de inicialização dos elementos.
+`scripts/html.mjs` reúne os fragmentos durante a geração. Arquivos ausentes, caminhos externos e inclusões circulares interrompem a operação. As duas páginas chegam ao navegador como HTML completo para abertura direta.
 
 Dividir HTML facilita a manutenção; não cria uma barreira de segurança. Código de interface continua acessível no navegador. Proteção de dados, autorização na nuvem, validação e tratamento de conteúdo devem ser avaliados separadamente.
 
@@ -47,7 +47,7 @@ Os nomes do código são majoritariamente em inglês; textos para o usuário sã
 
 ## Geração e uso local
 
-O esbuild reúne os módulos ES em um script clássico, carregado pelo `index.html`. Isso mantém o uso por abertura direta do arquivo. O CSS também é reunido durante a geração. O processo não modifica o IndexedDB e não incorpora `config.js` ao pacote JavaScript.
+O esbuild gera `app.js` e `style.css` para `login.html`, e `landing.js` e `landing.css` para a página pública. O script da página pública encaminha retornos de autenticação e atalhos antigos ao painel. A geração não modifica o IndexedDB nem incorpora `config.js` ao JavaScript.
 
 Não reconstrua `app.js` concatenando textos ou substituindo trechos de código. A adaptação do microfone já está no arquivo mantido `ui/voice.js`.
 

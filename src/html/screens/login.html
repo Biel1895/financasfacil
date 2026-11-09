@@ -1,19 +1,7 @@
 <section id="authScreen" class="auth-screen" hidden aria-labelledby="authTitle">
-  <div class="auth-story">
-    <div class="brand">
-      <span class="brand-mark" data-icon="wallet"></span
-      ><span>Finanças<span class="brand-light">Fácil</span></span>
-    </div>
-    <span class="eyebrow">MAIS CLAREZA. MENOS PREOCUPAÇÃO.</span>
-    <h1>Seu dinheiro.<br />Um lugar para<br />entender tudo.</h1>
-    <p>Organize o que entra, acompanhe o que sai e planeje as próximas contas. No seu ritmo.</p>
-    <div class="auth-feature"><span data-icon="mic"></span> Fale, confira e registre.</div>
-    <div class="auth-feature">
-      <span data-icon="calendar"></span> Suas contas, sem esquecer nenhuma.
-    </div>
-    <div class="auth-feature">
-      <span data-icon="shield"></span> Cópia local e backup dos seus dados.
-    </div>
+  <div class="auth-brand">
+    <img src="assets/favicon.svg" width="42" height="42" alt="" />
+    <span>FinançasFácil</span>
   </div>
   <div class="auth-card">
     <button
@@ -24,57 +12,157 @@
     >
       <span data-icon="sun"></span>
     </button>
-    <h2 id="authTitle">Bom ter você por aqui.</h2>
-    <p class="muted">Entre para continuar de onde parou.</p>
-    <div class="segmented auth-tabs" role="group" aria-label="Acesso à conta">
-      <button id="tabLoginBtn" class="active" type="button">Entrar</button
-      ><button id="tabRegisterBtn" type="button">Criar conta</button>
-    </div>
+    <h1 id="authTitle" tabindex="-1">Entre na sua conta</h1>
+    <p id="authSubtitle" class="muted">Informe seus dados de acesso.</p>
     <div id="authAlert" class="inline-alert danger" role="alert" hidden></div>
+    <div id="authNotice" class="inline-alert auth-success" role="status" hidden></div>
     <form id="authForm">
       <label id="registerNameGroup" hidden
-        >Como podemos chamar você?<input
+        >Seu nome
+        <input
           id="authName"
           autocomplete="name"
           maxlength="60"
-          placeholder="Seu nome"
-      /></label>
+          placeholder="Como podemos chamar você?"
+        />
+      </label>
       <label
-        ><span id="authIdentifierLabel">E-mail ou usuário</span
-        ><input
+        ><span id="authIdentifierLabel">E-mail ou usuário</span>
+        <input
           id="authIdentifier"
           autocomplete="username"
           maxlength="80"
           required
-          placeholder="Seu e-mail ou nome de usuário"
-      /></label>
+          placeholder="Seu e-mail ou usuário"
+        />
+      </label>
       <label
-        >Senha<span class="password-field"
-          ><input
+        >Senha<span class="password-field">
+          <input
             id="authPassword"
             type="password"
             autocomplete="current-password"
             minlength="4"
             maxlength="128"
             required
-            placeholder="Sua senha" /><button
+            placeholder="Sua senha"
+          />
+          <button
             id="btnTogglePassword"
             type="button"
             class="icon-button"
             aria-label="Mostrar senha"
           >
-            <span data-icon="eye"></span></button></span
+            <span data-icon="eye"></span>
+          </button> </span
       ></label>
-      <label class="checkbox"
-        ><input id="authRememberMe" type="checkbox" checked />Manter conectado neste aparelho</label
-      >
+      <div class="auth-form-options">
+        <label class="checkbox"
+          ><input id="authRememberMe" type="checkbox" checked />Manter conectado</label
+        >
+        <button id="btnForgotPassword" class="text-button" type="button" hidden>
+          Esqueci a senha
+        </button>
+      </div>
       <button id="btnAuthSubmit" type="submit" class="button primary wide">
-        <span id="authSubmitText">Entrar na minha conta</span><span data-icon="arrow-right"></span>
+        <span id="authSubmitText">Entrar</span><span data-icon="arrow-right"></span>
       </button>
     </form>
-    <p class="fine-print" id="authStorageHint">
-      Sua conta e seus lançamentos são guardados neste navegador. Exporte um backup para levar seus
-      dados a outro aparelho.
-    </p>
+    <form id="forgotPasswordForm" hidden>
+      <label
+        >E-mail<input
+          id="forgotEmail"
+          type="email"
+          autocomplete="email"
+          maxlength="80"
+          required
+          placeholder="voce@exemplo.com"
+      /></label>
+      <button id="btnSendReset" class="button primary wide" type="submit">
+        Enviar link de recuperação
+      </button>
+      <button class="text-button auth-back" id="btnBackToLogin" type="button">
+        Voltar para entrar
+      </button>
+    </form>
+    <form id="resetPasswordForm" hidden>
+      <label
+        >Nova senha<input
+          id="resetPassword"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          maxlength="128"
+          required
+      /></label>
+      <label
+        >Repita a nova senha<input
+          id="resetPasswordAgain"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          maxlength="128"
+          required
+      /></label>
+      <button id="btnResetPassword" class="button primary wide" type="submit">
+        Salvar nova senha
+      </button>
+      <button class="text-button auth-back" id="btnCancelReset" type="button">
+        Voltar para entrar
+      </button>
+    </form>
+    <div id="authSocial" class="auth-social" hidden>
+      <div class="auth-divider">ou continue com</div>
+      <div class="auth-providers">
+        <button id="btnAuthGoogle" class="button secondary" type="button" hidden>
+          <svg viewBox="0 0 48 48" class="auth-provider-icon" aria-hidden="true">
+            <path
+              fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.2 3.6l6.85-6.86C35.91 2.38 30.51 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z"
+            />
+            <path
+              fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.27 5.48-4.8 7.17l7.73 6C44.4 38 46.98 31.85 46.98 24.55Z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M10.53 28.59a14.4 14.4 0 0 1 0-9.18l-7.97-6.19a24 24 0 0 0 0 21.56Z"
+            />
+            <path
+              fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.91-5.81l-7.73-6c-2.15 1.45-4.92 2.31-8.18 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"
+            />
+          </svg>
+          Google
+        </button>
+        <button id="btnAuthApple" class="button secondary" type="button" hidden>
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="auth-provider-icon"
+            aria-hidden="true"
+          >
+            <path
+              d="M17.1 12.5c0-1.7.8-3 2.4-4-1-1.4-2.5-2.1-4.1-2.2-1.6-.1-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.2 1-4.1 2.5-1.8 3.1-.5 7.7 1.2 10.2.9 1.2 1.9 2.6 3.2 2.5 1.3 0 1.8-.8 3.4-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5.6-.9 1-1.8 1.4-2.8-1.7-.7-2.8-2.3-2.8-3.7ZM14.5 4.7c.7-.9 1.2-2.1 1.1-3.2-1.1.1-2.4.8-3.2 1.7-.7.8-1.2 2-1.1 3.1 1.2.1 2.4-.6 3.2-1.6Z"
+            />
+          </svg>
+          Apple
+        </button>
+      </div>
+    </div>
+    <div id="authAccountLinks" class="auth-account-links">
+      <p id="authRegisterLink">
+        Ainda não tem conta?
+        <button id="tabRegisterBtn" class="text-button" type="button">Criar conta</button>
+      </p>
+      <p id="authLoginLink" hidden>
+        Já tem conta?
+        <button id="tabLoginBtn" class="text-button" type="button">Entrar</button>
+      </p>
+    </div>
+    <p class="fine-print auth-footnote" id="authStorageHint">Conta local deste navegador.</p>
   </div>
+  <a class="auth-home-link" href="index.html">
+    <span aria-hidden="true">←</span> Voltar para a página inicial
+  </a>
 </section>

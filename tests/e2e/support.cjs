@@ -7,7 +7,16 @@ const projectRoot = path.resolve(__dirname, '../..');
 function prepareSuite(name) {
   const siteDir = path.join(projectRoot, 'test-results/e2e', name, 'site');
   fs.mkdirSync(siteDir, { recursive: true });
-  for (const file of ['index.html', 'app.js', 'style.css', 'config.js']) {
+  const files = [
+    'index.html',
+    'landing.js',
+    'landing.css',
+    'login.html',
+    'app.js',
+    'style.css',
+    'config.js',
+  ];
+  for (const file of files) {
     fs.copyFileSync(path.join(projectRoot, file), path.join(siteDir, file));
   }
   fs.cpSync(path.join(projectRoot, 'assets'), path.join(siteDir, 'assets'), { recursive: true });

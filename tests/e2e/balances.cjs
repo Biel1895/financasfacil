@@ -24,7 +24,7 @@ async function values(total, month) {
   await context.route('https://fonts.gstatic.com/**', (r) => r.abort());
   page = await context.newPage();
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('file:///' + path.join(siteDir, 'index.html').replace(/\\/g, '/'));
+  await page.goto('file:///' + path.join(siteDir, 'login.html').replace(/\\/g, '/'));
   await page.locator('#tabRegisterBtn').click();
   await page.locator('#authName').fill('Teste dos saldos');
   await page.locator('#authIdentifier').fill('teste_saldos');

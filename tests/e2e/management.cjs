@@ -10,7 +10,7 @@ const pass = (name) => {
   results.push({ name, ok: true });
   console.log('OK', name);
 };
-const appURL = 'file:///' + path.join(siteDir, 'index.html').replace(/\\/g, '/');
+const appURL = 'file:///' + path.join(siteDir, 'login.html').replace(/\\/g, '/');
 async function openSettings() {
   await page.locator('[data-action="settings"]').filter({ visible: true }).first().click();
 }

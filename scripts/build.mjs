@@ -10,8 +10,8 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const checkOnly = process.argv.includes('--check');
 const result = await build({
   absWorkingDir: root,
-  entryPoints: ['src/js/main.js'],
-  outfile: 'app.js',
+  entryPoints: { app: 'src/js/main.js', landing: 'src/js/landing.js' },
+  outdir: '.',
   bundle: true,
   format: 'iife',
   platform: 'browser',
@@ -22,43 +22,35 @@ const result = await build({
   banner: { js: '// GERADO por npm run build. Fontes em src/js/.' },
 });
 
-// Classic script output preserves opening index.html directly through file://.
+// Scripts clássicos permitem abrir as páginas diretamente pelo sistema de arquivos.
 for (const output of result.outputFiles) {
-  if (output.path.endsWith('.js')) {
-    new Script(output.text, { filename: 'app.js' });
-  }
+  new Script(output.text, { filename: output.path });
 }
 const cssResult = await build({
   absWorkingDir: root,
-  entryPoints: ['src/css/main.css'],
+  entryPoints: { style: 'src/css/main.css', landing: 'src/css/landing.css' },
+  outdir: '.',
   bundle: true,
   write: false,
   minify: false,
   charset: 'utf8',
 });
-const css = await format(cssResult.outputFiles[0].text, {
-  parser: 'css',
-  printWidth: 100,
-  endOfLine: 'lf',
-});
-const htmlSource = await assembleHTML(resolve(root, 'src/html'));
-const html = await format(
-  htmlSource.replace(
-    /<!doctype html>/i,
-    '<!doctype html>\n<!-- GERADO por npm run build. Edite src/html/, não este arquivo. -->',
-  ),
-  {
-    parser: 'html',
-    printWidth: 100,
-    tabWidth: 2,
-    endOfLine: 'lf',
-  },
-);
-const files = [
-  [resolve(root, 'index.html'), html],
-  ...result.outputFiles.map((output) => [output.path, output.text]),
-  [resolve(root, 'style.css'), `/* GERADO por npm run build. Fontes em src/css/. */\n${css}`],
-];
+const files = result.outputFiles.map((output) => [output.path, output.text]);
+for (const output of cssResult.outputFiles) {
+  const css = await format(output.text, { parser: 'css', printWidth: 100, endOfLine: 'lf' });
+  files.push([output.path, `/* GERADO por npm run build. Fontes em src/css/. */\n${css}`]);
+}
+for (const page of ['index.html', 'login.html']) {
+  const source = await assembleHTML(resolve(root, 'src/html'), page);
+  const html = await format(
+    source.replace(
+      /<!doctype html>/i,
+      '<!doctype html>\n<!-- GERADO por npm run build. Edite src/html/, não este arquivo. -->',
+    ),
+    { parser: 'html', printWidth: 100, tabWidth: 2, endOfLine: 'lf' },
+  );
+  files.push([resolve(root, page), html]);
+}
 for (const [file, content] of files) {
   if (checkOnly) {
     const existing = await readFile(file, 'utf8').catch(() => '');

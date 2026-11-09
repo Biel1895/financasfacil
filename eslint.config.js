@@ -11,6 +11,7 @@ export default [
       'tests/fixtures/previous-version/**',
       'app.js',
       'style.css',
+      'landing.js',
     ],
   },
   js.configs.recommended,

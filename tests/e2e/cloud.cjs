@@ -1,5 +1,6 @@
 const { prepareSuite, launchBrowser } = require('./support.cjs');
 const siteDir = prepareSuite('cloud');
+const siteUrl = 'https://financasfacil.example.test/';
 const fs = require('node:fs'),
   path = require('node:path'),
   assert = require('node:assert/strict');
@@ -8,11 +9,20 @@ const remote = new Map(),
   errors = [];
 let browser;
 const fakeSDK = String.raw`
-export function createClient(url, _key, { auth: { storage } }) {
+export function createClient(url, _key, { auth: { storage, flowType } }) {
+  if (flowType !== 'pkce') throw new Error('O teste exige PKCE');
   const storageKey = 'mock-session';
   let session = JSON.parse(storage.getItem(storageKey));
   const listeners = new Set();
   const emit = (event) => { for (const listener of listeners) listener(event, session); };
+  function saveSession(result, event) {
+    session = result.data.session;
+    storage.setItem(storageKey, JSON.stringify(session));
+    emit(event);
+  }
+  function saveVerifier() {
+    storage.setItem(storageKey + '-flow-mock-code-verifier', 'verifier');
+  }
   async function api(input, signal) {
     const response = await fetch(url + '/mock', {
       method: 'POST',
@@ -28,9 +38,40 @@ export function createClient(url, _key, { auth: { storage } }) {
     async signInWithPassword(credentials) {
       const result = await api({ action: 'login', credentials });
       if (!result.error) {
-        session = result.data.session;
+        saveSession(result, 'SIGNED_IN');
+      }
+      return result;
+    },
+    async signUp(credentials) {
+      saveVerifier();
+      return api({ action: 'signup', credentials });
+    },
+    async resetPasswordForEmail(email, options) {
+      saveVerifier();
+      return api({ action: 'reset', email, options });
+    },
+    async signInWithOAuth({ provider, options }) {
+      saveVerifier();
+      const result = await api({ action: 'oauth', provider, options });
+      if (!result.error) {
+        location.assign(options.redirectTo + '?code=' + result.data.code + '&sb_flow_id=mock');
+      }
+      return result;
+    },
+    async exchangeCodeForSession(code, { flowId } = {}) {
+      const key = storageKey + '-flow-' + flowId + '-code-verifier';
+      const verifier = storage.getItem(key);
+      const result = await api({ action: 'exchange', code, verifier });
+      storage.removeItem(key);
+      if (!result.error) saveSession(result, result.data.redirectType === 'recovery' ? 'PASSWORD_RECOVERY' : 'SIGNED_IN');
+      return result;
+    },
+    async updateUser(attributes) {
+      const result = await api({ action: 'update-user', attributes });
+      if (!result.error) {
+        session.user = result.data.user;
         storage.setItem(storageKey, JSON.stringify(session));
-        emit('SIGNED_IN');
+        emit('USER_UPDATED');
       }
       return result;
     },
@@ -67,6 +108,24 @@ const users = new Map([
   ['pessoal@example.test', '11111111-1111-4111-8111-111111111111'],
   ['outra@example.test', '22222222-2222-4222-8222-222222222222'],
 ]);
+const passwords = new Map([...users.keys()].map((email) => [email, 'senha123']));
+const metadata = new Map();
+const codes = new Map();
+function mockUser(email) {
+  return {
+    id: users.get(email),
+    email,
+    user_metadata: metadata.get(email) ?? {},
+    identities: [{ provider: 'email' }],
+  };
+}
+function mockSession(email, redirectType = null) {
+  const user = mockUser(email);
+  return {
+    data: { user, session: { user, access_token: 'mock-' + email }, redirectType },
+    error: null,
+  };
+}
 function pass(name) {
   results.push({ name, ok: true });
   console.log('OK', name);
@@ -77,7 +136,15 @@ async function context() {
     window.FF_SUPABASE_CONFIG = {
       url: 'https://testefinancas.supabase.co',
       publishableKey: 'sb_publishable_teste',
+      authProviders: { google: true, apple: true },
     };
+  });
+  await c.route(siteUrl + '**', (route) => {
+    const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
+    if (!/^(?:[\w.]+|assets\/[\w.-]+)$/.test(name) || name.includes('..')) {
+      return route.abort();
+    }
+    return route.fulfill({ path: path.join(siteDir, name) });
   });
   await c.route('https://fonts.googleapis.com/**', (r) => r.abort());
   await c.route('https://fonts.gstatic.com/**', (r) => r.abort());
@@ -104,12 +171,49 @@ async function context() {
     let value = { data: null, error: { message: 'Acesso negado' } };
     if (query.action === 'login') {
       const address = query.credentials.email;
-      if (users.has(address) && query.credentials.password === 'senha123') {
-        const user = { id: users.get(address), email: address };
-        value = { data: { user, session: { user, access_token: 'mock-' + address } }, error: null };
+      if (users.has(address) && query.credentials.password === passwords.get(address)) {
+        value = mockSession(address);
       }
+    } else if (query.action === 'signup') {
+      const { email: address, password, options } = query.credentials;
+      assert.equal(options.emailRedirectTo, siteUrl);
+      users.set(address, '33333333-3333-4333-8333-333333333333');
+      passwords.set(address, password);
+      metadata.set(address, options.data);
+      codes.set('signup', { email: address, redirectType: null });
+      value = { data: { user: mockUser(address), session: null }, error: null };
+    } else if (query.action === 'reset') {
+      assert.equal(query.options.redirectTo, siteUrl);
+      codes.set('recovery', { email: query.email, redirectType: 'recovery' });
+      value = { data: {}, error: null };
+    } else if (query.action === 'oauth') {
+      assert.equal(query.options.redirectTo, siteUrl);
+      assert.ok(['google', 'apple'].includes(query.provider));
+      codes.set(query.provider, { email: 'outra@example.test', redirectType: null });
+      value = { data: { code: query.provider }, error: null };
+    } else if (
+      query.action === 'exchange' &&
+      query.verifier === 'verifier' &&
+      codes.has(query.code)
+    ) {
+      const auth = codes.get(query.code);
+      codes.delete(query.code);
+      value = mockSession(auth.email, auth.redirectType);
     } else if (query.action === 'user' && owner) {
-      value = { data: { user: { id: owner, email } }, error: null };
+      value = { data: { user: mockUser(email) }, error: null };
+    } else if (query.action === 'update-user' && owner) {
+      const { current_password: current, password, data } = query.attributes;
+      if (current && current !== passwords.get(email)) {
+        value = { data: null, error: { code: 'invalid_credentials' } };
+      } else {
+        if (password) {
+          passwords.set(email, password);
+        }
+        if (data) {
+          metadata.set(email, { ...metadata.get(email), ...data });
+        }
+        value = { data: { user: mockUser(email) }, error: null };
+      }
     } else if (owner && query.table === 'ff_finance_records') {
       if (query.action === 'put' && query.rows.every((row) => row.owner_id === owner)) {
         assert.equal(query.options.onConflict, 'owner_id,entity,record_id');
@@ -159,12 +263,14 @@ async function manual(p, desc, amount) {
 }
 (async () => {
   browser = await launchBrowser({ headless: true });
-  const url = 'file:///' + path.join(siteDir, 'index.html').replace(/\\/g, '/');
+  const url = siteUrl + 'login.html';
   const c1 = await context(),
     p1 = await c1.newPage();
   p1.on('pageerror', (e) => errors.push(e.message));
-  await p1.goto(url);
-  assert.equal(await p1.locator('#tabRegisterBtn').isVisible(), false);
+  await p1.goto(siteUrl + '#error_code=otp_expired');
+  await p1.locator('#authAlert').waitFor({ state: 'visible' });
+  assert.equal(p1.url(), url);
+  await p1.locator('#tabRegisterBtn').waitFor({ state: 'visible' });
   await p1.locator('#authIdentifier').fill('pessoal@example.test');
   await p1.locator('#authPassword').fill('incorreta');
   await p1.locator('#btnAuthSubmit').click();
@@ -198,6 +304,63 @@ async function manual(p, desc, amount) {
   pass(
     'Sessão lembrada reabre, conta diferente tem dados isolados e sessão temporária expira ao recarregar',
   );
+  const profileEmail = 'nova@example.test';
+  await p3.locator('#tabRegisterBtn').click();
+  await p3.locator('#authName').fill('Pessoa do cadastro');
+  await p3.locator('#authIdentifier').fill(profileEmail);
+  await p3.locator('#authPassword').fill('senhaCadastro');
+  await p3.locator('#btnAuthSubmit').click();
+  await p3.locator('#authNotice').waitFor({ state: 'visible' });
+  assert.match(await p3.locator('#authNotice').innerText(), /confirmação/);
+  await p3.goto(siteUrl + '?code=signup&sb_flow_id=mock');
+  await p3.locator('#appWrapper').waitFor({ state: 'visible' });
+  assert.equal(await p3.evaluate(() => FF_STATE.loggedAccount.displayName), 'Pessoa do cadastro');
+  assert.ok(!p3.url().includes('code='));
+  pass('Cadastro conserva o nome e abre a conta após confirmação por código PKCE');
+
+  await p3.locator('[data-action="settings"]').filter({ visible: true }).first().click();
+  await p3.locator('#profileName').fill('Nome atualizado');
+  await p3.locator('#btnSaveProfile').click();
+  await p3.waitForFunction(() => FF_STATE.loggedAccount.displayName === 'Nome atualizado');
+  await p3.locator('#btnChangePassword').click();
+  await p3.locator('#currentPassword').fill('senhaCadastro');
+  await p3.locator('#newPassword').fill('senhaAlterada');
+  await p3.locator('#newPasswordAgain').fill('senhaAlterada');
+  await p3.locator('#btnSavePassword').click();
+  await p3.locator('#changePasswordDialog').waitFor({ state: 'hidden' });
+  assert.equal(passwords.get(profileEmail), 'senhaAlterada');
+  await p3.waitForFunction(() => !FF_STATE.busy && !FF_STATE.syncBusy);
+  await p3.locator('#btnLogout').click();
+  await p3.locator('#btnForgotPassword').click();
+  await p3.locator('#forgotEmail').fill(profileEmail);
+  await p3.locator('#btnSendReset').click();
+  await p3.locator('#authNotice').waitFor({ state: 'visible' });
+  await p3.goto(siteUrl + '?code=recovery&sb_flow_id=mock');
+  await p3.locator('#resetPasswordForm').waitFor({ state: 'visible' });
+  assert.equal(await p3.locator('#appWrapper').isVisible(), false);
+  assert.equal(await p3.evaluate(() => localStorage.getItem('mock-session')), null);
+  await p3.locator('#resetPassword').fill('senhaRecuperada');
+  await p3.locator('#resetPasswordAgain').fill('senhaRecuperada');
+  await p3.locator('#btnResetPassword').click();
+  await p3.locator('#appWrapper').waitFor({ state: 'visible' });
+  assert.equal(passwords.get(profileEmail), 'senhaRecuperada');
+  assert.equal(await p3.evaluate(() => FF_STATE.loggedAccount.displayName), 'Nome atualizado');
+  pass('Perfil salva nome e senha, e recuperação aguarda nova senha antes de mostrar os dados');
+
+  for (const provider of ['Google', 'Apple']) {
+    const socialContext = await context();
+    const social = await socialContext.newPage();
+    await social.goto(url);
+    await social.locator('#btnAuth' + provider).click();
+    await social.locator('#appWrapper').waitFor({ state: 'visible' });
+    assert.equal(
+      await social.evaluate(() => FF_STATE.loggedAccount.identifier),
+      'outra@example.test',
+    );
+    await socialContext.close();
+  }
+  pass('Google e Apple iniciam o provedor selecionado e retomam a conta no retorno simulado');
+
   await c1.setOffline(true);
   await manual(p1, 'Salvo sem conexão', '20,00');
   assert.equal(await p1.evaluate(() => FF_STATE.transactions.length), 2);

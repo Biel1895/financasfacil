@@ -1,4 +1,11 @@
-import { enterAccount, handleAuth, logout, restoreOnlineSession, switchAuthTab } from './auth.js';
+import {
+  bindAuthRecovery,
+  enterAccount,
+  handleAuth,
+  logout,
+  restoreOnlineSession,
+  switchAuthTab,
+} from './auth.js';
 import { editorPaymentFields, openEditor, saveManual } from './editing.js';
 import { isPending } from './finance.js';
 import {
@@ -20,6 +27,7 @@ import {
 } from './operations.js';
 import { ensurePlannedBills } from '../data/repository.js';
 import { importBackup } from './restore.js';
+import { bindProfileEvents } from './profile.js';
 import { normalizeAccountKey } from '../domain/format.js';
 import { DB, STORE } from '../infrastructure/database.js';
 import { Cloud, queueCloudSync, syncCloud } from '../services/cloud.js';
@@ -81,6 +89,7 @@ async function runAction(button) {
     openComposer('manual', true);
   } else if (action === 'settings') {
     renderSettings();
+    $('profileName').value = state.loggedAccount.displayName;
     $('settingsDialog').showModal();
   } else if (action === 'edit-tx') {
     openEditor(id);
@@ -131,8 +140,16 @@ async function runAction(button) {
 }
 
 function bindEvents() {
-  $('tabLoginBtn').addEventListener('click', () => switchAuthTab('login'));
-  $('tabRegisterBtn').addEventListener('click', () => switchAuthTab('register'));
+  bindAuthRecovery();
+  bindProfileEvents();
+  $('tabLoginBtn').addEventListener('click', () => {
+    switchAuthTab('login');
+    $('authIdentifier').focus();
+  });
+  $('tabRegisterBtn').addEventListener('click', () => {
+    switchAuthTab('register');
+    $('authName').focus();
+  });
   $('authForm').addEventListener('submit', handleAuth);
   $('btnTogglePassword').addEventListener('click', () => {
     const show = $('authPassword').type === 'password';

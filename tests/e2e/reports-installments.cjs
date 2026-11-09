@@ -11,7 +11,7 @@ const pass = (name) => {
   results.push({ name, ok: true });
   console.log('OK', name);
 };
-const uiFile = 'file:///' + path.join(siteDir, 'index.html').replace(/\\/g, '/');
+const uiFile = 'file:///' + path.join(siteDir, 'login.html').replace(/\\/g, '/');
 async function openText(text) {
   await page.locator('[data-action="new"]').filter({ visible: true }).first().click();
   await page.locator('#commandInput').fill(text);

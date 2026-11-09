@@ -927,6 +927,10 @@
     crypto.getRandomValues(randomBytes);
     return Array.from(randomBytes).map((b) => b.toString(16).padStart(2, "0")).join("");
   }
+  async function passwordMatches(user, password) {
+    const hash = user.kdf === "PBKDF2-SHA256" ? await derivePbkdf2Hash(password, `${user.accountKey}::${user.salt}`) : await sha256Hash(`${user.accountKey}::${password}`);
+    return hash === user.passwordHash;
+  }
 
   // src/js/infrastructure/deadline.js
   function deadline(promise, ms = 1e4) {
@@ -2687,12 +2691,7 @@
     if (!$("composerDialog").open) {
       $("composerDialog").showModal();
     }
-    setTimeout(
-      () => $(
-        bill ? "manualDescription" : mode === "manual" ? "manualDescription" : "commandInput"
-      ).focus(),
-      50
-    );
+    $(bill || mode === "manual" ? "manualDescription" : "commandInput").focus();
   }
   function updateScheduleFields() {
     const freq = $("manualFrequency").value, installment = freq === "installment";
@@ -3565,6 +3564,18 @@
     return { url, publishableKey };
   }
 
+  // src/js/services/auth-return.js
+  var errorKeys = ["error", "error_code", "error_description"];
+  var callbackKeys = ["code", "sb_flow_id", ...errorKeys];
+  function readAuthReturn(url) {
+    const fragment = new URLSearchParams(url.hash.slice(1));
+    return {
+      code: url.searchParams.get("code"),
+      flowId: url.searchParams.get("sb_flow_id"),
+      redirectError: errorKeys.some((key) => url.searchParams.has(key) || fragment.has(key))
+    };
+  }
+
   // src/js/services/cloud.js
   var TABLE = "ff_finance_records";
   var PAGE_SIZE = 500;
@@ -3580,12 +3591,13 @@
   };
   var rememberSession = null;
   var sessionMemory = /* @__PURE__ */ new Map();
+  var rememberRedirectKey = "ff-auth-remember";
   var authStorage = {
     getItem(key) {
       return sessionMemory.get(key) ?? localStorage.getItem(key);
     },
     setItem(key, value) {
-      if (rememberSession ?? localStorage.getItem(key) !== null) {
+      if (key.endsWith("-code-verifier") || (rememberSession ?? localStorage.getItem(key) !== null)) {
         localStorage.setItem(key, value);
         sessionMemory.delete(key);
       } else {
@@ -3609,7 +3621,7 @@
           import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm")
         );
         Cloud.client = createClient(config.url, config.publishableKey, {
-          auth: { storage: authStorage, detectSessionInUrl: false }
+          auth: { storage: authStorage, detectSessionInUrl: false, flowType: "pkce" }
         });
         return Cloud.client;
       })().finally(() => {
@@ -3620,25 +3632,127 @@
   }
   async function resumeCloudUser() {
     const client = await connectCloud();
+    const url = new URL(location.href);
+    const { code, flowId, redirectError } = readAuthReturn(url);
+    if (code || redirectError) {
+      for (const key of callbackKeys) {
+        url.searchParams.delete(key);
+      }
+      if (redirectError) {
+        url.hash = "";
+      }
+      history.replaceState(null, "", url.href);
+      const keep = sessionStorage.getItem(rememberRedirectKey) === "yes";
+      sessionStorage.removeItem(rememberRedirectKey);
+      if (redirectError) {
+        throw new Error("O link não pôde ser usado. Tente entrar ou solicite um novo link.");
+      }
+      rememberSession = false;
+      const { data: data2, error: error2 } = await deadline(
+        client.auth.exchangeCodeForSession(code, flowId ? { flowId } : void 0)
+      );
+      if (error2 || !data2.user || !data2.session) {
+        throw new Error("Link expirado ou aberto em outro navegador. Solicite um novo link.");
+      }
+      const recovery = data2.redirectType === "recovery";
+      if (!recovery && keep) {
+        rememberSession = true;
+        for (const [key, value] of [...sessionMemory]) {
+          authStorage.setItem(key, value);
+        }
+      }
+      return { user: data2.user, recovery };
+    }
     const { data, error } = await deadline(client.auth.getSession());
     if (error) {
       throw error;
     }
     if (!data.session) {
-      return null;
+      return { user: null, recovery: false };
     }
     const verified = await deadline(client.auth.getUser());
     if (verified.error) {
       throw verified.error;
     }
-    return verified.data.user;
+    return { user: verified.data.user, recovery: false };
   }
   async function signInCloud(email, password, remember) {
     const client = await connectCloud();
     rememberSession = remember;
     const { data, error } = await client.auth.signInWithPassword({ email, password });
+    if (error?.code === "email_not_confirmed") {
+      throw new Error("Confirme seu e-mail pelo link recebido e tente entrar novamente.");
+    }
     if (error || !data.user) {
       throw new Error("Confira seu e-mail e sua senha do Supabase e tente novamente.");
+    }
+    return data.user;
+  }
+  function redirectToApp(remember) {
+    sessionStorage.setItem(rememberRedirectKey, remember ? "yes" : "no");
+    return location.protocol === "file:" ? new URL("index.html", location.href).href : location.origin + "/";
+  }
+  function cloudAuthError(error, fallback) {
+    const messages = {
+      signup_disabled: "O cadastro está fechado no momento. Entre com uma conta existente.",
+      weak_password: "Escolha uma senha mais forte e tente novamente.",
+      email_address_not_authorized: "O serviço de e-mail ainda não está disponível para este endereço.",
+      over_email_send_rate_limit: "Limite de e-mails atingido. Aguarde e tente novamente.",
+      over_request_rate_limit: "Muitas tentativas. Aguarde um pouco antes de repetir.",
+      same_password: "Escolha uma senha diferente da atual.",
+      invalid_credentials: "Confira sua senha atual e tente novamente.",
+      current_password_required: "Informe a senha atual ou use a recuperação pelo e-mail.",
+      reauthentication_needed: "Entre novamente na sua conta antes de alterar a senha."
+    };
+    return new Error(Object.hasOwn(messages, error?.code) ? messages[error.code] : fallback);
+  }
+  async function signUpCloud(email, password, name, remember) {
+    const client = await connectCloud();
+    rememberSession = remember;
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: { data: { display_name: name }, emailRedirectTo: redirectToApp(remember) }
+    });
+    if (error) {
+      throw cloudAuthError(error, "Não foi possível criar a conta agora. Tente novamente.");
+    }
+    return data.session ? data.user : null;
+  }
+  async function sendCloudReset(email) {
+    const client = await connectCloud();
+    const { error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectToApp(false)
+    });
+    if (error) {
+      throw cloudAuthError(error, "Não foi possível enviar o link agora. Tente novamente.");
+    }
+  }
+  function cloudProviderEnabled(provider) {
+    return Cloud.configured && (provider === "google" || provider === "apple") && window.FF_SUPABASE_CONFIG.authProviders?.[provider] === true;
+  }
+  async function signInWithCloudProvider(provider, remember) {
+    if (!cloudProviderEnabled(provider)) {
+      throw new Error("Este método de entrada está indisponível.");
+    }
+    const client = await connectCloud();
+    const { error } = await client.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: redirectToApp(remember) }
+    });
+    if (error) {
+      throw new Error("Não foi possível abrir o login deste provedor. Tente novamente.");
+    }
+  }
+  async function updateCloudUser(attributes, expectedOwner) {
+    const client = await connectCloud();
+    const { data: identity, error: identityError } = await deadline(client.auth.getUser());
+    if (identityError || identity.user?.id !== expectedOwner) {
+      throw new Error("Sua sessão mudou ou expirou. Entre novamente para continuar.");
+    }
+    const { data, error } = await client.auth.updateUser(attributes);
+    if (error) {
+      throw cloudAuthError(error, "Não foi possível atualizar sua conta agora. Tente novamente.");
     }
     return data.user;
   }
@@ -3655,10 +3769,12 @@
       }
     });
     Cloud.subscription = data.subscription;
+    const name = user.user_metadata?.display_name || user.user_metadata?.full_name || user.user_metadata?.name;
     return {
       accountKey: ["sb", project, user.id.replaceAll("-", "")].join("_"),
       identifier: user.email,
-      displayName: String(user.email || "Minha conta").split("@")[0]
+      displayName: String(name || "").trim().slice(0, 60) || String(user.email || "Minha conta").split("@")[0],
+      needsCurrentPassword: (user.identities ?? []).some((identity) => identity.provider === "email") || user.app_metadata?.provider === "email"
     };
   }
   function stopCloudSession() {
@@ -3825,15 +3941,198 @@
     }
   }
 
+  // src/js/application/profile.js
+  function validateNewPassword(password, confirmation) {
+    if (password.length < 8 || password.length > 128) {
+      throw new Error("Use entre 8 e 128 caracteres na nova senha.");
+    }
+    if (password !== confirmation) {
+      throw new Error("As duas senhas precisam ser iguais.");
+    }
+    return password;
+  }
+  async function runProfileAction(button, action, onError = showError) {
+    if (button.disabled) {
+      return;
+    }
+    button.disabled = true;
+    state.busy++;
+    renderSync();
+    try {
+      if (Cloud.configured && !Cloud.ready) {
+        throw new Error("Sua sessão expirou. Entre novamente para continuar.");
+      }
+      await action();
+    } catch (error) {
+      onError(error);
+    } finally {
+      state.busy--;
+      button.disabled = false;
+      renderSync();
+    }
+  }
+  async function saveProfileName() {
+    const key = account();
+    const name = $("profileName").value.trim().slice(0, 60);
+    if (!name) {
+      throw new Error("Informe o nome que deseja exibir.");
+    }
+    if (Cloud.configured) {
+      await updateCloudUser({ data: { display_name: name } }, Cloud.owner);
+    } else {
+      await enqueueWork(async () => {
+        const user = await DB.get(STORE.users, key);
+        if (!user) {
+          throw new Error("Sua conta local precisa ser aberta novamente.");
+        }
+        const active = await DB.get(STORE.session, "activeUser");
+        const puts = [[STORE.users, { ...user, displayName: name }]];
+        if (active?.accountKey === key) {
+          puts.push([STORE.session, { ...active, displayName: name }]);
+        }
+        await DB.commit(puts);
+      });
+    }
+    if (state.loggedAccount?.accountKey === key) {
+      state.loggedAccount.displayName = name;
+      $("profileName").value = name;
+      render();
+      renderSettings();
+      toast("Seu nome foi atualizado.");
+    }
+  }
+  async function savePassword() {
+    const key = account();
+    const current = $("currentPassword").value;
+    const password = validateNewPassword($("newPassword").value, $("newPasswordAgain").value);
+    if (Cloud.configured) {
+      await updateCloudUser({ password, ...current && { current_password: current } }, Cloud.owner);
+    } else {
+      await enqueueWork(async () => {
+        const user = await DB.get(STORE.users, key);
+        if (!user || !await passwordMatches(user, current)) {
+          throw new Error("Confira a senha atual e tente novamente.");
+        }
+        const salt = generateRandomSaltHex();
+        const passwordHash = await derivePbkdf2Hash(password, `${key}::${salt}`);
+        await DB.put(STORE.users, { ...user, salt, passwordHash, kdf: "PBKDF2-SHA256" });
+      });
+    }
+    $("changePasswordDialog").close();
+    toast("Sua senha foi alterada.");
+  }
+  function bindProfileEvents() {
+    $("profileForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      void runProfileAction($("btnSaveProfile"), saveProfileName);
+    });
+    $("btnChangePassword").addEventListener("click", () => {
+      const requiresPassword = !Cloud.configured || state.loggedAccount.needsCurrentPassword;
+      $("currentPasswordGroup").hidden = !requiresPassword;
+      $("currentPassword").required = Boolean(requiresPassword);
+      $("changePasswordForm").reset();
+      $("changePasswordAlert").hidden = true;
+      $("changePasswordDialog").showModal();
+    });
+    $("changePasswordForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const alert = $("changePasswordAlert");
+      alert.hidden = true;
+      void runProfileAction($("btnSavePassword"), savePassword, (error) => {
+        alert.textContent = error.message;
+        alert.hidden = false;
+      });
+    });
+    $("changePasswordDialog").addEventListener("close", () => $("changePasswordForm").reset());
+  }
+
   // src/js/application/auth.js
+  var authCopy = {
+    login: ["Entre na sua conta", "Informe seus dados de acesso.", "Entrar"],
+    register: ["Crie sua conta", "Preencha seus dados para criar seu acesso.", "Criar conta"],
+    recover: [
+      "Recupere o acesso",
+      "Informe o e-mail cadastrado para receber um link.",
+      "Enviar link"
+    ],
+    reset: [
+      "Defina uma nova senha",
+      "Escolha uma senha com pelo menos 8 caracteres.",
+      "Salvar senha"
+    ]
+  };
+  var recoveryOwner = null;
+  var authBusy = false;
+  function authMessage(message, success = false) {
+    const alert = $("authAlert");
+    const notice = $("authNotice");
+    alert.hidden = success || !message;
+    notice.hidden = !success || !message;
+    (success ? notice : alert).textContent = message;
+  }
+  async function runAuth(button, action) {
+    if (authBusy) {
+      return;
+    }
+    authBusy = true;
+    const controls = [
+      "tabLoginBtn",
+      "tabRegisterBtn",
+      "btnAuthSubmit",
+      "btnForgotPassword",
+      "btnAuthGoogle",
+      "btnAuthApple",
+      "btnBackToLogin",
+      "btnCancelReset"
+    ];
+    for (const id of controls) {
+      $(id).disabled = true;
+    }
+    button.disabled = true;
+    authMessage("");
+    try {
+      await action();
+    } catch (error) {
+      authMessage(error.message || "Não foi possível concluir. Tente novamente.");
+    } finally {
+      authBusy = false;
+      for (const id of controls) {
+        $(id).disabled = false;
+      }
+      button.disabled = false;
+      $("authSubmitText").textContent = authCopy[state.authMode][2];
+    }
+  }
   function switchAuthTab(mode) {
+    const [title, subtitle, submit] = authCopy[mode];
+    const register = mode === "register";
+    const normal = mode === "login" || register;
     state.authMode = mode;
-    $("registerNameGroup").hidden = mode !== "register";
-    $("tabRegisterBtn").classList.toggle("active", mode === "register");
-    $("tabLoginBtn").classList.toggle("active", mode === "login");
-    $("authSubmitText").textContent = mode === "register" ? "Criar minha conta" : "Entrar na minha conta";
-    $("authPassword").autocomplete = mode === "register" ? "new-password" : "current-password";
-    $("authAlert").hidden = true;
+    $("authTitle").textContent = title;
+    $("authSubtitle").textContent = subtitle;
+    $("authAccountLinks").hidden = !normal;
+    $("authRegisterLink").hidden = mode !== "login";
+    $("authLoginLink").hidden = !register;
+    $("authForm").hidden = !normal;
+    $("forgotPasswordForm").hidden = mode !== "recover";
+    $("resetPasswordForm").hidden = mode !== "reset";
+    $("registerNameGroup").hidden = !register;
+    $("authName").required = register && Cloud.configured;
+    $("authSubmitText").textContent = submit;
+    $("authPassword").value = "";
+    $("authPassword").type = "password";
+    $("authPassword").autocomplete = register ? "new-password" : "current-password";
+    $("authPassword").minLength = register && Cloud.configured ? 8 : 4;
+    $("authPassword").placeholder = register && Cloud.configured ? "Pelo menos 8 caracteres" : "Sua senha";
+    $("btnTogglePassword").setAttribute("aria-label", "Mostrar senha");
+    $("btnTogglePassword").innerHTML = icon("eye");
+    $("btnForgotPassword").hidden = mode !== "login" || !Cloud.configured;
+    const google = cloudProviderEnabled("google");
+    const apple = cloudProviderEnabled("apple");
+    $("btnAuthGoogle").hidden = !google;
+    $("btnAuthApple").hidden = !apple;
+    $("authSocial").hidden = !normal || !google && !apple;
+    authMessage("");
   }
   async function enterAccount() {
     sessionLifecycle.generation++;
@@ -3852,6 +4151,8 @@
     await ensurePlannedBills();
     $("authScreen").hidden = true;
     $("appWrapper").hidden = false;
+    $("skipContentLink").href = "#mainContent";
+    document.title = "Painel | FinançasFácil";
     $("bootMessage").hidden = true;
     setView(location.hash.slice(1) || "inicio", false);
     render();
@@ -3903,6 +4204,8 @@
     $("searchInput").value = "";
     $("appWrapper").hidden = true;
     $("authScreen").hidden = false;
+    $("skipContentLink").href = "#authTitle";
+    document.title = "Entrar | FinançasFácil";
     switchAuthTab("login");
     history.replaceState(null, "", location.pathname + location.search);
     $("authIdentifier").focus();
@@ -3913,22 +4216,79 @@
     await enterAccount();
   }
   async function restoreOnlineSession() {
-    $("tabLoginBtn").parentElement.hidden = true;
     $("authIdentifierLabel").textContent = "E-mail";
     $("authIdentifier").type = "email";
-    $("authIdentifier").placeholder = "Seu e-mail cadastrado no Supabase";
-    $("authStorageHint").textContent = "Entre com a conta criada no Supabase para sincronizar seus lançamentos.";
+    $("authIdentifier").placeholder = "voce@exemplo.com";
+    $("authStorageHint").hidden = true;
     try {
-      const user = await resumeCloudUser();
-      if (user) {
+      const { user, recovery } = await resumeCloudUser();
+      if (user && recovery) {
+        recoveryOwner = user.id;
+        switchAuthTab("reset");
+      } else if (user) {
         await enterOnlineAccount(user);
       }
     } catch (error) {
       stopCloudSession();
       state.loggedAccount = null;
-      $("authAlert").textContent = "Não foi possível retomar a sessão online. Tente entrar novamente.";
-      $("authAlert").hidden = false;
+      authMessage(
+        error instanceof Error ? error.message : "Não foi possível retomar a sessão online. Tente entrar novamente."
+      );
       console.warn(error);
+    }
+  }
+  function bindAuthRecovery() {
+    $("btnForgotPassword").addEventListener("click", () => {
+      $("forgotEmail").value = $("authIdentifier").value;
+      switchAuthTab("recover");
+      $("forgotEmail").focus();
+    });
+    $("btnBackToLogin").addEventListener("click", () => {
+      $("authIdentifier").value = $("forgotEmail").value;
+      switchAuthTab("login");
+      $("authIdentifier").focus();
+    });
+    $("forgotPasswordForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      void runAuth($("btnSendReset"), async () => {
+        await sendCloudReset($("forgotEmail").value.trim());
+        authMessage(
+          "Se esse e-mail estiver cadastrado, você receberá um link. Abra-o neste mesmo navegador.",
+          true
+        );
+      });
+    });
+    $("resetPasswordForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      void runAuth($("btnResetPassword"), async () => {
+        if (!recoveryOwner) {
+          throw new Error("Solicite um novo link de recuperação.");
+        }
+        const password = validateNewPassword($("resetPassword").value, $("resetPasswordAgain").value);
+        const user = await updateCloudUser({ password }, recoveryOwner);
+        recoveryOwner = null;
+        $("resetPasswordForm").reset();
+        switchAuthTab("login");
+        await enterOnlineAccount(user);
+        toast("Sua senha foi redefinida.");
+      });
+    });
+    $("btnCancelReset").addEventListener("click", () => {
+      void runAuth($("btnCancelReset"), async () => {
+        await signOutCloud();
+        recoveryOwner = null;
+        $("resetPasswordForm").reset();
+        switchAuthTab("login");
+        $("authIdentifier").focus();
+      });
+    });
+    for (const [id, provider] of [
+      ["btnAuthGoogle", "google"],
+      ["btnAuthApple", "apple"]
+    ]) {
+      $(id).addEventListener("click", () => {
+        void runAuth($(id), () => signInWithCloudProvider(provider, $("authRememberMe").checked));
+      });
     }
   }
   function loginIdentifier(value) {
@@ -3970,7 +4330,6 @@
   }
   async function handleAuth(event) {
     event.preventDefault();
-    $("authAlert").hidden = true;
     if (Date.now() < state.lockoutUntil) {
       $("authAlert").textContent = "Aguarde alguns segundos antes de tentar novamente.";
       $("authAlert").hidden = false;
@@ -3980,11 +4339,28 @@
     if (!loginId || loginId.length > 80 || password.length < 4 || password.length > 128) {
       return;
     }
-    $("btnAuthSubmit").disabled = true;
-    $("authSubmitText").textContent = "Aguarde…";
-    try {
+    await runAuth($("btnAuthSubmit"), async () => {
+      $("authSubmitText").textContent = "Aguarde…";
       if (Cloud.configured) {
-        const user = await signInCloud(loginId, password, $("authRememberMe").checked);
+        const remember = $("authRememberMe").checked;
+        let user;
+        if (state.authMode === "register") {
+          const name = $("authName").value.trim();
+          if (!name || password.length < 8) {
+            throw new Error("Informe seu nome e uma senha com pelo menos 8 caracteres.");
+          }
+          user = await signUpCloud(loginId, password, name, remember);
+          if (!user) {
+            switchAuthTab("login");
+            authMessage(
+              "Confira seu e-mail e abra o link de confirmação neste navegador. Depois, entre com sua senha.",
+              true
+            );
+            return;
+          }
+        } else {
+          user = await signInCloud(loginId, password, remember);
+        }
         await enterOnlineAccount(user);
         $("authPassword").value = "";
         toast("Você entrou na sua conta online.");
@@ -4013,8 +4389,8 @@
             "Conta não encontrada. Confira o usuário ou crie sua conta neste aparelho."
           );
         }
-        const key = existing.accountKey, candidate = existing.kdf === "PBKDF2-SHA256" ? await derivePbkdf2Hash(password, `${key}::${existing.salt}`) : await sha256Hash(`${key}::${password}`);
-        if (candidate !== existing.passwordHash) {
+        const key = existing.accountKey;
+        if (!await passwordMatches(existing, password)) {
           state.failedLoginAttempts++;
           if (state.failedLoginAttempts >= 5) {
             state.lockoutUntil = Date.now() + 15e3;
@@ -4043,13 +4419,7 @@
       await enterAccount();
       $("authPassword").value = "";
       toast(`Bem-vindo(a), ${state.loggedAccount.displayName.split(" ")[0]}.`);
-    } catch (error) {
-      $("authAlert").textContent = error.message || "Não foi possível entrar. Tente novamente.";
-      $("authAlert").hidden = false;
-    } finally {
-      $("btnAuthSubmit").disabled = false;
-      $("authSubmitText").textContent = state.authMode === "register" ? "Criar minha conta" : "Entrar na minha conta";
-    }
+    });
   }
 
   // src/js/application/restore.js
@@ -4167,6 +4537,7 @@
       openComposer("manual", true);
     } else if (action === "settings") {
       renderSettings();
+      $("profileName").value = state.loggedAccount.displayName;
       $("settingsDialog").showModal();
     } else if (action === "edit-tx") {
       openEditor(id);
@@ -4210,8 +4581,16 @@
     }
   }
   function bindEvents() {
-    $("tabLoginBtn").addEventListener("click", () => switchAuthTab("login"));
-    $("tabRegisterBtn").addEventListener("click", () => switchAuthTab("register"));
+    bindAuthRecovery();
+    bindProfileEvents();
+    $("tabLoginBtn").addEventListener("click", () => {
+      switchAuthTab("login");
+      $("authIdentifier").focus();
+    });
+    $("tabRegisterBtn").addEventListener("click", () => {
+      switchAuthTab("register");
+      $("authName").focus();
+    });
     $("authForm").addEventListener("submit", handleAuth);
     $("btnTogglePassword").addEventListener("click", () => {
       const show = $("authPassword").type === "password";

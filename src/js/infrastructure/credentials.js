@@ -37,4 +37,12 @@ function generateRandomSaltHex(byteLength = 16) {
     .join('');
 }
 
-export { derivePbkdf2Hash, generateRandomSaltHex, sha256Hash };
+async function passwordMatches(user, password) {
+  const hash =
+    user.kdf === 'PBKDF2-SHA256'
+      ? await derivePbkdf2Hash(password, `${user.accountKey}::${user.salt}`)
+      : await sha256Hash(`${user.accountKey}::${password}`);
+  return hash === user.passwordHash;
+}
+
+export { derivePbkdf2Hash, generateRandomSaltHex, passwordMatches, sha256Hash };

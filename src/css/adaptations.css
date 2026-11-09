@@ -50,9 +50,6 @@
   .bill-row {
     gap: 9px;
   }
-  .auth-screen {
-    gap: 50px;
-  }
   .row-value {
     font-size: 0.76rem;
   }
@@ -109,16 +106,6 @@
   }
   .search-box {
     min-width: 180px;
-  }
-  .auth-screen {
-    gap: 30px;
-    padding: 25px;
-  }
-  .auth-story h1 {
-    font-size: 3rem;
-  }
-  .auth-card {
-    padding: 28px;
   }
 }
 @media (max-width: 700px) {
@@ -537,36 +524,6 @@
   .toast {
     font-size: 0.74rem;
     padding: 12px;
-  }
-  .auth-screen {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 26px 18px;
-    min-height: 100svh;
-    justify-content: center;
-  }
-  .auth-story {
-    width: 100%;
-    max-width: 430px;
-  }
-  .auth-story .brand {
-    margin: 0 0 10px;
-  }
-  .auth-story > .eyebrow,
-  .auth-story h1,
-  .auth-story > p,
-  .auth-feature {
-    display: none;
-  }
-  .auth-card {
-    width: 100%;
-    max-width: 430px;
-    padding: 27px 23px;
-    border-radius: 20px;
-  }
-  .auth-card h2 {
-    font-size: 1.28rem;
   }
 }
 @media (max-width: 370px) {

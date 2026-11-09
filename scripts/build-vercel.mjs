@@ -5,6 +5,10 @@ const config = readSupabaseConfig({
   url: process.env.FF_SUPABASE_URL,
   publishableKey: process.env.FF_SUPABASE_PUBLISHABLE_KEY,
 });
+config.authProviders = {
+  google: process.env.FF_AUTH_GOOGLE === 'true',
+  apple: process.env.FF_AUTH_APPLE === 'true',
+};
 const domain = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
 const address = process.env.FF_SITE_URL?.trim() || (domain && 'https://' + domain);
 if (!address) {
@@ -30,7 +34,8 @@ const shareTags = [
 
 const output = new URL('../dist/', import.meta.url);
 const assetOutput = new URL('assets/', output);
-const siteFiles = ['index.html', 'app.js', 'style.css', 'config.js'];
+const runtimeFiles = ['login.html', 'app.js', 'style.css', 'landing.css', 'landing.js'];
+const siteFiles = ['index.html', 'config.js', ...runtimeFiles];
 const assets = ['favicon.svg', 'apple-touch-icon.png', 'compartilhar.jpg'];
 await mkdir(output, { recursive: true });
 for (const entry of await readdir(output, { withFileTypes: true })) {
@@ -49,7 +54,7 @@ for (const entry of await readdir(assetOutput, { withFileTypes: true })) {
 }
 
 await import('./build.mjs');
-for (const file of ['app.js', 'style.css']) {
+for (const file of runtimeFiles) {
   await copyFile(new URL('../' + file, import.meta.url), new URL(file, output));
 }
 for (const asset of assets) {

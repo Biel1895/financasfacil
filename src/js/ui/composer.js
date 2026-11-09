@@ -68,13 +68,7 @@ function openComposer(mode = 'text', bill = false) {
   if (!$('composerDialog').open) {
     $('composerDialog').showModal();
   }
-  setTimeout(
-    () =>
-      $(
-        bill ? 'manualDescription' : mode === 'manual' ? 'manualDescription' : 'commandInput',
-      ).focus(),
-    50,
-  );
+  $(bill || mode === 'manual' ? 'manualDescription' : 'commandInput').focus();
 }
 
 function updateScheduleFields() {

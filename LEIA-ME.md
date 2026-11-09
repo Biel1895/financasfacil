@@ -1,6 +1,6 @@
 # FinançasFácil — versão atualizada
 
-Abra `index.html` na mesma pasta dos arquivos `app.js`, `style.css` e `config.js`. Se já estava com o sistema aberto, recarregue com **Ctrl + F5**. Use o mesmo navegador e a mesma conta para continuar acessando os lançamentos existentes.
+Abra `index.html` e clique em **Entrar** para acessar sua conta. Você também pode abrir `login.html` diretamente. Mantenha os arquivos do projeto juntos e use o mesmo navegador e a mesma conta para acessar seus lançamentos.
 
 ## O que mudou
 
