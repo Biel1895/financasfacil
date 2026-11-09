@@ -1,0 +1,10 @@
+/* A ordem preserva a cascata da versão anterior. Veja docs/ARQUITETURA.md. */
+@import './base.css';
+@import './shell.css';
+@import './records.css';
+@import './auth.css';
+@import './dialogs.css';
+@import './adaptations.css';
+@import './reports-installments.css';
+@import './operations-forecast.css';
+@import './balances.css';

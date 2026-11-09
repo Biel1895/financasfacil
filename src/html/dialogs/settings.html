@@ -1,0 +1,65 @@
+<dialog id="settingsDialog" class="dialog" aria-labelledby="settingsTitle">
+  <div class="dialog-heading">
+    <div>
+      <span class="eyebrow">SEU ESPAÇO</span>
+      <h2 id="settingsTitle">Dados e preferências</h2>
+    </div>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <div class="account-card">
+    <span class="avatar" id="settingsAvatar">F</span>
+    <div>
+      <strong id="settingsName"></strong>
+      <p id="settingsIdentifier" class="muted small"></p>
+    </div>
+    <button id="btnLogout" class="button quiet">Sair</button>
+  </div>
+  <div class="form-grid">
+    <label
+      >Aparência<select id="themeSelect">
+        <option value="auto">Automática, como meu aparelho</option>
+        <option value="light">Clara</option>
+        <option value="dark">Escura</option>
+      </select></label
+    ><label
+      >Cálculo do saldo<select id="balanceModeSelect">
+        <option value="independent">Receitas menos despesas</option>
+        <option value="integrated">Descontar também os aportes</option>
+      </select></label
+    >
+  </div>
+  <section class="settings-section">
+    <h3><span data-icon="cloud"></span>Salvamento e sincronização</h3>
+    <p id="syncDetail" class="muted"></p>
+    <p id="lastSyncLabel" class="small muted"></p>
+    <button id="btnForceSyncNow" class="button secondary">
+      <span data-icon="refresh"></span>Tentar sincronizar
+    </button>
+  </section>
+  <section class="settings-section">
+    <h3><span data-icon="shield"></span>Seus dados, protegidos</h3>
+    <p class="muted">
+      Mantemos até 7 cópias diárias neste navegador. Para guardar uma cópia fora do aparelho,
+      exporte seu backup.
+    </p>
+    <div class="settings-buttons">
+      <button id="btnExportJSON" class="button primary">
+        <span data-icon="download"></span>Exportar backup</button
+      ><label class="button secondary file-label"
+        ><span data-icon="upload"></span>Restaurar backup<input
+          id="inputImportJSON"
+          type="file"
+          accept="application/json,.json"
+          hidden /></label
+      ><button id="btnExportCSV" class="button quiet">Exportar extrato CSV</button>
+    </div>
+    <p id="lastExportLabel" class="muted small"></p>
+    <div id="snapshotsList" class="snapshots-list"></div>
+  </section>
+  <p class="fine-print">
+    As cópias deste navegador não substituem um arquivo de backup. Se você limpar os dados do
+    navegador, as cópias locais também serão apagadas.
+  </p>
+</dialog>

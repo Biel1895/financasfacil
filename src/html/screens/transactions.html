@@ -1,0 +1,24 @@
+<section id="view-lancamentos" class="view" hidden aria-label="Lançamentos">
+  <div class="panel statement-panel">
+    <div class="statement-toolbar">
+      <div>
+        <h2>Seu extrato</h2>
+        <p id="transactionsCountLabel" class="muted small"></p>
+      </div>
+      <label class="search-box"
+        ><span data-icon="search"></span
+        ><input
+          id="searchInput"
+          type="search"
+          placeholder="Buscar descrição ou categoria"
+          aria-label="Buscar lançamento"
+      /></label>
+    </div>
+    <div id="typeFilterTabs" class="filter-tabs" role="group" aria-label="Filtrar lançamentos">
+      <button data-filter="all" class="active">Todos</button
+      ><button data-filter="expense">Despesas</button><button data-filter="income">Receitas</button
+      ><button data-filter="investment">Investimentos</button>
+    </div>
+    <div id="transactionsListContainer"></div>
+  </div>
+</section>

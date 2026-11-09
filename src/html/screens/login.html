@@ -1,0 +1,80 @@
+<section id="authScreen" class="auth-screen" hidden aria-labelledby="authTitle">
+  <div class="auth-story">
+    <div class="brand">
+      <span class="brand-mark" data-icon="wallet"></span
+      ><span>Finanças<span class="brand-light">Fácil</span></span>
+    </div>
+    <span class="eyebrow">MAIS CLAREZA. MENOS PREOCUPAÇÃO.</span>
+    <h1>Seu dinheiro.<br />Um lugar para<br />entender tudo.</h1>
+    <p>Organize o que entra, acompanhe o que sai e planeje as próximas contas. No seu ritmo.</p>
+    <div class="auth-feature"><span data-icon="mic"></span> Fale, confira e registre.</div>
+    <div class="auth-feature">
+      <span data-icon="calendar"></span> Suas contas, sem esquecer nenhuma.
+    </div>
+    <div class="auth-feature">
+      <span data-icon="shield"></span> Cópia local e backup dos seus dados.
+    </div>
+  </div>
+  <div class="auth-card">
+    <button
+      id="authThemeButton"
+      class="icon-button auth-theme"
+      aria-label="Alternar tema"
+      type="button"
+    >
+      <span data-icon="sun"></span>
+    </button>
+    <h2 id="authTitle">Bom ter você por aqui.</h2>
+    <p class="muted">Entre para continuar de onde parou.</p>
+    <div class="segmented auth-tabs" role="group" aria-label="Acesso à conta">
+      <button id="tabLoginBtn" class="active" type="button">Entrar</button
+      ><button id="tabRegisterBtn" type="button">Criar conta</button>
+    </div>
+    <div id="authAlert" class="inline-alert danger" role="alert" hidden></div>
+    <form id="authForm">
+      <label id="registerNameGroup" hidden
+        >Como podemos chamar você?<input
+          id="authName"
+          autocomplete="name"
+          maxlength="60"
+          placeholder="Seu nome"
+      /></label>
+      <label
+        ><span id="authIdentifierLabel">E-mail ou usuário</span
+        ><input
+          id="authIdentifier"
+          autocomplete="username"
+          maxlength="80"
+          required
+          placeholder="Seu e-mail ou nome de usuário"
+      /></label>
+      <label
+        >Senha<span class="password-field"
+          ><input
+            id="authPassword"
+            type="password"
+            autocomplete="current-password"
+            minlength="4"
+            maxlength="128"
+            required
+            placeholder="Sua senha" /><button
+            id="btnTogglePassword"
+            type="button"
+            class="icon-button"
+            aria-label="Mostrar senha"
+          >
+            <span data-icon="eye"></span></button></span
+      ></label>
+      <label class="checkbox"
+        ><input id="authRememberMe" type="checkbox" checked />Manter conectado neste aparelho</label
+      >
+      <button id="btnAuthSubmit" type="submit" class="button primary wide">
+        <span id="authSubmitText">Entrar na minha conta</span><span data-icon="arrow-right"></span>
+      </button>
+    </form>
+    <p class="fine-print" id="authStorageHint">
+      Sua conta e seus lançamentos são guardados neste navegador. Exporte um backup para levar seus
+      dados a outro aparelho.
+    </p>
+  </div>
+</section>

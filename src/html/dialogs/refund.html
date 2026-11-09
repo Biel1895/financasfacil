@@ -1,0 +1,31 @@
+<dialog id="refundDialog" class="dialog" aria-labelledby="refundTitle">
+  <div class="dialog-heading">
+    <h2 id="refundTitle">Estornar lançamento</h2>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <p id="refundDescription" class="muted"></p>
+  <form id="refundForm">
+    <div class="form-grid">
+      <label>Valor do estorno (R$)<input id="refundAmount" inputmode="decimal" required /></label
+      ><label
+        >Data da devolução<input id="refundDate" type="date" required min="1900-01-01"
+      /></label>
+    </div>
+    <label
+      >Descrição (opcional)<input
+        id="refundNote"
+        maxlength="140"
+        placeholder="Ex.: Produto devolvido" /></label
+    ><label id="refundCancelField" class="checkbox" hidden
+      ><input id="refundCancelRemaining" type="checkbox" />Cancelar também as parcelas pendentes
+      desta compra</label
+    >
+    <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="button quiet" type="button" data-close>Voltar</button
+      ><button id="confirmRefund" class="button primary" type="submit">Confirmar estorno</button>
+    </div>
+  </form>
+</dialog>

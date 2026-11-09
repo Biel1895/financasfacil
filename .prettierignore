@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-results/
+backups/
+tests/fixtures/previous-version/
+app.js
+/index.html
+style.css
+package-lock.json

@@ -1,0 +1,51 @@
+<section id="view-contas" class="view" hidden aria-label="Contas e parcelas">
+  <div id="billSummary" class="bill-summary"></div>
+  <section class="panel">
+    <div class="statement-toolbar">
+      <div>
+        <h2>Contas e parcelas</h2>
+        <p class="muted small">
+          Pendências seguem o vencimento. Pagamentos aparecem no mês em que o dinheiro foi
+          movimentado.
+        </p>
+      </div>
+      <button class="button secondary" data-action="new-bill">
+        <span data-icon="plus"></span>Agendar conta
+      </button>
+    </div>
+    <div id="billFilterTabs" class="filter-tabs" role="group" aria-label="Filtrar contas">
+      <button data-bill-filter="pending" class="active">A vencer</button
+      ><button data-bill-filter="overdue">Atrasadas</button
+      ><button data-bill-filter="paid">Pagas / recebidas</button
+      ><button data-bill-filter="cancelled">Canceladas</button
+      ><button data-bill-filter="all">Todas</button>
+    </div>
+    <div id="billsList"></div>
+  </section>
+  <section class="panel recurrence-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Compras e recorrências</h2>
+        <p class="muted small">Gerencie parcelas pendentes, pagas, concluídas ou canceladas.</p>
+      </div>
+    </div>
+    <div id="rulesList"></div>
+  </section>
+  <section class="panel forecast-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Previsão dos próximos meses</h2>
+        <p class="muted small">Entradas, compromissos e resultado de cada mês.</p>
+      </div>
+      <label class="report-span-label"
+        ><span class="sr-only">Meses de previsão</span
+        ><select id="forecastSpan">
+          <option value="6">6 meses</option>
+          <option value="12">12 meses</option>
+        </select></label
+      >
+    </div>
+    <div id="forecastCards" class="forecast-grid"></div>
+    <p id="forecastNote" class="forecast-note"></p>
+  </section>
+</section>

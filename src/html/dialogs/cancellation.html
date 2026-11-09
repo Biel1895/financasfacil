@@ -1,0 +1,33 @@
+<dialog id="cancelPurchaseDialog" class="dialog" aria-labelledby="cancelPurchaseTitle">
+  <div class="dialog-heading">
+    <h2 id="cancelPurchaseTitle">Cancelar compra</h2>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <p id="cancelPurchaseText" class="muted"></p>
+  <form id="cancelPurchaseForm">
+    <label
+      >Data do cancelamento<input
+        id="cancelPurchaseDate"
+        type="date"
+        required
+        min="1900-01-01" /></label
+    ><label id="cancelPurchaseRefundField" class="checkbox"
+      ><input id="cancelPurchaseRefund" type="checkbox" /><span
+        id="cancelPurchaseRefundLabel"
+      ></span
+    ></label>
+    <p class="field-hint">
+      Registre o estorno apenas se o valor já foi devolvido. Caso ainda esteja aguardando, mantenha
+      a opção desmarcada.
+    </p>
+    <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button type="button" class="button quiet" data-close>Voltar</button
+      ><button type="submit" id="confirmCancelPurchase" class="button danger">
+        Confirmar cancelamento
+      </button>
+    </div>
+  </form>
+</dialog>

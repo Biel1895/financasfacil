@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+  <!-- @include layout/head.html -->
+  <body>
+    <a class="skip-link" href="#mainContent">Pular para o conteúdo</a>
+    <div id="bootMessage" class="boot-message" role="status">Preparando suas finanças…</div>
+    <!-- @include screens/login.html -->
+
+    <div id="appWrapper" hidden>
+      <!-- @include layout/sidebar.html -->
+      <div class="app-main">
+        <!-- @include layout/topbar.html -->
+        <main id="mainContent" class="content" tabindex="-1">
+          <!-- @include layout/page-heading.html -->
+          <!-- @include layout/period-toolbar.html -->
+
+          <!-- @include screens/home.html -->
+
+          <!-- @include screens/transactions.html -->
+
+          <!-- @include screens/bills.html -->
+
+          <!-- @include screens/reports.html -->
+          <!-- @include layout/footer.html -->
+        </main>
+      </div>
+      <button class="mobile-fab" data-action="new" aria-label="Novo lançamento">
+        <span data-icon="plus"></span>
+      </button>
+      <!-- @include layout/mobile-navigation.html -->
+    </div>
+
+    <!-- @include dialogs/transaction.html -->
+
+    <!-- @include dialogs/settings.html -->
+
+    <!-- @include dialogs/confirmation.html -->
+    <!-- @include dialogs/payment.html -->
+    <!-- @include dialogs/refund.html -->
+    <!-- @include dialogs/purchase.html -->
+    <!-- @include dialogs/cancellation.html -->
+    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <noscript
+      ><p class="inline-alert danger">
+        Ative o JavaScript no navegador para usar o FinançasFácil.
+      </p></noscript
+    >
+  </body>
+</html>

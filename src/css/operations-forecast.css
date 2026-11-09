@@ -1,0 +1,212 @@
+.forecast-panel {
+  margin-top: 24px;
+}
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 24px 18px;
+}
+.forecast-card {
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+  border-radius: 14px;
+  padding: 17px;
+  min-width: 0;
+}
+.forecast-card h3 {
+  text-transform: capitalize;
+  font-size: 0.86rem;
+  margin-bottom: 14px;
+}
+.forecast-card dl {
+  margin: 0;
+}
+.forecast-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.72rem;
+  padding: 5px 0;
+}
+.forecast-card dt {
+  color: var(--muted);
+}
+.forecast-card dd {
+  margin: 0;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.forecast-card .forecast-pending {
+  border-top: 1px solid var(--border);
+  margin-top: 5px;
+  padding-top: 10px;
+}
+.forecast-card .forecast-result {
+  color: var(--green);
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-size: 0.8rem;
+}
+.forecast-result dt {
+  color: inherit;
+  font-weight: 650;
+}
+.forecast-card .forecast-result.negative {
+  color: var(--red);
+}
+.forecast-card > p {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 12px;
+}
+.forecast-note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 0 24px 22px;
+}
+.rule-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.operation-items {
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 0 12px;
+}
+.operation-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+.operation-item:last-child {
+  border: 0;
+}
+.operation-item > span {
+  flex: 1;
+  min-width: 0;
+}
+.operation-item small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.69rem;
+  margin-top: 3px;
+}
+.operation-item strong {
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+.editor-extra-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 10px;
+}
+.editor-extra-actions .text-button {
+  font-size: 0.73rem;
+}
+.purchase-bills {
+  max-height: 360px;
+  overflow: auto;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.purchase-bill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.purchase-bill strong,
+.purchase-bill span {
+  display: block;
+}
+.purchase-bill strong {
+  font-size: 0.8rem;
+}
+.purchase-bill span {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.chart-bars.diverging {
+  align-items: center;
+  border-bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 1px),
+    var(--muted) 50%,
+    transparent calc(50% + 1px)
+  );
+}
+.chart-bars.diverging .bar {
+  transform: translateY(-50%);
+}
+.chart-bars.diverging .bar.negative {
+  transform: translateY(50%);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    #ffffff55 3px,
+    #ffffff55 5px
+  );
+}
+@media (max-width: 1100px) {
+  .forecast-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .forecast-grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px 16px;
+    gap: 12px;
+  }
+  .forecast-note {
+    padding: 0 16px 18px;
+    font-size: 0.69rem;
+  }
+  .forecast-card {
+    padding: 15px;
+  }
+  .forecast-card h3 {
+    font-size: 0.88rem;
+  }
+  .forecast-card dl > div {
+    font-size: 0.76rem;
+  }
+  .operation-item {
+    font-size: 0.74rem;
+  }
+  .operation-item strong {
+    font-size: 0.74rem;
+  }
+  .operation-item small {
+    font-size: 0.65rem;
+  }
+  .rule-actions {
+    gap: 5px;
+  }
+  .rule-actions .text-button {
+    font-size: 0.69rem;
+  }
+  .purchase-bill .button {
+    padding: 8px 10px;
+  }
+  .editor-extra-actions {
+    gap: 5px 12px;
+  }
+}

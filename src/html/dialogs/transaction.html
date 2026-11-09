@@ -1,0 +1,165 @@
+<dialog id="composerDialog" class="dialog composer" aria-labelledby="composerTitle">
+  <div class="dialog-heading">
+    <div>
+      <span class="eyebrow">DO SEU JEITO</span>
+      <h2 id="composerTitle">Novo lançamento</h2>
+    </div>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <div id="composerTabs" class="segmented" role="group" aria-label="Como registrar">
+    <button data-compose="text" class="active"><span data-icon="message"></span>Digitar</button
+    ><button data-compose="manual"><span data-icon="edit"></span>Preencher</button>
+  </div>
+  <div id="assistantPane">
+    <p id="composerHelp" class="muted">
+      Digite ou use o microfone para contar o que aconteceu. Confira antes de salvar.
+    </p>
+    <div id="recordingBanner" class="recording-banner" hidden role="status">
+      <span class="recording-dot"></span>Estou ouvindo…<button
+        id="btnStopVoiceBanner"
+        class="text-button"
+        type="button"
+      >
+        Parar e conferir
+      </button>
+    </div>
+    <form id="commandForm">
+      <label for="commandInput" class="sr-only">Descreva seu lançamento</label
+      ><textarea
+        id="commandInput"
+        rows="3"
+        maxlength="2000"
+        placeholder="Ex.: Comprei um PS5 por 2800 em 5x"
+      ></textarea>
+      <div class="composer-actions">
+        <button id="btnMic" type="button" class="button secondary">
+          <span id="micIcon" data-icon="mic"></span
+          ><span id="micButtonLabel">Usar microfone</span></button
+        ><button id="btnSubmitCommand" class="button primary" type="submit">
+          Conferir <span data-icon="arrow-right"></span>
+        </button>
+      </div>
+    </form>
+    <div class="quick-examples">
+      <span>Experimente:</span
+      ><button data-example="Gastei 89,90 no supermercado hoje">Mercado</button
+      ><button data-example="Recebi 4500 de salário">Salário</button
+      ><button data-example="Comprei um PS5 por 2800 em 5x">Compra parcelada</button
+      ><button data-example="Investi 500 no Tesouro Selic">Investimento</button>
+    </div>
+    <section id="previewPanel" class="preview-panel" hidden aria-labelledby="previewTitle">
+      <div class="preview-heading">
+        <div>
+          <span class="eyebrow">CONFIRA ANTES DE SALVAR</span>
+          <h3 id="previewTitle">Foi isso que você quis dizer?</h3>
+        </div>
+        <span id="previewSource" class="tag"></span>
+      </div>
+      <div id="draftList"></div>
+      <div class="dialog-actions">
+        <button id="cancelPreview" class="button quiet" type="button">Descartar prévia</button
+        ><button id="confirmPreview" class="button primary" type="button">
+          <span data-icon="check"></span>Confirmar lançamento
+        </button>
+      </div>
+    </section>
+  </div>
+  <form id="manualForm" hidden>
+    <input type="hidden" id="editTransactionId" /><input type="hidden" id="editBillId" />
+    <div class="type-options" role="group" aria-label="Tipo">
+      <label
+        ><input type="radio" name="manualType" value="expense" checked /><span>Despesa</span></label
+      ><label><input type="radio" name="manualType" value="income" /><span>Receita</span></label
+      ><label
+        ><input type="radio" name="manualType" value="investment" /><span>Investimento</span></label
+      >
+    </div>
+    <label
+      >Descrição<input
+        id="manualDescription"
+        required
+        maxlength="140"
+        placeholder="Ex.: Aluguel, salário, compra no cartão"
+    /></label>
+    <div class="form-grid">
+      <label
+        ><span id="amountLabel">Valor (R$)</span
+        ><input
+          id="manualAmount"
+          type="text"
+          inputmode="decimal"
+          required
+          placeholder="0,00"
+          maxlength="20"
+          aria-describedby="amountHelp" /></label
+      ><label
+        ><span id="dateLabel">Data</span
+        ><input id="manualDate" type="date" required min="1900-01-01" max="2200-12-31"
+      /></label>
+    </div>
+    <p id="amountHelp" class="field-hint">Use vírgula para os centavos.</p>
+    <label>Categoria<select id="manualCategory" required></select></label>
+    <div id="scheduleFields" class="schedule-fields">
+      <div class="form-grid">
+        <label
+          >Repetição<select id="manualFrequency">
+            <option value="once">Só desta vez</option>
+            <option value="monthly">Todo mês</option>
+            <option value="installment">Compra parcelada</option>
+          </select></label
+        ><label id="installmentField" hidden
+          >Quantidade de parcelas<input
+            id="manualInstallments"
+            type="number"
+            min="2"
+            max="120"
+            value="3"
+        /></label>
+      </div>
+      <p id="scheduleHint" class="field-hint" hidden></p>
+      <label id="manualCardField" hidden
+        >Cartão (opcional)<input id="manualCardName" maxlength="60" placeholder="Ex.: Nubank, Itaú"
+      /></label>
+    </div>
+    <label id="paymentStatusField"
+      >Situação<select id="manualStatus">
+        <option value="paid">Já foi pago / recebido</option>
+        <option value="pending">Pendente — registrar nas contas</option>
+        <option id="manualCancelledOption" value="cancelled" hidden>Cancelada</option>
+      </select></label
+    >
+    <div id="manualActualFields" class="form-grid" hidden>
+      <label
+        >Data do pagamento / recebimento<input
+          id="manualPaymentDate"
+          type="date"
+          min="1900-01-01"
+          max="2200-12-31" /></label
+      ><label id="manualSettledField" hidden
+        >Valor efetivamente pago (R$)<input
+          id="manualPaidAmount"
+          inputmode="decimal"
+          placeholder="0,00"
+      /></label>
+    </div>
+    <div id="manualDuplicateWarning" class="inline-alert" hidden></div>
+    <div class="dialog-actions">
+      <button type="button" class="button quiet" data-close>Cancelar</button
+      ><button type="submit" id="manualSaveButton" class="button primary">
+        <span data-icon="check"></span>Salvar lançamento
+      </button>
+    </div>
+    <div class="editor-extra-actions">
+      <button id="refundEditedTransaction" class="text-button" type="button" hidden>
+        <span data-icon="undo"></span>Estornar lançamento</button
+      ><button id="manageEditedPurchase" class="text-button" type="button" hidden>
+        <span data-icon="list"></span>Gerenciar compra / recorrência</button
+      ><button id="deleteEditedTransaction" class="text-button danger-text" type="button" hidden>
+        <span data-icon="trash"></span>Excluir este lançamento
+      </button>
+    </div>
+  </form>
+  <div id="composerError" class="inline-alert danger" role="alert" hidden></div>
+</dialog>

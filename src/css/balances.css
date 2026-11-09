@@ -1,0 +1,63 @@
+.monthly-balance-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 23px;
+  margin: -6px 0 25px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.monthly-balance-panel h2 {
+  font-size: 0.93rem;
+}
+.monthly-balance-panel p {
+  font-size: 0.73rem;
+  margin-top: 4px;
+}
+.monthly-balance-panel > div {
+  min-width: 0;
+}
+.monthly-balance-amount {
+  text-align: right;
+}
+.monthly-balance-amount strong {
+  display: block;
+  font-family: Manrope, system-ui, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.monthly-balance-amount strong.negative {
+  color: var(--red);
+}
+#monthlyBalancePeriod {
+  text-transform: capitalize;
+}
+@media (max-width: 700px) {
+  .monthly-balance-panel {
+    padding: 15px;
+    margin: -4px 0 20px;
+    gap: 14px;
+    border-radius: 14px;
+  }
+  .monthly-balance-panel h2 {
+    font-size: 0.83rem;
+  }
+  .monthly-balance-panel p {
+    font-size: 0.66rem;
+  }
+  .monthly-balance-amount {
+    max-width: 57%;
+  }
+  .monthly-balance-amount strong {
+    font-size: 1.3rem;
+  }
+  .monthly-balance-amount p {
+    font-size: 0.61rem;
+  }
+}

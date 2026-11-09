@@ -1,0 +1,78 @@
+<section id="view-relatorios" class="view" hidden aria-label="Relatórios financeiros">
+  <div id="reportInsights" class="report-insights"></div>
+  <section class="panel chart-panel">
+    <div class="panel-heading">
+      <div>
+        <span id="reportEyebrow" class="eyebrow">OS ÚLTIMOS SEIS MESES</span>
+        <h2>Como seu dinheiro se movimenta</h2>
+      </div>
+      <div class="chart-legend">
+        <span><i class="dot income"></i>Receitas</span
+        ><span><i class="dot expense"></i>Despesas</span
+        ><span><i class="dot investment"></i>Investimentos</span>
+      </div>
+    </div>
+    <div class="report-toolbar">
+      <div class="report-period-nav" role="group" aria-label="Navegar pelo período do gráfico">
+        <button
+          id="reportPrev"
+          class="icon-button"
+          data-action="report-period-prev"
+          aria-label="Período anterior"
+        >
+          <span data-icon="chevron-left"></span></button
+        ><span id="reportRangeLabel" aria-live="polite"></span
+        ><button
+          id="reportNext"
+          class="icon-button"
+          data-action="report-period-next"
+          aria-label="Próximo período"
+        >
+          <span data-icon="chevron-right"></span>
+        </button>
+      </div>
+      <label class="report-span-label"
+        ><span class="sr-only">Período do gráfico</span
+        ><select id="reportSpan">
+          <option value="6">6 meses</option>
+          <option value="12">12 meses</option>
+        </select></label
+      ><button id="reportToday" class="text-button" data-action="report-today">Mês atual</button
+      ><button class="text-button report-export" data-action="export-report">
+        <span data-icon="download"></span>Exportar período
+      </button>
+    </div>
+    <div id="reportPeriodTotals" class="report-period-totals"></div>
+    <p class="chart-instruction">
+      Toque em um mês para ver os detalhes. O período do gráfico permanece no lugar.
+    </p>
+    <div id="trendChart" class="trend-chart"></div>
+    <div id="reportSelection" class="report-selection" aria-live="polite"></div>
+    <details class="chart-details">
+      <summary>Ver os valores em tabela</summary>
+      <div id="trendTable" class="table-scroll"></div>
+    </details>
+  </section>
+  <div class="report-grid">
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Onde você gastou</h2>
+          <p class="muted small">Despesas por categoria</p>
+        </div>
+        <strong id="panelExpenseTotalBadge" class="money"></strong>
+      </div>
+      <div id="expenseBreakdownList" class="breakdown-list"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Seus investimentos</h2>
+          <p class="muted small">Aportes separados dos gastos</p>
+        </div>
+        <strong id="panelInvestTotalBadge" class="money"></strong>
+      </div>
+      <div id="investBreakdownList" class="breakdown-list"></div>
+    </section>
+  </div>
+</section>

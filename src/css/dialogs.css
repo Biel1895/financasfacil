@@ -1,0 +1,332 @@
+.dialog {
+  padding: 27px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  color: var(--text);
+  width: min(590px, calc(100% - 32px));
+  max-height: calc(100svh - 48px);
+  overflow-y: auto;
+  box-shadow: 0 25px 100px #0b173333;
+  margin: auto;
+}
+.dialog::backdrop {
+  background: #111e3a70;
+  backdrop-filter: blur(4px);
+}
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.dialog-heading h2 {
+  font-size: 1.35rem;
+}
+.dialog-heading .icon-button {
+  margin: -8px -10px 0 0;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.dialog .muted {
+  font-size: 0.82rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.type-options {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.type-options label {
+  flex: 1;
+  display: block;
+  position: relative;
+  margin: 16px 0 0;
+}
+.type-options input {
+  position: absolute;
+  opacity: 0;
+  min-height: 0;
+  width: 1px;
+  height: 1px;
+}
+.type-options span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border);
+  padding: 10px 7px;
+  border-radius: 10px;
+  min-height: 44px;
+  font-size: 0.75rem;
+}
+.type-options input:checked + span {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.type-options input:focus-visible + span {
+  outline: 3px solid #729cff;
+  outline-offset: 3px;
+}
+.field-hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.composer #assistantPane > .muted {
+  margin: 17px 0;
+}
+.composer-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.quick-examples {
+  font-size: 0.7rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 19px 0 0;
+}
+.quick-examples button {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.69rem;
+  padding: 5px 10px;
+  min-height: 34px;
+  color: var(--muted);
+}
+.recording-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 12px;
+  background: var(--red-soft);
+  color: var(--red);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  margin: 17px 0;
+}
+.recording-banner .text-button {
+  margin-left: auto;
+  color: var(--red);
+}
+.recording-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse 1s infinite;
+}
+.recording .button {
+  background: var(--red-soft);
+}
+.preview-panel {
+  border-top: 1px solid var(--border);
+  margin-top: 25px;
+  padding-top: 22px;
+}
+.preview-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.preview-heading h3 {
+  font-size: 0.94rem;
+}
+.draft-card {
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 15px;
+  margin-top: 16px;
+}
+.draft-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.74rem;
+}
+.draft-card label {
+  font-size: 0.72rem;
+  margin-top: 12px;
+}
+.draft-card .duplicate-warning {
+  font-size: 0.72rem;
+  color: var(--amber);
+  margin-top: 10px;
+}
+.draft-card .form-grid {
+  gap: 10px;
+}
+.draft-card input,
+.draft-card select {
+  padding: 9px;
+  font-size: 0.8rem;
+}
+.schedule-fields {
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+.account-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: var(--surface-subtle);
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+.account-card > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.account-card strong {
+  font-size: 0.85rem;
+}
+.account-card .avatar {
+  width: 41px;
+  height: 41px;
+  flex-shrink: 0;
+}
+.account-card .button {
+  padding-inline: 8px;
+}
+.settings-section {
+  border-top: 1px solid var(--border);
+  padding-top: 23px;
+  margin-top: 23px;
+}
+.settings-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+.settings-section h3 > .icon {
+  color: var(--primary);
+}
+.settings-section .muted {
+  font-size: 0.78rem;
+}
+.settings-section .small {
+  font-size: 0.7rem;
+  margin-top: 8px;
+}
+.settings-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.settings-buttons .button {
+  font-size: 0.74rem;
+  padding: 10px 12px;
+}
+.file-label {
+  margin: 0;
+  display: inline-flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+.snapshots-list {
+  margin-top: 12px;
+}
+.snapshot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.snapshot-row .text-button {
+  font-size: 0.72rem;
+}
+.confirm-dialog {
+  width: min(420px, calc(100% - 32px));
+}
+.confirm-dialog .dialog-heading h2 {
+  font-size: 1.1rem;
+}
+.toast-region {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1500;
+  max-width: min(440px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  box-shadow: 0 10px 35px #13203d25;
+  padding: 14px 16px;
+  font-size: 0.81rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  animation: toastIn 0.2s ease;
+}
+.toast > .icon {
+  color: var(--green);
+}
+.toast.warning > .icon {
+  color: var(--amber);
+}
+.toast.error > .icon {
+  color: var(--red);
+}
+.toast .text-button {
+  margin-left: auto;
+  min-height: 30px;
+  white-space: nowrap;
+}
+.toast .icon-button {
+  min-width: 28px;
+  min-height: 30px;
+}
+.hidden-values .chart-bars {
+  opacity: 0.18;
+}
+.hidden-values .progress {
+  opacity: 0.18;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes toastIn {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

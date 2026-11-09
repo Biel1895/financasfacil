@@ -1,0 +1,38 @@
+<dialog id="purchaseDialog" class="dialog" aria-labelledby="purchaseTitle">
+  <div class="dialog-heading">
+    <h2 id="purchaseTitle">Gerenciar compra</h2>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <p id="purchaseInfo" class="muted"></p>
+  <form id="purchaseForm">
+    <label>Descrição<input id="purchaseDescription" maxlength="140" required /></label
+    ><label>Categoria<select id="purchaseCategory"></select></label>
+    <div id="purchaseStructure">
+      <div class="form-grid">
+        <label>Valor total (R$)<input id="purchaseAmount" inputmode="decimal" /></label
+        ><label
+          >Quantidade de parcelas<input id="purchaseCount" type="number" min="2" max="120"
+        /></label>
+      </div>
+      <label
+        >Primeiro vencimento<input id="purchaseStart" type="date" min="1900-01-01" max="2200-12-31"
+      /></label>
+    </div>
+    <p id="purchaseEditHint" class="field-hint"></p>
+    <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button type="submit" id="savePurchase" class="button secondary">
+        Salvar alterações da compra
+      </button>
+    </div>
+  </form>
+  <div id="purchaseBills" class="purchase-bills"></div>
+  <div class="dialog-actions">
+    <button id="purchaseAdvance" type="button" class="button primary">Antecipar parcelas</button
+    ><button id="purchaseCancel" type="button" class="button quiet danger-text">
+      Cancelar compra / programação
+    </button>
+  </div>
+</dialog>

@@ -1,0 +1,34 @@
+<dialog id="settlementDialog" class="dialog" aria-labelledby="settlementTitle">
+  <div class="dialog-heading">
+    <h2 id="settlementTitle">Confirmar pagamento</h2>
+    <button class="icon-button" data-close aria-label="Fechar">
+      <span data-icon="x"></span>
+    </button>
+  </div>
+  <form id="settlementForm">
+    <div id="settlementItems" class="operation-items"></div>
+    <label
+      >Data em que o dinheiro entrou ou saiu<input
+        id="settlementDate"
+        type="date"
+        required
+        min="1900-01-01" /></label
+    ><label id="settlementDiscountField" hidden
+      >Desconto total na antecipação (R$)<input
+        id="settlementDiscount"
+        inputmode="decimal"
+        value="0,00"
+    /></label>
+    <p id="settlementSummary" class="inline-alert"></p>
+    <p class="field-hint">
+      O vencimento original fica preservado. O saldo muda apenas no mês da data escolhida.
+    </p>
+    <p class="inline-alert danger" data-operation-error role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button type="button" class="button quiet" data-close>Voltar</button
+      ><button id="confirmSettlement" type="submit" class="button primary">
+        Confirmar pagamento
+      </button>
+    </div>
+  </form>
+</dialog>

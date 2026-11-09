@@ -1,0 +1,251 @@
+.report-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 24px 18px;
+}
+.report-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 2px;
+}
+.report-period-nav > span {
+  font-size: 0.76rem;
+  font-weight: 650;
+  white-space: nowrap;
+  min-width: 160px;
+  text-align: center;
+}
+.report-period-nav .icon-button {
+  min-width: 36px;
+  min-height: 36px;
+}
+.report-span-label {
+  margin: 0;
+  display: block;
+}
+.report-span-label select {
+  font-size: 0.76rem;
+  padding: 9px 10px;
+  min-height: 42px;
+  min-width: 90px;
+}
+.report-export {
+  margin-left: auto;
+}
+.report-period-totals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 24px 18px;
+}
+.report-total {
+  background: var(--surface-subtle);
+  padding: 12px 14px;
+  border-radius: 11px;
+  min-width: 0;
+}
+.report-total > span {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+.report-total > strong {
+  display: block;
+  font-family: Manrope, system-ui, sans-serif;
+  font-size: 1.05rem;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.report-total.income > strong {
+  color: var(--green);
+}
+.report-total.expense > strong {
+  color: var(--red);
+}
+.report-total.investment > strong {
+  color: var(--purple);
+}
+.chart-instruction {
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding: 0 24px 8px;
+}
+.report-selection {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  margin: 0 24px 18px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.report-selection > strong {
+  text-transform: capitalize;
+  color: var(--primary);
+}
+.report-selection b {
+  color: var(--text);
+  font-weight: 650;
+}
+.selected-row {
+  background: var(--primary-soft);
+}
+.trend-chart.twelve-months {
+  grid-template-columns: repeat(12, minmax(52px, 1fr)) !important;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.chart-month[aria-pressed='true'] {
+  outline: 1px solid var(--primary);
+  outline-offset: -1px;
+}
+.installment-draft {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+.installment-draft .draft-header strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+.installment-draft .draft-header strong .icon {
+  width: 19px;
+  height: 19px;
+}
+.installment-summary {
+  background: var(--primary-soft);
+  border-radius: 11px;
+  padding: 14px;
+  margin-top: 15px;
+}
+.installment-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.installment-total > span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.installment-total > strong {
+  font-size: 0.96rem;
+  color: var(--primary);
+}
+.installment-summary .field-hint {
+  font-size: 0.72rem;
+}
+.installment-details {
+  font-size: 0.74rem;
+  margin-top: 10px;
+}
+.installment-details summary {
+  cursor: pointer;
+  color: var(--primary);
+  min-height: 36px;
+  padding-block: 7px;
+}
+.installment-details ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 240px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.installment-details li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 2px;
+  border-top: 1px solid var(--border);
+}
+.installment-details li span {
+  color: var(--muted);
+}
+.installment-details li strong {
+  font-weight: 600;
+}
+@media (max-width: 960px) {
+  .report-period-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .report-export {
+    margin-left: 0;
+  }
+}
+@media (max-width: 700px) {
+  .report-toolbar {
+    padding: 0 16px 14px;
+    gap: 9px;
+  }
+  .report-period-nav {
+    flex: 1;
+    justify-content: space-between;
+  }
+  .report-period-nav > span {
+    min-width: 0;
+    font-size: 0.67rem;
+  }
+  .report-period-nav .icon-button {
+    min-width: 31px;
+  }
+  .report-period-totals {
+    padding: 0 16px 15px;
+    gap: 9px;
+  }
+  .report-total {
+    padding: 11px;
+  }
+  .report-total > span {
+    font-size: 0.62rem;
+  }
+  .report-total > strong {
+    font-size: 0.93rem;
+  }
+  .chart-instruction {
+    padding-inline: 16px;
+    font-size: 0.66rem;
+  }
+  .report-selection {
+    margin: 0 16px 16px;
+    padding: 12px;
+    gap: 8px 14px;
+    font-size: 0.66rem;
+  }
+  .report-selection > strong {
+    flex-basis: 100%;
+  }
+  .report-toolbar > .text-button {
+    font-size: 0.72rem;
+  }
+  .installment-summary {
+    padding: 12px;
+  }
+  .installment-total {
+    gap: 5px;
+  }
+  .installment-total > span {
+    font-size: 0.67rem;
+  }
+  .installment-total > strong {
+    font-size: 0.87rem;
+  }
+  .installment-details {
+    font-size: 0.68rem;
+  }
+}

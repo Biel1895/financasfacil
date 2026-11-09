@@ -1,0 +1,31 @@
+{
+  "name": "financasfacil-ia",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Controle financeiro pessoal com armazenamento local e sincronização opcional.",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:vercel": "node scripts/build-vercel.mjs",
+    "build:check": "node scripts/build.mjs --check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "test": "node --test tests/unit/*.test.js",
+    "test:e2e": "node scripts/test-e2e.mjs",
+    "test:install": "playwright install chromium --only-shell",
+    "check": "npm run format:check && npm run lint && npm test && npm run build:check",
+    "verify": "npm run check && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "esbuild": "0.28.2",
+    "eslint": "10.14.0",
+    "globals": "17.14.0",
+    "playwright": "1.62.1",
+    "prettier": "3.9.10"
+  }
+}
