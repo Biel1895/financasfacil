@@ -29,10 +29,14 @@ export default [
     },
   },
   {
-    files: ['src/**/*.js', 'config.js'],
+    files: ['src/js/**/*.js', 'config.js'],
     languageOptions: {
       globals: globals.browser,
     },
+  },
+  {
+    files: ['src/pwa/service-worker.js'],
+    languageOptions: { globals: globals.serviceworker },
   },
   {
     files: ['scripts/**/*.mjs', 'tests/unit/**/*.js', 'eslint.config.js'],

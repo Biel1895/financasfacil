@@ -5,6 +5,7 @@ import { autoSnapshot } from './data/backups.js';
 import { onLifecycle } from './infrastructure/lifecycle.js';
 import { queueCloudSync } from './services/cloud.js';
 import { toast } from './ui/feedback.js';
+import { initInstallApp } from './ui/install-app.js';
 import { render, renderSettings, renderSync } from './ui/views.js';
 
 onLifecycle('notice', ([message, type]) => toast(message, type));
@@ -21,6 +22,7 @@ if (window.__FF_ENABLE_TEST_API__ === true) {
   installTestAdapter();
 }
 
+initInstallApp();
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot, { once: true });
 } else {

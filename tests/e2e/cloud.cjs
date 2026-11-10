@@ -9,8 +9,9 @@ const remote = new Map(),
   errors = [];
 let browser;
 const fakeSDK = String.raw`
-export function createClient(url, _key, { auth: { storage, flowType } }) {
+export function createClient(url, _key, { auth: { storage, flowType, persistSession, autoRefreshToken } }) {
   if (flowType !== 'pkce') throw new Error('O teste exige PKCE');
+  if (!persistSession || !autoRefreshToken) throw new Error('A sessão deve ser renovada e persistida pelo SDK');
   const storageKey = 'mock-session';
   let session = JSON.parse(storage.getItem(storageKey));
   const listeners = new Set();
@@ -53,7 +54,7 @@ export function createClient(url, _key, { auth: { storage, flowType } }) {
     async signInWithOAuth({ provider, options }) {
       saveVerifier();
       const result = await api({ action: 'oauth', provider, options });
-      if (!result.error) {
+      if (!result.error && !window.deferOAuthReturn) {
         location.assign(options.redirectTo + '?code=' + result.data.code + '&sb_flow_id=mock');
       }
       return result;
@@ -130,8 +131,8 @@ function pass(name) {
   results.push({ name, ok: true });
   console.log('OK', name);
 }
-async function context() {
-  const c = await browser.newContext({ timezoneId: 'America/Bahia' });
+async function context(options) {
+  const c = await browser.newContext({ timezoneId: 'America/Bahia', ...options });
   await c.addInitScript(() => {
     window.FF_SUPABASE_CONFIG = {
       url: 'https://testefinancas.supabase.co',
@@ -281,7 +282,7 @@ async function manual(p, desc, amount) {
   await p1.waitForFunction(() => FF_STATE.lastSync && FF_STATE.pendingCount === 0);
   assert([...remote.keys()].some((k) => k.includes('/tx/')));
   pass('Fila persistente envia o lançamento local para o adaptador da nuvem');
-  const c2 = await context(),
+  let c2 = await context(),
     p2 = await c2.newPage();
   p2.on('pageerror', (e) => errors.push(e.message));
   await p2.goto(url);
@@ -289,10 +290,17 @@ async function manual(p, desc, amount) {
   await p2.waitForFunction(() => FF_STATE.transactions.length === 1);
   assert.equal(await p2.evaluate(() => FF_STATE.transactions[0].amount), 50.5);
   pass('Segundo navegador autentica e recupera o mesmo lançamento');
-  await p2.reload();
+  const savedBrowserState = await c2.storageState();
+  await c2.close();
+  c2 = await context({ storageState: savedBrowserState });
+  p2 = await c2.newPage();
+  p2.on('pageerror', (e) => errors.push(e.message));
+  await p2.goto(url);
   await p2.locator('#appWrapper').waitFor({ state: 'visible' });
+  assert.equal(await p2.evaluate(() => FF_STATE.loggedAccount.identifier), 'pessoal@example.test');
+  pass('A sessão por senha é restaurada a partir do armazenamento persistente em uma nova janela');
   const c3 = await context();
-  const p3 = await c3.newPage();
+  let p3 = await c3.newPage();
   await p3.goto(url);
   await p3.locator('#authRememberMe').uncheck();
   await logIn(p3, 'outra@example.test');
@@ -309,12 +317,16 @@ async function manual(p, desc, amount) {
   await p3.locator('#authName').fill('Pessoa do cadastro');
   await p3.locator('#authIdentifier').fill(profileEmail);
   await p3.locator('#authPassword').fill('senhaCadastro');
+  await p3.locator('#authRememberMe').check();
   await p3.locator('#btnAuthSubmit').click();
   await p3.locator('#authNotice').waitFor({ state: 'visible' });
   assert.match(await p3.locator('#authNotice').innerText(), /confirmação/);
+  await p3.close();
+  p3 = await c3.newPage();
   await p3.goto(siteUrl + '?code=signup&sb_flow_id=mock');
   await p3.locator('#appWrapper').waitFor({ state: 'visible' });
   assert.equal(await p3.evaluate(() => FF_STATE.loggedAccount.displayName), 'Pessoa do cadastro');
+  assert.ok(await p3.evaluate(() => localStorage.getItem('mock-session')));
   assert.ok(!p3.url().includes('code='));
   pass('Cadastro conserva o nome e abre a conta após confirmação por código PKCE');
 
@@ -332,6 +344,7 @@ async function manual(p, desc, amount) {
   await p3.waitForFunction(() => !FF_STATE.busy && !FF_STATE.syncBusy);
   await p3.locator('#btnLogout').click();
   await p3.locator('#btnForgotPassword').click();
+  assert.equal(await p3.evaluate(() => localStorage.getItem('mock-session')), null);
   await p3.locator('#forgotEmail').fill(profileEmail);
   await p3.locator('#btnSendReset').click();
   await p3.locator('#authNotice').waitFor({ state: 'visible' });
@@ -345,6 +358,11 @@ async function manual(p, desc, amount) {
   await p3.locator('#appWrapper').waitFor({ state: 'visible' });
   assert.equal(passwords.get(profileEmail), 'senhaRecuperada');
   assert.equal(await p3.evaluate(() => FF_STATE.loggedAccount.displayName), 'Nome atualizado');
+  await p3.close();
+  p3 = await c3.newPage();
+  await p3.goto(url);
+  await p3.locator('#appWrapper').waitFor({ state: 'visible' });
+  assert.equal(await p3.evaluate(() => FF_STATE.loggedAccount.identifier), profileEmail);
   pass('Perfil salva nome e senha, e recuperação aguarda nova senha antes de mostrar os dados');
 
   for (const provider of ['Google', 'Apple']) {
@@ -357,9 +375,33 @@ async function manual(p, desc, amount) {
       await social.evaluate(() => FF_STATE.loggedAccount.identifier),
       'outra@example.test',
     );
+    await social.close();
+    const reopened = await socialContext.newPage();
+    await reopened.goto(url);
+    await reopened.locator('#appWrapper').waitFor({ state: 'visible' });
     await socialContext.close();
   }
   pass('Google e Apple iniciam o provedor selecionado e retomam a conta no retorno simulado');
+
+  const temporaryContext = await context();
+  const temporary = await temporaryContext.newPage();
+  await temporary.goto(url);
+  await temporary.locator('#authRememberMe').uncheck();
+  await temporary.evaluate(() => {
+    window.deferOAuthReturn = true;
+  });
+  await temporary.locator('#btnAuthGoogle').click();
+  await temporary.locator('#btnAuthGoogle').waitFor({ state: 'visible' });
+  await temporary.waitForFunction(() => !document.getElementById('btnAuthGoogle').disabled);
+  await temporary.close();
+  const temporaryReturn = await temporaryContext.newPage();
+  await temporaryReturn.goto(siteUrl + '?code=google&sb_flow_id=mock');
+  await temporaryReturn.locator('#appWrapper').waitFor({ state: 'visible' });
+  assert.equal(await temporaryReturn.evaluate(() => localStorage.getItem('mock-session')), null);
+  await temporaryReturn.reload();
+  await temporaryReturn.locator('#authScreen').waitFor({ state: 'visible' });
+  await temporaryContext.close();
+  pass('Escolher uma sessão temporária também vale quando o retorno do Google abre outra aba');
 
   await c1.setOffline(true);
   await manual(p1, 'Salvo sem conexão', '20,00');

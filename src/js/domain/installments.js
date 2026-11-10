@@ -9,7 +9,21 @@ import {
   today,
   uid,
 } from './format.js';
-import { detectTypeAndCategory } from './natural-language.js';
+import { detectTypeAndCategory, parseNaturalLanguageInput } from './natural-language.js';
+
+function parseGeneralInput(text, period = currentPeriod()) {
+  const clauses = text
+    .trim()
+    .split(
+      /;|,\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)|\s+e\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)/i,
+    )
+    .map((clause) => clause.trim())
+    .filter(Boolean);
+  return clauses.flatMap((clause) => {
+    const installment = parseInstallmentClause(clause, period);
+    return installment ? [installment] : parseNaturalLanguageInput(clause, period);
+  });
+}
 
 function installmentCount(value) {
   if (/^\d+$/.test(value)) {
@@ -234,4 +248,4 @@ const spokenCounts = {
   mil: 1000,
 };
 
-export { installmentCount, parseInstallmentClause, spokenCounts };
+export { installmentCount, parseGeneralInput, parseInstallmentClause, spokenCounts };

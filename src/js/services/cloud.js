@@ -21,15 +21,24 @@ const Cloud = {
   subscription: null,
 };
 
-let rememberSession = null;
+let rememberSession = true;
+let readReturnPreference = null;
 const sessionMemory = new Map();
-const rememberRedirectKey = 'ff-auth-remember';
+const isVerifier = (key) => key.endsWith('-code-verifier') && !key.endsWith('-flows-code-verifier');
+const preferenceKey = (key) => key + '-ff-remember';
 const authStorage = {
   getItem(key) {
-    return sessionMemory.get(key) ?? localStorage.getItem(key);
+    const value = sessionMemory.get(key) ?? localStorage.getItem(key);
+    if (value && readReturnPreference && isVerifier(key)) {
+      readReturnPreference(localStorage.getItem(preferenceKey(key)));
+    }
+    return value;
   },
   setItem(key, value) {
-    if (key.endsWith('-code-verifier') || (rememberSession ?? localStorage.getItem(key) !== null)) {
+    if (isVerifier(key)) {
+      localStorage.setItem(preferenceKey(key), rememberSession ? 'yes' : 'no');
+    }
+    if (key.endsWith('-code-verifier') || rememberSession) {
       localStorage.setItem(key, value);
       sessionMemory.delete(key);
     } else {
@@ -40,8 +49,18 @@ const authStorage = {
   removeItem(key) {
     sessionMemory.delete(key);
     localStorage.removeItem(key);
+    if (isVerifier(key)) {
+      localStorage.removeItem(preferenceKey(key));
+    }
   },
 };
+
+function rememberCloudSession() {
+  rememberSession = true;
+  for (const [key, value] of sessionMemory) {
+    authStorage.setItem(key, value);
+  }
+}
 
 async function connectCloud() {
   if (!Cloud.configured || Cloud.client) {
@@ -52,9 +71,17 @@ async function connectCloud() {
       const config = readSupabaseConfig(window.FF_SUPABASE_CONFIG);
       const { createClient } = await deadline(
         import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm'),
-      );
+      ).catch(() => {
+        throw new Error('Não foi possível conectar ao login. Confira sua conexão e recarregue.');
+      });
       Cloud.client = createClient(config.url, config.publishableKey, {
-        auth: { storage: authStorage, detectSessionInUrl: false, flowType: 'pkce' },
+        auth: {
+          storage: authStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false,
+          flowType: 'pkce',
+        },
       });
       return Cloud.client;
     })().finally(() => {
@@ -76,27 +103,35 @@ async function resumeCloudUser() {
       url.hash = '';
     }
     history.replaceState(null, '', url.href);
-    const keep = sessionStorage.getItem(rememberRedirectKey) === 'yes';
-    sessionStorage.removeItem(rememberRedirectKey);
+    // Compatibilidade com links iniciados na versão anterior.
+    const legacyPreference = sessionStorage.getItem('ff-auth-remember');
+    sessionStorage.removeItem('ff-auth-remember');
     if (redirectError) {
       throw new Error('O link não pôde ser usado. Tente entrar ou solicite um novo link.');
     }
-    // A sessão de recuperação deve viver apenas nesta página.
+    // O tipo do retorno só é conhecido depois da troca do código.
     rememberSession = false;
-    const { data, error } = await deadline(
-      client.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined),
-    );
-    if (error || !data.user || !data.session) {
-      throw new Error('Link expirado ou aberto em outro navegador. Solicite um novo link.');
-    }
-    const recovery = data.redirectType === 'recovery';
-    if (!recovery && keep) {
-      rememberSession = true;
-      for (const [key, value] of [...sessionMemory]) {
-        authStorage.setItem(key, value);
+    let preference = null;
+    readReturnPreference = (value) => {
+      preference ??= value;
+    };
+    try {
+      const { data, error } = await deadline(
+        client.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined),
+      );
+      if (error || !data.user || !data.session) {
+        throw new Error('Link expirado ou aberto em outro navegador. Solicite um novo link.');
       }
+      const recovery = data.redirectType === 'recovery';
+      const remember =
+        preference === null ? recovery || legacyPreference !== 'no' : preference === 'yes';
+      if (!recovery && remember) {
+        rememberCloudSession();
+      }
+      return { user: data.user, recovery, remember };
+    } finally {
+      readReturnPreference = null;
     }
-    return { user: data.user, recovery };
   }
   const { data, error } = await deadline(client.auth.getSession());
   if (error) {
@@ -125,8 +160,7 @@ async function signInCloud(email, password, remember) {
   return data.user;
 }
 
-function redirectToApp(remember) {
-  sessionStorage.setItem(rememberRedirectKey, remember ? 'yes' : 'no');
+function redirectToApp() {
   return location.protocol === 'file:'
     ? new URL('index.html', location.href).href
     : location.origin + '/';
@@ -154,7 +188,7 @@ async function signUpCloud(email, password, name, remember) {
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { data: { display_name: name }, emailRedirectTo: redirectToApp(remember) },
+    options: { data: { display_name: name }, emailRedirectTo: redirectToApp() },
   });
   if (error) {
     throw cloudAuthError(error, 'Não foi possível criar a conta agora. Tente novamente.');
@@ -162,10 +196,11 @@ async function signUpCloud(email, password, name, remember) {
   return data.session ? data.user : null;
 }
 
-async function sendCloudReset(email) {
+async function sendCloudReset(email, remember) {
   const client = await connectCloud();
+  rememberSession = remember;
   const { error } = await client.auth.resetPasswordForEmail(email, {
-    redirectTo: redirectToApp(false),
+    redirectTo: redirectToApp(),
   });
   if (error) {
     throw cloudAuthError(error, 'Não foi possível enviar o link agora. Tente novamente.');
@@ -185,9 +220,10 @@ async function signInWithCloudProvider(provider, remember) {
     throw new Error('Este método de entrada está indisponível.');
   }
   const client = await connectCloud();
+  rememberSession = remember;
   const { error } = await client.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: redirectToApp(remember) },
+    options: { redirectTo: redirectToApp() },
   });
   if (error) {
     throw new Error('Não foi possível abrir o login deste provedor. Tente novamente.');
@@ -420,6 +456,7 @@ export {
   bindCloudUser,
   cloudProviderEnabled,
   queueCloudSync,
+  rememberCloudSession,
   resumeCloudUser,
   sendCloudReset,
   signInCloud,

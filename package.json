@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "watch": "node scripts/watch.mjs",
     "build:vercel": "node scripts/build-vercel.mjs",
     "build:check": "node scripts/build.mjs --check",
     "format": "prettier --write .",

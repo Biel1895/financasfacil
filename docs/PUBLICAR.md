@@ -24,11 +24,19 @@ O ícone da aba e a capa de compartilhamento estão em `assets/`. A publicação
 
 O site sincroniza ao entrar, ao gravar, quando a conexão volta e quando você retorna à aba. Em **Configurações**, **Tentar sincronizar** força uma atualização. Com a sessão aberta, alterações feitas sem conexão ficam na fila deste aparelho. Use o endereço publicado e a mesma conta em cada aparelho.
 
+## Instalar o FinançasFácil
+
+Abra o endereço HTTPS publicado. Em navegadores que oferecem a instalação, use **Instalar aplicativo** perto do fim da página inicial ou em **Configurações**, dentro do painel. No iPhone, abra o site no Safari, escolha **Compartilhar → Adicionar à Tela de Início** e, se aparecer, ative **Abrir como App da Web**. O ícone abre a área de acesso. Com uma sessão salva e válida, o painel abre após a verificação no Supabase.
+
+Abra o app online primeiro para preparar os arquivos offline. A interface pode abrir sem conexão. Entrar ou retomar uma sessão após fechar o app exige internet. Com uma sessão já aberta, você pode registrar lançamentos por texto ou formulário e sincronizá-los ao voltar a ficar online. O cache guarda os arquivos públicos da interface. Os lançamentos e a sessão usam seus armazenamentos próprios.
+
+O Vercel gera uma versão nova do cache quando os arquivos publicados mudam. Se ainda estiver vendo a versão antiga, feche as janelas do app e as abas do site antes de abrir novamente. Após publicar, confira a instalação e teste o retorno do Google e os links de senha também a partir do app instalado.
+
 ## Ativar cadastro, e-mails e login social
 
 Em **Authentication → URL Configuration** do Supabase, coloque a página inicial de produção em **Site URL** e **Redirect URLs**. Use o endereço completo com HTTPS e a barra final, como `https://financasfacil.vercel.app/`. Abra os links de confirmação e recuperação no mesmo navegador em que você iniciou o pedido. [URLs de retorno do Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
 
-A página inicial apresenta os recursos e as modalidades mensal e anual previstas. **Entrar** abre `login.html`. Os retornos do Supabase continuam usando o endereço inicial e são encaminhados para a tela de acesso. Os cartões de planos são informativos.
+A página inicial apresenta os recursos, o relatório com dados fictícios da conta Daniel e os planos previstos de R$ 9,00 por mês e R$ 90,00 por ano. **Entrar** abre `login.html`. Os retornos do Supabase continuam usando o endereço inicial e são encaminhados para a tela de acesso. Os cartões de planos são informativos.
 
 Para cadastro pelo site, habilite **Allow new users to sign up** e mantenha **Confirm email** ligado. Para enviar confirmação e recuperação a pessoas fora da sua equipe do Supabase, configure **Custom SMTP** no painel. O remetente padrão só entrega para endereços autorizados da equipe e tem limite de envio. [Envio de e-mails pelo Supabase](https://supabase.com/docs/guides/auth/auth-smtp).
 

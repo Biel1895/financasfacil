@@ -1,0 +1,57 @@
+<section class="section" id="como-funciona" aria-labelledby="demoTitle">
+  <div class="container demo-grid">
+    <div data-reveal>
+      <p class="section-tag">Lançamento por voz ou texto</p>
+      <h2 class="title" id="demoTitle">
+        Escreva ou fale. <span class="mint">Confira o lançamento.</span>
+      </h2>
+      <p class="section-sub">
+        O navegador transforma a fala em texto. O FinançasFácil identifica os valores na frase,
+        sugere uma categoria e monta a prévia. Quando você informa o número de parcelas, ele divide
+        o total e calcula os vencimentos.
+      </p>
+      <ul class="bullets">
+        <li>
+          <span class="bullet-check"
+            ><svg aria-hidden="true" width="12" height="12"><use href="#i-check" /></svg></span
+          >Revise descrição, categoria, valor e vencimentos antes de confirmar no aplicativo.
+        </li>
+        <li>
+          <span class="bullet-check"
+            ><svg aria-hidden="true" width="12" height="12"><use href="#i-check" /></svg></span
+          >Consulte as parcelas em Contas e registre quando o pagamento aconteceu.
+        </li>
+      </ul>
+      <p class="mic-note">
+        Para testar por voz, permita o acesso ao microfone. O ditado depende do suporte do
+        navegador.
+      </p>
+    </div>
+    <div class="demo-panel" data-reveal="later">
+      <p class="card-title">Teste um lançamento</p>
+      <p class="card-sub">
+        Diga “gastei quarenta reais no mercado” ou use o exemplo de compra parcelada.
+      </p>
+      <form id="installmentDemo" class="demo-form">
+        <label for="demoPhrase">Seu comando</label>
+        <input
+          id="demoPhrase"
+          name="phrase"
+          required
+          maxlength="180"
+          value="Comprei um PS5 por 2.800 em 5x"
+        />
+        <div class="demo-actions">
+          <button type="button" class="demo-mic" id="demoMic" aria-pressed="false">
+            <svg aria-hidden="true" width="18" height="18"><use href="#i-mic" /></svg>
+            <span>Usar microfone</span>
+          </button>
+          <button type="submit" class="btn-primary">Ver prévia</button>
+        </div>
+        <p id="demoMicStatus" class="demo-status" role="status" hidden></p>
+      </form>
+      <div class="preview-card" id="demoResult" aria-live="polite"></div>
+      <p class="demo-caption">Prévia de demonstração</p>
+    </div>
+  </div>
+</section>

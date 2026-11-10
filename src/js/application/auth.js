@@ -10,6 +10,7 @@ import {
   Cloud,
   bindCloudUser,
   cloudProviderEnabled,
+  rememberCloudSession,
   resumeCloudUser,
   sendCloudReset,
   signInCloud,
@@ -42,7 +43,7 @@ const authCopy = {
     'Salvar senha',
   ],
 };
-let recoveryOwner = null;
+let recoverySession = null;
 let authBusy = false;
 
 function authMessage(message, success = false) {
@@ -210,10 +211,14 @@ async function restoreOnlineSession() {
   $('authIdentifier').type = 'email';
   $('authIdentifier').placeholder = 'voce@exemplo.com';
   $('authStorageHint').hidden = true;
+  if (!navigator.onLine) {
+    authMessage('Você está sem conexão. Quando a internet voltar, recarregue para entrar.');
+    return;
+  }
   try {
-    const { user, recovery } = await resumeCloudUser();
+    const { user, recovery, remember } = await resumeCloudUser();
     if (user && recovery) {
-      recoveryOwner = user.id;
+      recoverySession = { owner: user.id, remember };
       switchAuthTab('reset');
     } else if (user) {
       await enterOnlineAccount(user);
@@ -244,7 +249,7 @@ function bindAuthRecovery() {
   $('forgotPasswordForm').addEventListener('submit', (event) => {
     event.preventDefault();
     void runAuth($('btnSendReset'), async () => {
-      await sendCloudReset($('forgotEmail').value.trim());
+      await sendCloudReset($('forgotEmail').value.trim(), $('authRememberMe').checked);
       authMessage(
         'Se esse e-mail estiver cadastrado, você receberá um link. Abra-o neste mesmo navegador.',
         true,
@@ -254,12 +259,15 @@ function bindAuthRecovery() {
   $('resetPasswordForm').addEventListener('submit', (event) => {
     event.preventDefault();
     void runAuth($('btnResetPassword'), async () => {
-      if (!recoveryOwner) {
+      if (!recoverySession) {
         throw new Error('Solicite um novo link de recuperação.');
       }
       const password = validateNewPassword($('resetPassword').value, $('resetPasswordAgain').value);
-      const user = await updateCloudUser({ password }, recoveryOwner);
-      recoveryOwner = null;
+      const user = await updateCloudUser({ password }, recoverySession.owner);
+      if (recoverySession.remember) {
+        rememberCloudSession();
+      }
+      recoverySession = null;
       $('resetPasswordForm').reset();
       switchAuthTab('login');
       await enterOnlineAccount(user);
@@ -269,7 +277,7 @@ function bindAuthRecovery() {
   $('btnCancelReset').addEventListener('click', () => {
     void runAuth($('btnCancelReset'), async () => {
       await signOutCloud();
-      recoveryOwner = null;
+      recoverySession = null;
       $('resetPasswordForm').reset();
       switchAuthTab('login');
       $('authIdentifier').focus();

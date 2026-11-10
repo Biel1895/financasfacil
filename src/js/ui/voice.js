@@ -1,17 +1,22 @@
+import {
+  createSpeechRecognition,
+  speechErrorMessage,
+  speechTranscript,
+} from '../services/speech-recognition.js';
 import { state } from '../state/store.js';
 import { icon } from './dom.js';
 
 const Voice = {
   recognition: null,
   setupVoiceRecognition(onToastCallback) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    this.recognition = createSpeechRecognition();
     const btnMic = document.getElementById('btnMic');
     const micIcon = document.getElementById('micIcon');
     const banner = document.getElementById('recordingBanner');
     const btnStopBanner = document.getElementById('btnStopVoiceBanner');
     const inputEl = document.getElementById('commandInput');
 
-    if (!SpeechRecognition) {
+    if (!this.recognition) {
       btnMic.addEventListener('click', () => {
         onToastCallback(
           'Seu navegador não suporta ditado por voz. Digite no campo de texto!',
@@ -21,10 +26,6 @@ const Voice = {
       return;
     }
 
-    this.recognition = new SpeechRecognition();
-    this.recognition.lang = 'pt-BR';
-    this.recognition.continuous = false;
-    this.recognition.interimResults = true;
     this.submitVoiceOnEnd = false;
     this.hasVoiceTranscript = false;
 
@@ -39,10 +40,7 @@ const Voice = {
     };
 
     this.recognition.onresult = (event) => {
-      let transcript = '';
-      for (let i = 0; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
-      }
+      const transcript = speechTranscript(event);
       this.hasVoiceTranscript = Boolean(transcript.trim());
       inputEl.value = transcript;
     };
@@ -50,21 +48,8 @@ const Voice = {
     this.recognition.onerror = (event) => {
       this.submitVoiceOnEnd = false;
       this.stopVoiceRecording(false);
-      const messages = {
-        'not-allowed': 'Permita o uso do microfone no navegador para falar seus lançamentos.',
-        'service-not-allowed':
-          'O navegador bloqueou o ditado por voz. Verifique as permissões do microfone.',
-        'audio-capture': 'Nenhum microfone disponível. Verifique se ele está conectado.',
-        'no-speech': 'Não consegui ouvir a fala. Tente novamente ou digite o lançamento.',
-        network:
-          'O ditado por voz precisa de conexão. Verifique a internet ou digite o lançamento.',
-      };
       if (event.error !== 'aborted') {
-        onToastCallback(
-          messages[event.error] ||
-            'Não foi possível reconhecer o áudio. Tente novamente ou digite o lançamento.',
-          'warning',
-        );
+        onToastCallback(speechErrorMessage(event.error), 'warning');
       }
     };
 

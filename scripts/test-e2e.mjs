@@ -4,7 +4,15 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const suites = ['startup', 'core', 'reports-installments', 'management', 'balances', 'cloud'];
+const suites = [
+  'startup',
+  'core',
+  'reports-installments',
+  'management',
+  'balances',
+  'cloud',
+  'pwa',
+];
 const selected = process.argv.slice(2);
 const results = [];
 if (selected.some((name) => !suites.includes(name))) {

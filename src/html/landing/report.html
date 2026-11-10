@@ -1,0 +1,62 @@
+<section
+  class="card b12 report-card"
+  id="relatorio-exemplo"
+  aria-labelledby="reportTitle"
+  data-reveal
+>
+  <div class="report-heading">
+    <div>
+      <p class="illus">Relatório de demonstração · Conta Daniel</p>
+      <h3 class="card-title" id="reportTitle">Como seu dinheiro se movimenta</h3>
+      <p class="card-sub">
+        Compare receitas, despesas e investimentos com os dados fictícios do Daniel.
+      </p>
+    </div>
+    <div class="report-actions">
+      <label class="report-span" for="reportSpan">Período</label>
+      <select id="reportSpan">
+        <option value="6">6 meses</option>
+        <option value="12">12 meses</option>
+      </select>
+      <button id="reportReset" class="report-control" type="button">Último período</button>
+    </div>
+  </div>
+  <div class="report-navigation" role="group" aria-label="Navegação por períodos do gráfico">
+    <button type="button" class="report-control" id="reportPrev" aria-label="Período anterior">
+      ←
+    </button>
+    <span id="reportRange" aria-live="polite"></span>
+    <button type="button" class="report-control" id="reportNext" aria-label="Próximo período">
+      →
+    </button>
+  </div>
+  <div class="legend" aria-label="Legenda do gráfico">
+    <span><i class="series-income" aria-hidden="true"></i>Receitas</span>
+    <span><i class="series-expense" aria-hidden="true"></i>Despesas</span>
+    <span><i class="series-investment" aria-hidden="true"></i>Investimentos</span>
+  </div>
+  <div class="sum-grid g4" id="reportTotals"></div>
+  <p class="card-sub">Selecione um mês nas barras para conferir seus valores e categorias.</p>
+  <div class="report-graph" id="reportGraph">
+    <div class="report-axis" id="reportAxis" aria-hidden="true"></div>
+    <div class="report-scroll">
+      <div class="report-months" id="reportMonths" role="group" aria-label="Meses do gráfico"></div>
+    </div>
+  </div>
+  <p id="reportHidden" class="card-sub" hidden>Valores da demonstração ocultos.</p>
+  <div id="reportSelected" class="report-selection" aria-live="polite"></div>
+  <div class="report-breakdown">
+    <section aria-labelledby="reportExpensesTitle">
+      <h4 id="reportExpensesTitle">Onde você gastou</h4>
+      <div id="reportExpenses"></div>
+    </section>
+    <section aria-labelledby="reportInvestmentsTitle">
+      <h4 id="reportInvestmentsTitle">Seus investimentos</h4>
+      <div id="reportInvestments"></div>
+    </section>
+  </div>
+  <details class="report-details" id="reportDetails">
+    <summary>Ver os valores em tabela</summary>
+    <div class="report-table-scroll" id="reportTable"></div>
+  </details>
+</section>

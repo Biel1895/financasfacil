@@ -36,13 +36,14 @@ npm run verify
 | `npm run lint`         | Apontar problemas e padrões inconsistentes em JavaScript.          |
 | `npm test`             | Testar regras financeiras, interpretação e limites de arquitetura. |
 | `npm run build`        | Gerar as duas páginas, seus scripts e estilos.                     |
+| `npm run watch`        | Atualizar os arquivos gerados ao salvar alterações em `src/`.      |
 | `npm run build:check`  | Verificar se os arquivos gerados correspondem às fontes atuais.    |
 | `npm run check`        | Formatação, análise, testes unitários e conferência da geração.    |
 | `npm run test:e2e`     | Executar os fluxos completos no Chromium.                          |
 | `npm run verify`       | Executar todas as verificações anteriores.                         |
 
 Para um fluxo específico: `npm run test:e2e -- balances`.
-Outras opções: `startup`, `core`, `reports-installments`, `management` e `cloud`.
+Outras opções: `startup`, `core`, `reports-installments`, `management`, `cloud` e `pwa`.
 
 ## Onde alterar
 
@@ -69,7 +70,9 @@ assets/            Ícone da aba, ícone do iPhone e capa de compartilhamento.
 backups/           Cópias de versões anteriores do código.
 ```
 
-**Edite `src/` e `config.js`.** A página pública está em `src/html/index.html` e usa `src/css/landing.css`. Os cartões mensal e anual estão nessa página.
+**Edite `src/` e `config.js`.** A página pública está em `src/html/index.html`, com seções em `src/html/landing/` e estilos em `src/css/landing.css`. Os preços ficam em `src/html/landing/pricing.html`. O simulador de parcelas e o gráfico ficam em `src/js/landing/`.
+
+Durante a edição, deixe `npm run watch` rodando no terminal. Ao salvar um arquivo em `src/`, o comando atualiza os arquivos da raiz. Recarregue a página no navegador para ver a mudança.
 
 `src/html/login.html` reúne a tela de acesso e o painel financeiro. As telas ficam em `src/html/screens/`, os diálogos em `src/html/dialogs/` e a navegação em `src/html/layout/`. A geração produz os dois HTMLs completos para abertura direta no navegador.
 

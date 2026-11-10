@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { readSupabaseConfig } from '../src/js/services/cloud-config.js';
 
@@ -34,9 +35,18 @@ const shareTags = [
 
 const output = new URL('../dist/', import.meta.url);
 const assetOutput = new URL('assets/', output);
-const runtimeFiles = ['login.html', 'app.js', 'style.css', 'landing.css', 'landing.js'];
-const siteFiles = ['index.html', 'config.js', ...runtimeFiles];
-const assets = ['favicon.svg', 'apple-touch-icon.png', 'compartilhar.jpg'];
+const runtimeFiles = ['app.js', 'style.css', 'landing.css', 'landing.js'];
+const pages = ['index.html', 'login.html'];
+const shell = [...pages, 'config.js', 'manifest.webmanifest', ...runtimeFiles];
+const siteFiles = [...shell, 'service-worker.js'];
+const iconFiles = [
+  'favicon.svg',
+  'apple-touch-icon.png',
+  'pwa-192.png',
+  'pwa-512.png',
+  'pwa-maskable-512.png',
+];
+const assets = [...iconFiles, 'compartilhar.jpg'];
 await mkdir(output, { recursive: true });
 for (const entry of await readdir(output, { withFileTypes: true })) {
   if (entry.name === 'assets' && entry.isDirectory()) {
@@ -60,17 +70,39 @@ for (const file of runtimeFiles) {
 for (const asset of assets) {
   await copyFile(new URL('../assets/' + asset, import.meta.url), new URL(asset, assetOutput));
 }
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 const shareMarker = '<!-- @share-url -->';
-if (!html.includes(shareMarker)) {
-  throw new Error('O HTML precisa do marcador de compartilhamento no cabeçalho.');
+const pwaMarker = '<!-- @pwa -->';
+for (const page of pages) {
+  let html = await readFile(new URL('../' + page, import.meta.url), 'utf8');
+  if (!html.includes(pwaMarker)) {
+    throw new Error(`${page} precisa do marcador do manifesto no cabeçalho.`);
+  }
+  html = html.replace(pwaMarker, '<link rel="manifest" href="manifest.webmanifest" />');
+  if (page === 'index.html') {
+    if (!html.includes(shareMarker)) {
+      throw new Error('O HTML precisa do marcador de compartilhamento no cabeçalho.');
+    }
+    html = html.replace(shareMarker, () => shareTags);
+  }
+  await writeFile(new URL(page, output), html);
 }
-await writeFile(
-  new URL('index.html', output),
-  html.replace(shareMarker, () => shareTags),
-);
 await writeFile(
   new URL('config.js', output),
   'window.FF_SUPABASE_CONFIG = ' + JSON.stringify(config) + ';\n',
+);
+await copyFile(
+  new URL('../src/pwa/manifest.webmanifest', import.meta.url),
+  new URL('manifest.webmanifest', output),
+);
+const worker = await readFile(new URL('../src/pwa/service-worker.js', import.meta.url), 'utf8');
+const files = [...shell, ...iconFiles.map((file) => 'assets/' + file)];
+const hash = createHash('sha256').update(worker);
+for (const file of files) {
+  hash.update(file).update(await readFile(new URL(file, output)));
+}
+const release = { version: hash.digest('hex').slice(0, 16), files };
+await writeFile(
+  new URL('service-worker.js', output),
+  worker.replace('/* @release */ {}', JSON.stringify(release)),
 );
 console.log('Site para o Vercel gerado em dist/.');

@@ -23,201 +23,1294 @@
     <!-- @share-url -->
     <link rel="icon" type="image/svg+xml" sizes="any" href="assets/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+    <!-- @pwa -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="landing.css" />
-    <script src="landing.js"></script>
+    <script src="landing.js" defer></script>
   </head>
   <body>
     <a class="landing-skip" href="#conteudo">Pular para o conteúdo</a>
-    <header class="landing-top">
-      <div class="landing-container landing-header">
-        <a class="landing-brand" href="./index.html" aria-label="FinançasFácil, página inicial">
-          <img src="assets/favicon.svg" width="38" height="38" alt="" />
-          <span>FinançasFácil</span>
-        </a>
-        <nav class="landing-nav" aria-label="Navegação principal">
-          <a href="#recursos">Recursos</a>
-          <a href="#planos">Planos</a>
-        </nav>
-        <a class="landing-button landing-button-outline" href="login.html"
-          >Entrar <span aria-hidden="true">↗</span></a
+    <svg width="0" height="0" class="icon-library" aria-hidden="true">
+      <defs>
+        <symbol
+          id="i-check"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
+          <path d="M20 6 9 17l-5-5" />
+        </symbol>
+        <symbol
+          id="i-chev"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </symbol>
+        <symbol
+          id="i-eye"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol
+          id="i-eye-off"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+          <path d="M6.61 6.61A13.5 13.5 0 0 0 2 11s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+          <path d="m2 2 20 20" />
+          <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+        </symbol>
+        <symbol
+          id="i-arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </symbol>
+        <symbol
+          id="i-mic"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <path d="M12 19v3" />
+        </symbol>
+        <symbol
+          id="i-key"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="6" width="18" height="12" rx="2" />
+          <path d="m7 10 2 2 2-2" />
+        </symbol>
+        <symbol
+          id="i-search"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </symbol>
+        <symbol
+          id="i-alert"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+          <path d="M12 9v4" />
+          <path d="M12 17h.01" />
+        </symbol>
+        <symbol
+          id="i-checkc"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="m9 12 2 2 4-4" />
+        </symbol>
+        <symbol
+          id="i-wallet"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H5"
+          />
+          <circle cx="16" cy="14" r="1" />
+        </symbol>
+        <symbol
+          id="i-leaf"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"
+          />
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+        </symbol>
+        <symbol
+          id="i-down"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 5v14" />
+          <path d="m19 12-7 7-7-7" />
+        </symbol>
+        <symbol
+          id="i-up"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 19V5" />
+          <path d="m5 12 7-7 7 7" />
+        </symbol>
+        <symbol
+          id="i-home"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <path d="M9 22V12h6v10" />
+        </symbol>
+        <symbol
+          id="i-list"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+        </symbol>
+        <symbol
+          id="i-cal"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <path d="M16 2v4M8 2v4M3 10h18" />
+        </symbol>
+        <symbol
+          id="i-chart"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M3 3v18h18" />
+          <path d="M18 17V9M13 17V5M8 17v-3" />
+        </symbol>
+        <symbol
+          id="i-plus"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </symbol>
+        <symbol
+          id="i-menu"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </symbol>
+        <symbol
+          id="i-x"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <path d="M18 6 6 18M6 6l12 12" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <header class="navbar" id="navbar">
+      <div class="navbar-in">
+        <a href="#pagina-inicial" class="brand">
+          <img src="assets/favicon.svg" width="36" height="36" alt="" />
+          <span class="brand-name">FinançasFácil</span>
+        </a>
+        <nav class="nav-links" aria-label="Navegação principal">
+          <a class="nav-link" href="#recursos">Recursos</a>
+          <a class="nav-link" href="#como-funciona">Como funciona</a>
+          <a class="nav-link" href="#planos">Planos</a>
+          <a class="nav-link" href="#faq">Dúvidas</a>
+        </nav>
+        <div class="nav-right">
+          <button
+            type="button"
+            class="icon-btn"
+            aria-pressed="false"
+            id="eyeBtn"
+            aria-label="Ocultar valores da demonstração"
+            title="Ocultar valores da demonstração"
+          >
+            <svg aria-hidden="true" width="16" height="16" id="eyeIcon"><use href="#i-eye" /></svg>
+          </button>
+          <a class="btn-primary login-link" href="login.html">Entrar</a>
+          <button
+            type="button"
+            class="menu-btn"
+            aria-expanded="false"
+            aria-controls="mobileMenu"
+            id="menuBtn"
+            aria-label="Abrir menu"
+          >
+            <svg aria-hidden="true" width="16" height="16" id="menuIcon">
+              <use href="#i-menu" />
+            </svg>
+          </button>
+        </div>
       </div>
+      <nav class="mobile-menu" id="mobileMenu" aria-label="Navegação para celular" hidden>
+        <div class="mobile-menu-links">
+          <a href="#recursos">Recursos</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#planos">Planos</a>
+          <a href="#faq">Dúvidas</a>
+        </div>
+      </nav>
     </header>
 
     <main id="conteudo" tabindex="-1">
-      <div class="hero-background">
-        <section class="landing-container landing-hero" aria-labelledby="hero-title">
-          <div class="hero-copy">
-            <p class="landing-kicker">Controle financeiro pessoal</p>
-            <h1 id="hero-title">Organize hoje.<br /><span>Planeje o próximo mês.</span></h1>
-            <p class="hero-description">
-              Registre gastos do seu jeito, acompanhe o que falta pagar e veja quanto sobra em cada
-              mês.
+      <section class="hero" id="pagina-inicial" aria-labelledby="heroTitle">
+        <div class="ledger"></div>
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="container hero-grid">
+          <div class="hero-copy" data-reveal>
+            <span class="badge"><span class="dot"></span>Seu dinheiro, com clareza</span>
+            <h1 id="heroTitle">
+              <span class="hero-title-line"><span>Organize hoje.</span></span>
+              <span class="hero-title-line"><span>Planeje o</span></span>
+              <span class="hero-title-line">
+                <span class="mint">
+                  próximo mês.
+                  <svg
+                    class="hero-underline"
+                    aria-hidden="true"
+                    viewBox="0 0 220 12"
+                    preserveAspectRatio="none"
+                  >
+                    <path d="M3 9C60 3 150 3 217 8" pathLength="1" />
+                  </svg>
+                </span>
+              </span>
+            </h1>
+            <p class="hero-sub">
+              Registre gastos e recebimentos por texto ou voz, acompanhe compras parceladas e veja a
+              previsão dos próximos 12 meses. Consulte entradas, despesas e aportes em reais.
             </p>
-            <div class="hero-actions">
-              <a class="landing-button landing-button-primary" href="#planos"
-                >Conhecer os planos <span aria-hidden="true">↓</span></a
-              >
-              <a class="landing-text-link" href="#recursos"
-                >Ver como funciona <span aria-hidden="true">↗</span></a
-              >
+            <div class="hero-ctas">
+              <a class="btn-primary" href="#como-funciona">
+                Ver demonstração
+                <svg aria-hidden="true" width="16" height="16">
+                  <use href="#i-arrow" />
+                </svg>
+              </a>
+              <a class="btn-secondary" href="#planos">Ver planos</a>
             </div>
+            <p class="hero-note">Planos previstos a partir de R$ 9,00 por mês.</p>
+            <ul class="trust">
+              <li>
+                <svg aria-hidden="true" width="16" height="16">
+                  <use href="#i-check" /></svg
+                >Sincroniza entre aparelhos
+              </li>
+              <li>
+                <svg aria-hidden="true" width="16" height="16">
+                  <use href="#i-check" /></svg
+                >Acompanhe os próximos vencimentos
+              </li>
+            </ul>
           </div>
 
-          <figure class="dashboard-preview">
-            <figcaption>
-              <span><span class="preview-dot" aria-hidden="true"></span> Visão geral</span>
-              <small>Exemplo ilustrativo</small>
-            </figcaption>
-            <div class="preview-metrics">
-              <div class="preview-balance">
-                <span>Saldo do mês</span><strong>R$ 1.240,00</strong>
+          <div class="hero-mock" data-reveal="later">
+            <div class="mock-tilt">
+              <div class="dash">
+                <div class="dash-top">
+                  <span class="dash-brand">
+                    <img src="assets/favicon.svg" width="20" height="20" alt="" />
+                    FinançasFácil
+                  </span>
+                  <span class="inline-group">
+                    <span class="dash-sync"><i></i>Sincronizado</span>
+                    <span class="dash-user"><span class="avatar">D</span>Daniel</span>
+                  </span>
+                </div>
+                <div class="dash-body">
+                  <aside class="dash-side">
+                    <div>
+                      <p class="side-label">Seu espaço financeiro</p>
+                      <div class="side-nav">
+                        <span class="side-item active"
+                          ><svg aria-hidden="true" width="12" height="12">
+                            <use href="#i-home" /></svg
+                          >Início</span
+                        >
+                        <span class="side-item"
+                          ><svg aria-hidden="true" width="12" height="12">
+                            <use href="#i-list" /></svg
+                          >Lançamentos</span
+                        >
+                        <span class="side-item"
+                          ><svg aria-hidden="true" width="12" height="12">
+                            <use href="#i-cal" /></svg
+                          >Contas<span class="cnt">1</span></span
+                        >
+                        <span class="side-item"
+                          ><svg aria-hidden="true" width="12" height="12">
+                            <use href="#i-chart" /></svg
+                          >Relatórios</span
+                        >
+                      </div>
+                    </div>
+                    <div class="side-quote">Um passo de cada vez. <b>Seu futuro agradece.</b></div>
+                  </aside>
+                  <div class="dash-main">
+                    <div class="dash-head">
+                      <div>
+                        <p class="eyebrow">Seu dinheiro, com clareza</p>
+                        <p class="dash-title">Visão geral</p>
+                      </div>
+                      <span class="dash-new"
+                        ><svg aria-hidden="true" width="10" height="10">
+                          <use href="#i-plus" /></svg
+                        >Novo lançamento</span
+                      >
+                    </div>
+                    <span class="month-chip"
+                      ><svg aria-hidden="true" width="10" height="10">
+                        <use href="#i-chev" transform="rotate(90)" /></svg
+                      >Novembro de 2026<svg aria-hidden="true" width="10" height="10">
+                        <use href="#i-chev" transform="rotate(-90)" /></svg
+                    ></span>
+                    <div class="dash-stats">
+                      <div class="stat blue">
+                        <span class="stat-label"
+                          >Saldo total hoje<span class="stat-ico i-white"
+                            ><svg aria-hidden="true" width="10" height="10">
+                              <use href="#i-wallet" /></svg></span
+                        ></span>
+                        <p class="stat-value money">R$ 7.945,23</p>
+                        <p class="stat-note">Acumulado até hoje, investimentos separados</p>
+                      </div>
+                      <div class="stat">
+                        <span class="stat-label"
+                          >Entradas do mês<span class="stat-ico i-income"
+                            ><svg aria-hidden="true" width="10" height="10">
+                              <use href="#i-down" /></svg></span
+                        ></span>
+                        <p class="stat-value money">R$ 4.905,00</p>
+                        <p class="stat-note">2 recebimentos</p>
+                      </div>
+                      <div class="stat">
+                        <span class="stat-label"
+                          >Saídas do mês<span class="stat-ico i-expense"
+                            ><svg aria-hidden="true" width="10" height="10">
+                              <use href="#i-up" /></svg></span
+                        ></span>
+                        <p class="stat-value money">R$ 2.099,93</p>
+                        <p class="stat-note">8 despesas, com aportes separados</p>
+                      </div>
+                      <div class="stat">
+                        <span class="stat-label"
+                          >Investido no mês<span class="stat-ico i-invest"
+                            ><svg aria-hidden="true" width="10" height="10">
+                              <use href="#i-leaf" /></svg></span
+                        ></span>
+                        <p class="stat-value money">R$ 220,00</p>
+                        <p class="stat-note">
+                          Acumulado até hoje: <span class="money">R$ 5.907,00</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="dash-balance">
+                      <div>
+                        <p class="balance-label">Saldo do mês</p>
+                        <p class="balance-caption">Novembro de 2026</p>
+                      </div>
+                      <div class="align-right">
+                        <p class="stat-value money balance-value">R$ 2.805,07</p>
+                        <p class="balance-caption">
+                          Entradas - saídas do mês, com aportes separados
+                        </p>
+                      </div>
+                    </div>
+                    <div class="dash-cols">
+                      <div class="dash-panel">
+                        <p class="panel-label">Próximas contas</p>
+                        <div class="mini-row">
+                          <div class="shrinkable">
+                            <p class="mini-t">Condomínio</p>
+                            <p class="mini-d">Vence: 07 de nov</p>
+                          </div>
+                          <div class="mini-meta">
+                            <span class="tag tag-red">Atrasada</span
+                            ><span class="money mini-amount">R$ 320,00</span>
+                          </div>
+                        </div>
+                        <div class="mini-row">
+                          <div class="shrinkable">
+                            <p class="mini-t">Notebook para trabalho</p>
+                            <p class="mini-d">Vence: 14 de nov · 6 de 8 · Cartão pessoal</p>
+                          </div>
+                          <div class="mini-meta">
+                            <span class="tag tag-amber">A vencer</span
+                            ><span class="money mini-amount">R$ 362,49</span>
+                          </div>
+                        </div>
+                        <div class="mini-row">
+                          <div class="shrinkable">
+                            <p class="mini-t">Energia elétrica</p>
+                            <p class="mini-d">Vence: 15 de nov</p>
+                          </div>
+                          <div class="mini-meta">
+                            <span class="tag tag-amber">A vencer</span
+                            ><span class="money mini-amount">R$ 164,72</span>
+                          </div>
+                        </div>
+                        <div class="mini-row">
+                          <div class="shrinkable">
+                            <p class="mini-t">Reserva de hospedagem</p>
+                            <p class="mini-d">Vence: 22 de nov</p>
+                          </div>
+                          <div class="mini-meta">
+                            <span class="tag tag-amber">A vencer</span
+                            ><span class="money mini-amount">R$ 287,90</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="dash-panel">
+                        <p class="panel-label">Últimos lançamentos</p>
+                        <div class="mini-row">
+                          <div class="mini-entry">
+                            <span class="stat-ico i-income mini-icon"
+                              ><svg aria-hidden="true" width="10" height="10">
+                                <use href="#i-down" /></svg
+                            ></span>
+                            <div class="shrinkable">
+                              <p class="mini-t medium-text">Freelance de edição</p>
+                              <p class="mini-d">Serviços &amp; Freelance · 09 de nov</p>
+                            </div>
+                          </div>
+                          <span class="money mini-amount income-text">+ R$ 425,00</span>
+                        </div>
+                        <div class="mini-row">
+                          <div class="mini-entry">
+                            <span class="stat-ico i-expense mini-icon"
+                              ><svg aria-hidden="true" width="10" height="10">
+                                <use href="#i-wallet" /></svg
+                            ></span>
+                            <div class="shrinkable">
+                              <p class="mini-t medium-text">Almoço e café</p>
+                              <p class="mini-d">Alimentação &amp; Mercado · 09 de nov</p>
+                            </div>
+                          </div>
+                          <span class="money mini-amount expense-text">- R$ 42,60</span>
+                        </div>
+                        <div class="mini-row">
+                          <div class="mini-entry">
+                            <span class="stat-ico i-expense mini-icon"
+                              ><svg aria-hidden="true" width="10" height="10">
+                                <use href="#i-wallet" /></svg
+                            ></span>
+                            <div class="shrinkable">
+                              <p class="mini-t medium-text">Passagem de ônibus</p>
+                              <p class="mini-d">Transporte &amp; Combustível · 09 de nov</p>
+                            </div>
+                          </div>
+                          <span class="money mini-amount expense-text">- R$ 5,60</span>
+                        </div>
+                        <div class="mini-row">
+                          <div class="mini-entry">
+                            <span class="stat-ico i-expense mini-icon"
+                              ><svg aria-hidden="true" width="10" height="10">
+                                <use href="#i-wallet" /></svg
+                            ></span>
+                            <div class="shrinkable">
+                              <p class="mini-t medium-text">Farmácia</p>
+                              <p class="mini-d">Saúde &amp; Farmácia · 08 de nov</p>
+                            </div>
+                          </div>
+                          <span class="money mini-amount expense-text">- R$ 54,21</span>
+                        </div>
+                        <div class="mini-row">
+                          <div class="mini-entry">
+                            <span class="stat-ico i-expense mini-icon"
+                              ><svg aria-hidden="true" width="10" height="10">
+                                <use href="#i-wallet" /></svg
+                            ></span>
+                            <div class="shrinkable">
+                              <p class="mini-t medium-text">Aluguel</p>
+                              <p class="mini-d">Moradia &amp; Contas · 08 de nov</p>
+                            </div>
+                          </div>
+                          <span class="money mini-amount expense-text">- R$ 1.520,00</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-banner">
+                      <p>
+                        Você tem <b>5 contas pendentes</b> neste mês, somando
+                        <b class="money">R$ 1.245,01</b>.
+                      </p>
+                      <span
+                        >Organizar contas<svg aria-hidden="true" width="10" height="10">
+                          <use href="#i-arrow" /></svg
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+                <p class="dash-caption">Dados ilustrativos</p>
               </div>
-              <div><span>Entradas</span><strong>R$ 4.500,00</strong></div>
-              <div><span>Saídas</span><strong>R$ 3.260,00</strong></div>
             </div>
-            <div class="preview-chart">
-              <div class="preview-chart-header">
-                <strong>Entradas e saídas</strong>
-                <span class="preview-legend"><span>Entradas</span><span>Saídas</span></span>
-              </div>
-              <svg viewBox="0 0 360 126" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M0 12h360M0 48h360M0 84h360M0 120h360" fill="none" stroke="#e8eef6" />
-                <g fill="#2563eb">
-                  <rect x="20" y="46" width="20" height="74" rx="4" />
-                  <rect x="92" y="53" width="20" height="67" rx="4" />
-                  <rect x="164" y="36" width="20" height="84" rx="4" />
-                  <rect x="236" y="43" width="20" height="77" rx="4" />
-                  <rect x="308" y="20" width="20" height="100" rx="4" />
-                </g>
-                <g fill="#53be9e">
-                  <rect x="43" y="72" width="13" height="48" rx="3" />
-                  <rect x="115" y="66" width="13" height="54" rx="3" />
-                  <rect x="187" y="77" width="13" height="43" rx="3" />
-                  <rect x="259" y="58" width="13" height="62" rx="3" />
-                  <rect x="331" y="48" width="13" height="72" rx="3" />
-                </g>
-              </svg>
-              <div class="preview-months" aria-hidden="true">
-                <span>Jul</span><span>Ago</span><span>Set</span><span>Out</span><span>Nov</span>
-              </div>
+            <div class="chip-float chip-1 ink-text">
+              <svg class="income-text" aria-hidden="true" width="16" height="16">
+                <use href="#i-checkc" /></svg
+              >PlayStation 5 · 4 parcelas pagas
             </div>
-            <div class="preview-installment">
-              <span class="preview-installment-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="M3 10h18m-14 5h3" />
-                </svg>
-              </span>
-              <div><strong>Compra parcelada</strong><span>PS5 · 5 parcelas</span></div>
-              <strong>R$ 560,00 <small>/ parcela</small></strong>
+            <div class="chip-float chip-2">
+              <svg class="expense-text" aria-hidden="true" width="16" height="16">
+                <use href="#i-alert" /></svg
+              >Condomínio · <span class="money">R$ 320,00</span> em atraso
             </div>
-          </figure>
-        </section>
+          </div>
+        </div>
+      </section>
+      <div class="feature-strip" data-reveal>
+        <div class="feature-strip-window">
+          <div class="feature-strip-track">
+            <ul class="feature-strip-items" aria-label="Principais recursos">
+              <li>Texto e voz</li>
+              <li>Compras parceladas</li>
+              <li>Previsão de 6 e 12 meses</li>
+              <li>Relatórios em CSV</li>
+            </ul>
+          </div>
+        </div>
+        <button
+          class="feature-strip-toggle"
+          type="button"
+          aria-label="Pausar faixa de recursos"
+          hidden
+        >
+          Pausar
+        </button>
       </div>
-      <section
-        id="recursos"
-        class="landing-container landing-resources"
-        aria-labelledby="resources-title"
-      >
-        <p class="landing-kicker">Como funciona</p>
-        <h2 id="resources-title">Do primeiro gasto ao planejamento do mês.</h2>
-        <div class="resource-grid">
-          <article class="resource-card">
-            <span class="resource-icon" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H4l1.8-3.7A7.5 7.5 0 1 1 20 11.5Z" />
-                <path d="M8 11.5h8M8 14.5h4" />
-              </svg>
-            </span>
-            <h3>Registre do seu jeito</h3>
-            <p>
-              Escreva “gastei 42 reais no mercado”, use o microfone ou preencha os campos. Confira a
-              prévia antes de salvar.
+      <section class="section" id="como-funciona" aria-labelledby="demoTitle">
+        <div class="container demo-grid">
+          <div data-reveal>
+            <p class="section-tag">Lançamento por voz ou texto</p>
+            <h2 class="title" id="demoTitle">
+              Escreva ou fale. <span class="mint">Confira o lançamento.</span>
+            </h2>
+            <p class="section-sub">
+              O navegador transforma a fala em texto. O FinançasFácil identifica os valores na
+              frase, sugere uma categoria e monta a prévia. Quando você informa o número de
+              parcelas, ele divide o total e calcula os vencimentos.
             </p>
-          </article>
-          <article class="resource-card">
-            <span class="resource-icon resource-icon-green" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              >
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4m8-4v4m-8 8h2m4 0h2" />
-              </svg>
-            </span>
-            <h3>Divida e acompanhe parcelas</h3>
-            <p>
-              Informe o valor total e o número de vezes. O FinançasFácil calcula as parcelas e
-              organiza os vencimentos.
+            <ul class="bullets">
+              <li>
+                <span class="bullet-check"
+                  ><svg aria-hidden="true" width="12" height="12">
+                    <use href="#i-check" /></svg></span
+                >Revise descrição, categoria, valor e vencimentos antes de confirmar no aplicativo.
+              </li>
+              <li>
+                <span class="bullet-check"
+                  ><svg aria-hidden="true" width="12" height="12">
+                    <use href="#i-check" /></svg></span
+                >Consulte as parcelas em Contas e registre quando o pagamento aconteceu.
+              </li>
+            </ul>
+            <p class="mic-note">
+              Para testar por voz, permita o acesso ao microfone. O ditado depende do suporte do
+              navegador.
             </p>
-          </article>
-          <article class="resource-card">
-            <span class="resource-icon resource-icon-violet" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 4v16h16M7 15l5-5 3 2 5-6m-5 0h5v5" />
-              </svg>
-            </span>
-            <h3>Veja o mês e o que vem depois</h3>
-            <p>
-              Consulte o saldo total, confira o resultado de cada mês e veja as contas previstas
-              para os próximos meses.
+          </div>
+          <div class="demo-panel" data-reveal="later">
+            <p class="card-title">Teste um lançamento</p>
+            <p class="card-sub">
+              Diga “gastei quarenta reais no mercado” ou use o exemplo de compra parcelada.
             </p>
-          </article>
+            <form id="installmentDemo" class="demo-form">
+              <label for="demoPhrase">Seu comando</label>
+              <input
+                id="demoPhrase"
+                name="phrase"
+                required
+                maxlength="180"
+                value="Comprei um PS5 por 2.800 em 5x"
+              />
+              <div class="demo-actions">
+                <button type="button" class="demo-mic" id="demoMic" aria-pressed="false">
+                  <svg aria-hidden="true" width="18" height="18"><use href="#i-mic" /></svg>
+                  <span>Usar microfone</span>
+                </button>
+                <button type="submit" class="btn-primary">Ver prévia</button>
+              </div>
+              <p id="demoMicStatus" class="demo-status" role="status" hidden></p>
+            </form>
+            <div class="preview-card" id="demoResult" aria-live="polite"></div>
+            <p class="demo-caption">Prévia de demonstração</p>
+          </div>
         </div>
       </section>
 
-      <section id="planos" class="landing-plans" aria-labelledby="plans-title">
-        <div class="landing-container plans-layout">
-          <div class="plans-intro">
-            <p class="landing-kicker">Assinaturas</p>
-            <h2 id="plans-title">Escolha como quer assinar.</h2>
-            <p>
-              As duas modalidades de assinatura estão previstas para o lançamento. Os valores serão
-              divulgados quando as assinaturas estiverem disponíveis.
+      <section class="section" id="recursos">
+        <div class="container">
+          <div class="section-intro" data-reveal>
+            <span class="section-tag">Recursos</span>
+            <h2 class="title">Veja seu dinheiro <span class="mint">mês a mês</span></h2>
+            <p class="section-sub">
+              Acompanhe entradas, saídas, aportes e vencimentos. Os exemplos abaixo usam dados
+              fictícios da conta Daniel.
             </p>
           </div>
-          <div class="plans-grid">
-            <article class="plan-card">
-              <span class="plan-badge">Em breve</span>
-              <h3>Mensal</h3>
-              <p>Cobrança mês a mês.</p>
-            </article>
-            <article class="plan-card plan-card-annual">
-              <span class="plan-badge">Em breve</span>
-              <h3>Anual</h3>
-              <p>Uma cobrança a cada 12 meses.</p>
-            </article>
+
+          <div class="bento">
+            <!-- Previsão -->
+            <div class="card b7" data-reveal>
+              <div class="card-heading">
+                <div>
+                  <p class="card-title">Previsão dos próximos meses</p>
+                  <p class="card-sub">Entradas, compromissos e resultado de cada mês.</p>
+                </div>
+                <span class="select-chip">Amostra de 3 meses</span>
+              </div>
+              <div class="forecast-grid">
+                <div class="month-card current">
+                  <h4>Novembro de 2026</h4>
+                  <div class="month-rows">
+                    <div class="month-row">
+                      <span>Entradas previstas</span><span class="money">R$ 4.905,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Saídas previstas</span><span class="money">R$ 3.344,94</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Aportes previstos</span><span class="money">R$ 220,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Ainda a pagar</span><span class="money">R$ 1.245,01</span>
+                    </div>
+                  </div>
+                  <div class="month-result">
+                    <span>Resultado do mês</span><b class="money">R$ 1.560,06</b>
+                  </div>
+                </div>
+                <div class="month-card">
+                  <h4>Dezembro de 2026</h4>
+                  <div class="month-rows">
+                    <div class="month-row">
+                      <span>Entradas previstas</span><span class="money">R$ 4.480,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Saídas previstas</span><span class="money">R$ 1.992,38</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Aportes previstos</span><span class="money">R$ 0,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Ainda a pagar</span><span class="money">R$ 1.992,38</span>
+                    </div>
+                  </div>
+                  <div class="month-result">
+                    <span>Resultado do mês</span><b class="money">R$ 2.487,62</b>
+                  </div>
+                </div>
+                <div class="month-card">
+                  <h4>Janeiro de 2027</h4>
+                  <div class="month-rows">
+                    <div class="month-row">
+                      <span>Entradas previstas</span><span class="money">R$ 4.480,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Saídas previstas</span><span class="money">R$ 1.992,38</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Aportes previstos</span><span class="money">R$ 0,00</span>
+                    </div>
+                    <div class="month-row">
+                      <span>Ainda a pagar</span><span class="money">R$ 1.992,38</span>
+                    </div>
+                  </div>
+                  <div class="month-result">
+                    <span>Resultado do mês</span><b class="money">R$ 2.487,62</b>
+                  </div>
+                </div>
+              </div>
+              <p class="card-foot">
+                O resultado de cada mês usa os lançamentos e compromissos que você registrou ou
+                programou.
+              </p>
+            </div>
+
+            <!-- Contas e parcelas -->
+            <div class="card b5" data-reveal="later">
+              <p class="card-title">Contas e parcelas</p>
+              <p class="card-sub">
+                Pendências seguem o vencimento. Pagamentos aparecem no mês em que o dinheiro foi
+                movimentado.
+              </p>
+              <div class="sum-grid summary-three">
+                <div class="sum-box">
+                  <p>A pagar no mês</p>
+                  <p class="money">R$ 1.245,01</p>
+                </div>
+                <div class="sum-box">
+                  <p>Total em atraso</p>
+                  <p class="money expense-text">R$ 320,00</p>
+                </div>
+                <div class="sum-box">
+                  <p>Pago / recebido</p>
+                  <p class="money income-text">R$ 6.000,00</p>
+                </div>
+              </div>
+
+              <div class="account-list">
+                <div class="conta-row">
+                  <div class="l">
+                    <p class="t">Condomínio</p>
+                    <p class="d">Vence: 07 de nov</p>
+                    <div class="chips"><span class="tag tag-red">Atrasada</span></div>
+                  </div>
+                  <div class="r"><span class="v money">R$ 320,00</span></div>
+                </div>
+                <div class="conta-row">
+                  <div class="l">
+                    <p class="t">Notebook para trabalho</p>
+                    <p class="d">Vence: 14 de nov</p>
+                    <div class="chips">
+                      <span class="tag tag-blue">6 de 8</span
+                      ><span class="tag tag-amber">A vencer</span
+                      ><span class="tag tag-blue">Cartão pessoal</span>
+                    </div>
+                  </div>
+                  <div class="r"><span class="v money">R$ 362,49</span></div>
+                </div>
+                <div class="conta-row">
+                  <div class="l">
+                    <p class="t">Energia elétrica</p>
+                    <p class="d">Vence: 15 de nov</p>
+                    <div class="chips"><span class="tag tag-amber">A vencer</span></div>
+                  </div>
+                  <div class="r"><span class="v money">R$ 164,72</span></div>
+                </div>
+                <div class="conta-row">
+                  <div class="l">
+                    <p class="t">Reserva de hospedagem</p>
+                    <p class="d">Vence: 22 de nov</p>
+                    <div class="chips"><span class="tag tag-amber">A vencer</span></div>
+                  </div>
+                  <div class="r"><span class="v money">R$ 287,90</span></div>
+                </div>
+              </div>
+              <p class="illus card-space">Compras e recorrências</p>
+              <div class="compact-space">
+                <div class="rec-row">
+                  <div>
+                    <p class="t">PlayStation 5</p>
+                    <p class="d">5 parcelas · 0 pendente(s)</p>
+                  </div>
+                  <span class="tag tag-green">Concluída</span>
+                </div>
+                <div class="rec-row">
+                  <div>
+                    <p class="t">Notebook para trabalho</p>
+                    <p class="d">8 parcelas · 3 pendente(s)</p>
+                  </div>
+                  <span class="tag tag-blue">Ativa</span>
+                </div>
+                <div class="rec-row">
+                  <div>
+                    <p class="t">Aluguel</p>
+                    <p class="d">Todo mês · 12 pendente(s)</p>
+                  </div>
+                  <span class="tag tag-blue">Ativa</span>
+                </div>
+                <div class="rec-row">
+                  <div>
+                    <p class="t">Internet residencial</p>
+                    <p class="d">Todo mês · 12 pendente(s)</p>
+                  </div>
+                  <span class="tag tag-blue">Ativa</span>
+                </div>
+              </div>
+              <p class="illus">Dados ilustrativos</p>
+            </div>
+
+            <section
+              class="card b12 report-card"
+              id="relatorio-exemplo"
+              aria-labelledby="reportTitle"
+              data-reveal
+            >
+              <div class="report-heading">
+                <div>
+                  <p class="illus">Relatório de demonstração · Conta Daniel</p>
+                  <h3 class="card-title" id="reportTitle">Como seu dinheiro se movimenta</h3>
+                  <p class="card-sub">
+                    Compare receitas, despesas e investimentos com os dados fictícios do Daniel.
+                  </p>
+                </div>
+                <div class="report-actions">
+                  <label class="report-span" for="reportSpan">Período</label>
+                  <select id="reportSpan">
+                    <option value="6">6 meses</option>
+                    <option value="12">12 meses</option>
+                  </select>
+                  <button id="reportReset" class="report-control" type="button">
+                    Último período
+                  </button>
+                </div>
+              </div>
+              <div
+                class="report-navigation"
+                role="group"
+                aria-label="Navegação por períodos do gráfico"
+              >
+                <button
+                  type="button"
+                  class="report-control"
+                  id="reportPrev"
+                  aria-label="Período anterior"
+                >
+                  ←
+                </button>
+                <span id="reportRange" aria-live="polite"></span>
+                <button
+                  type="button"
+                  class="report-control"
+                  id="reportNext"
+                  aria-label="Próximo período"
+                >
+                  →
+                </button>
+              </div>
+              <div class="legend" aria-label="Legenda do gráfico">
+                <span><i class="series-income" aria-hidden="true"></i>Receitas</span>
+                <span><i class="series-expense" aria-hidden="true"></i>Despesas</span>
+                <span><i class="series-investment" aria-hidden="true"></i>Investimentos</span>
+              </div>
+              <div class="sum-grid g4" id="reportTotals"></div>
+              <p class="card-sub">
+                Selecione um mês nas barras para conferir seus valores e categorias.
+              </p>
+              <div class="report-graph" id="reportGraph">
+                <div class="report-axis" id="reportAxis" aria-hidden="true"></div>
+                <div class="report-scroll">
+                  <div
+                    class="report-months"
+                    id="reportMonths"
+                    role="group"
+                    aria-label="Meses do gráfico"
+                  ></div>
+                </div>
+              </div>
+              <p id="reportHidden" class="card-sub" hidden>Valores da demonstração ocultos.</p>
+              <div id="reportSelected" class="report-selection" aria-live="polite"></div>
+              <div class="report-breakdown">
+                <section aria-labelledby="reportExpensesTitle">
+                  <h4 id="reportExpensesTitle">Onde você gastou</h4>
+                  <div id="reportExpenses"></div>
+                </section>
+                <section aria-labelledby="reportInvestmentsTitle">
+                  <h4 id="reportInvestmentsTitle">Seus investimentos</h4>
+                  <div id="reportInvestments"></div>
+                </section>
+              </div>
+              <details class="report-details" id="reportDetails">
+                <summary>Ver os valores em tabela</summary>
+                <div class="report-table-scroll" id="reportTable"></div>
+              </details>
+            </section>
+
+            <!-- Extrato -->
+            <div class="card b12" data-reveal>
+              <div class="statement-heading">
+                <div>
+                  <p class="card-title">Seu extrato</p>
+                  <p class="card-sub">
+                    Exemplo de lançamentos agrupados por dia. Busque por descrição ou categoria.
+                  </p>
+                </div>
+                <div class="extrato-search">
+                  <svg aria-hidden="true" width="16" height="16"><use href="#i-search" /></svg>
+                  <input
+                    id="extratoSearch"
+                    type="search"
+                    aria-label="Buscar no extrato de demonstração"
+                    placeholder="Buscar descrição ou categoria"
+                  />
+                </div>
+              </div>
+              <div class="extrato-grid" id="extratoGrid">
+                <div class="day-card" data-group="hoje">
+                  <div class="day-head">
+                    <p>Seg., 9 de novembro</p>
+                    <span class="money">R$ 376,80</span>
+                  </div>
+                  <div class="ext-row" data-s="freelance de edição serviços & freelance">
+                    <div class="shrinkable">
+                      <p class="t">Freelance de edição</p>
+                      <div class="c">
+                        <p>Serviços &amp; Freelance</p>
+                        <span class="tag tag-green">Receita</span>
+                      </div>
+                    </div>
+                    <span class="v money income-text">+ R$ 425,00</span>
+                  </div>
+                  <div class="ext-row" data-s="almoço e café alimentação & mercado">
+                    <div class="shrinkable">
+                      <p class="t">Almoço e café</p>
+                      <div class="c">
+                        <p>Alimentação &amp; Mercado</p>
+                        <span class="tag tag-red">Despesa</span>
+                      </div>
+                    </div>
+                    <span class="v money expense-text">- R$ 42,60</span>
+                  </div>
+                  <div class="ext-row" data-s="passagem de ônibus transporte & combustível">
+                    <div class="shrinkable">
+                      <p class="t">Passagem de ônibus</p>
+                      <div class="c">
+                        <p>Transporte &amp; Combustível</p>
+                        <span class="tag tag-red">Despesa</span>
+                      </div>
+                    </div>
+                    <span class="v money expense-text">- R$ 5,60</span>
+                  </div>
+                </div>
+                <div class="day-card" data-group="dom">
+                  <div class="day-head">
+                    <p>dom., 8 de novembro</p>
+                    <span class="money">- R$ 1.574,21</span>
+                  </div>
+                  <div class="ext-row" data-s="farmácia saúde & farmácia">
+                    <div class="shrinkable">
+                      <p class="t">Farmácia</p>
+                      <div class="c">
+                        <p>Saúde &amp; Farmácia</p>
+                        <span class="tag tag-red">Despesa</span>
+                      </div>
+                    </div>
+                    <span class="v money expense-text">- R$ 54,21</span>
+                  </div>
+                  <div class="ext-row" data-s="aluguel moradia & contas">
+                    <div class="shrinkable">
+                      <p class="t">Aluguel</p>
+                      <div class="c">
+                        <p>Moradia &amp; Contas</p>
+                        <span class="tag tag-red">Despesa</span>
+                      </div>
+                    </div>
+                    <span class="v money expense-text">- R$ 1.520,00</span>
+                  </div>
+                </div>
+                <div class="day-card" data-group="sab">
+                  <div class="day-head">
+                    <p>sáb., 7 de novembro</p>
+                    <span class="money">- R$ 220,00</span>
+                  </div>
+                  <div class="ext-row" data-s="aporte na reserva reserva & caixinha">
+                    <div class="shrinkable">
+                      <p class="t">Aporte na reserva</p>
+                      <div class="c">
+                        <p>Reserva &amp; Caixinha</p>
+                        <span class="tag tag-purple">Investimento</span>
+                      </div>
+                    </div>
+                    <span class="v money invest-text">- R$ 220,00</span>
+                  </div>
+                </div>
+                <p class="ext-empty" id="extEmpty" role="status" hidden>
+                  Nenhum lançamento encontrado
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento-note">
+            <svg aria-hidden="true" width="16" height="16"><use href="#i-arrow" /></svg>
+            Tudo isso com tema claro, escuro ou automático, e um botão para ocultar valores.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="planos">
+        <div class="pricing-glow"></div>
+        <div class="container relative">
+          <div class="pricing-head section-intro centered">
+            <span class="section-tag">Planos</span>
+            <h2 class="title">Escolha seu <span class="mint">plano</span></h2>
+            <p class="section-sub">
+              Os dois planos dão acesso aos mesmos recursos. Escolha entre pagar mês a mês ou uma
+              vez por ano quando as assinaturas abrirem.
+            </p>
+          </div>
+          <div class="plans">
+            <div>
+              <div class="plan" data-reveal>
+                <h3 class="plan-name">Plano Mensal</h3>
+                <div class="plan-price"><b>R$ 9,00</b><span>/mês</span></div>
+                <p class="plan-note">Uma cobrança a cada mês.</p>
+                <ul class="plan-features">
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Lançamentos por texto, voz e formulário
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Contas, recorrências e compras parceladas
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Previsão de 6 e 12 meses
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Relatórios e exportação em CSV
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Sincronização entre aparelhos
+                  </li>
+                </ul>
+                <p class="plan-status">Assinatura em breve</p>
+              </div>
+            </div>
+            <div>
+              <div class="plan highlight" data-reveal="later">
+                <span class="plan-badge">Economize R$ 18,00</span>
+                <h3 class="plan-name">Plano Anual</h3>
+                <div class="plan-price"><b>R$ 90,00</b><span>/ano</span></div>
+                <p class="plan-note">Equivale a R$ 7,50 por mês, com cobrança anual.</p>
+                <ul class="plan-features">
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Lançamentos por texto, voz e formulário
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Contas, recorrências e compras parceladas
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Previsão de 6 e 12 meses
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Relatórios e exportação em CSV
+                  </li>
+                  <li>
+                    <svg aria-hidden="true" width="16" height="16"><use href="#i-check" /></svg
+                    >Sincronização entre aparelhos
+                  </li>
+                </ul>
+                <p class="plan-status">Assinatura em breve</p>
+              </div>
+            </div>
+          </div>
+          <p class="pricing-foot">
+            Valores em reais (R$). A economia anual compara o plano anual com 12 mensalidades.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="faq">
+        <div class="container">
+          <div class="centered" data-reveal>
+            <span class="section-tag">Dúvidas frequentes</span>
+            <h2 class="title">Perguntas <span class="mint">frequentes</span></h2>
+          </div>
+          <div class="faq-wrap" id="faqWrap" data-reveal>
+            <details class="faq-item">
+              <summary class="faq-q">Quais são os planos?</summary>
+              <div class="faq-a">
+                <p>
+                  Os valores previstos são R$ 9,00 por mês ou R$ 90,00 por ano. A página apresenta
+                  os planos enquanto as assinaturas são preparadas.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-q">Posso usar no computador e no celular?</summary>
+              <div class="faq-a">
+                <p>
+                  Sim. Os dados ficam salvos no navegador de cada aparelho e, na versão online,
+                  sincronizam entre aparelhos pela mesma conta.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-q">E se eu ficar sem internet?</summary>
+              <div class="faq-a">
+                <p>
+                  Com a sessão aberta, você pode continuar registrando movimentações durante uma
+                  queda de conexão. As alterações são enviadas quando a internet volta.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-q">A leitura por voz funciona no meu navegador?</summary>
+              <div class="faq-a">
+                <p>
+                  O uso do microfone depende do suporte e da permissão do navegador. Você também
+                  pode digitar: “comprei um PS5 por 2.800 em 5x” cria cinco parcelas de R$ 560,00
+                  para revisar antes de confirmar.
+                </p>
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-q">
+                O que acontece se eu pagar uma parcela depois do vencimento?
+              </summary>
+              <div class="faq-a">
+                <p>
+                  O sistema guarda separadamente o vencimento original e a data efetiva do
+                  pagamento. Se uma parcela vence em outubro e é paga em novembro, o lançamento
+                  entra no saldo de novembro.
+                </p>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-q">Dá para estornar ou antecipar parcelas?</summary>
+              <div class="faq-a">
+                <p>
+                  Sim: estornos totais ou parciais, cancelamento de compras e antecipação de
+                  parcelas com desconto — tudo preservando os vínculos com a compra e o histórico de
+                  pagamentos.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="final">
+        <div class="final-card" data-reveal>
+          <div class="final-glow fg-1"></div>
+          <div class="final-glow fg-2"></div>
+          <h2>Organize hoje. <span class="mint">Planeje o próximo mês.</span></h2>
+          <p>Veja o que entrou, organize o que falta pagar e prepare os próximos meses.</p>
+          <a class="btn-white" href="login.html">
+            Entrar no FinançasFácil<svg aria-hidden="true" width="16" height="16">
+              <use href="#i-arrow" />
+            </svg>
+          </a>
+          <div class="landing-install" data-install-panel hidden>
+            <button
+              class="btn-secondary"
+              type="button"
+              aria-controls="installGuide"
+              aria-expanded="false"
+            >
+              Instalar aplicativo
+            </button>
+            <p id="installGuide" class="install-guide" data-install-guide hidden>
+              No Safari, abra o menu <strong>Compartilhar</strong>, toque em
+              <strong>Adicionar à Tela de Início</strong> e ative
+              <strong>Abrir como App da Web</strong> se a opção aparecer. Depois, toque em
+              <strong>Adicionar</strong>.
+            </p>
           </div>
         </div>
       </section>
     </main>
-    <footer class="landing-footer">
-      <div class="landing-container landing-footer-inner">
-        <a class="landing-brand" href="./index.html" aria-label="FinançasFácil, página inicial">
-          <img src="assets/favicon.svg" width="32" height="32" alt="" />
-          <span>FinançasFácil</span>
-        </a>
-        <a class="landing-text-link" href="login.html"
-          >Já tem conta? Entrar <span aria-hidden="true">↗</span></a
-        >
+    <footer>
+      <div class="container">
+        <div class="foot-top">
+          <div>
+            <span class="brand">
+              <img src="assets/favicon.svg" width="36" height="36" alt="" />
+              <span class="brand-name">FinançasFácil</span>
+            </span>
+            <p class="foot-tag">
+              Mais clareza para o seu dia: gastos, recebimentos, parcelas e previsão dos próximos
+              meses.
+            </p>
+          </div>
+          <nav class="foot-links" aria-label="Navegação do rodapé">
+            <a href="#recursos">Recursos</a>
+            <a href="#como-funciona">Como funciona</a>
+            <a href="#planos">Planos</a>
+            <a href="#faq">Dúvidas</a>
+          </nav>
+        </div>
+        <div class="foot-bottom">
+          <p>© FinançasFácil · Todos os direitos reservados</p>
+          <p>Valores em reais (R$) · Dados de demonstração são ilustrativos</p>
+        </div>
       </div>
     </footer>
   </body>

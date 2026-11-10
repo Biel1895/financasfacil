@@ -2148,6 +2148,15 @@
   }
 
   // src/js/domain/installments.js
+  function parseGeneralInput(text, period = currentPeriod()) {
+    const clauses = text.trim().split(
+      /;|,\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)|\s+e\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)/i
+    ).map((clause) => clause.trim()).filter(Boolean);
+    return clauses.flatMap((clause) => {
+      const installment = parseInstallmentClause(clause, period);
+      return installment ? [installment] : parseNaturalLanguageInput(clause, period);
+    });
+  }
   function installmentCount(value) {
     if (/^\d+$/.test(value)) {
       return Number(value);
@@ -2346,14 +2355,8 @@
   };
 
   // src/js/application/installments.js
-  function parseGeneralInput(text) {
-    const clauses = text.trim().split(
-      /;|,\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)|\s+e\s+(?=(?:comprei|paguei|gastei|recebi|ganhei|investi|aportei|apliquei)\b)/i
-    ).map((s) => s.trim()).filter(Boolean);
-    return clauses.flatMap((clause) => {
-      const installment = parseInstallmentClause(clause, selectedPeriod());
-      return installment ? [installment] : parseNaturalLanguageInput(clause, selectedPeriod());
-    });
+  function parseGeneralInput2(text) {
+    return parseGeneralInput(text, selectedPeriod());
   }
   function installmentDraftPlan(item, ruleId = "plan_" + item.id) {
     if (!Number.isInteger(item.installments) || item.installments < 2 || item.installments > 120) {
@@ -2528,17 +2531,43 @@
     await savePreference();
   }
 
+  // src/js/services/speech-recognition.js
+  var messages = {
+    "not-allowed": "Permita o uso do microfone no navegador para falar seus lançamentos.",
+    "service-not-allowed": "O navegador bloqueou o ditado por voz. Verifique as permissões do microfone.",
+    "audio-capture": "Nenhum microfone disponível. Verifique se ele está conectado.",
+    "no-speech": "Não consegui ouvir a fala. Tente novamente ou digite o lançamento.",
+    network: "O ditado por voz precisa de conexão. Verifique a internet ou digite o lançamento."
+  };
+  function createSpeechRecognition() {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+      return null;
+    }
+    const recognition = new Recognition();
+    recognition.lang = "pt-BR";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    return recognition;
+  }
+  function speechTranscript(event) {
+    return Array.from(event.results, (result) => result[0].transcript.trim()).join(" ");
+  }
+  function speechErrorMessage(code) {
+    return messages[code] || "Não foi possível reconhecer o áudio. Tente novamente ou digite o lançamento.";
+  }
+
   // src/js/ui/voice.js
   var Voice = {
     recognition: null,
     setupVoiceRecognition(onToastCallback) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      this.recognition = createSpeechRecognition();
       const btnMic = document.getElementById("btnMic");
       const micIcon = document.getElementById("micIcon");
       const banner = document.getElementById("recordingBanner");
       const btnStopBanner = document.getElementById("btnStopVoiceBanner");
       const inputEl = document.getElementById("commandInput");
-      if (!SpeechRecognition) {
+      if (!this.recognition) {
         btnMic.addEventListener("click", () => {
           onToastCallback(
             "Seu navegador não suporta ditado por voz. Digite no campo de texto!",
@@ -2547,10 +2576,6 @@
         });
         return;
       }
-      this.recognition = new SpeechRecognition();
-      this.recognition.lang = "pt-BR";
-      this.recognition.continuous = false;
-      this.recognition.interimResults = true;
       this.submitVoiceOnEnd = false;
       this.hasVoiceTranscript = false;
       this.recognition.onstart = () => {
@@ -2563,28 +2588,15 @@
         banner.hidden = false;
       };
       this.recognition.onresult = (event) => {
-        let transcript = "";
-        for (let i = 0; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
+        const transcript = speechTranscript(event);
         this.hasVoiceTranscript = Boolean(transcript.trim());
         inputEl.value = transcript;
       };
       this.recognition.onerror = (event) => {
         this.submitVoiceOnEnd = false;
         this.stopVoiceRecording(false);
-        const messages = {
-          "not-allowed": "Permita o uso do microfone no navegador para falar seus lançamentos.",
-          "service-not-allowed": "O navegador bloqueou o ditado por voz. Verifique as permissões do microfone.",
-          "audio-capture": "Nenhum microfone disponível. Verifique se ele está conectado.",
-          "no-speech": "Não consegui ouvir a fala. Tente novamente ou digite o lançamento.",
-          network: "O ditado por voz precisa de conexão. Verifique a internet ou digite o lançamento."
-        };
         if (event.error !== "aborted") {
-          onToastCallback(
-            messages[event.error] || "Não foi possível reconhecer o áudio. Tente novamente ou digite o lançamento.",
-            "warning"
-          );
+          onToastCallback(speechErrorMessage(event.error), "warning");
         }
       };
       this.recognition.onend = () => {
@@ -2718,7 +2730,7 @@
     }
     Voice.stopVoiceRecording(true, false);
     $("composerError").hidden = true;
-    const items = parseGeneralInput(text);
+    const items = parseGeneralInput2(text);
     if (!items.length) {
       $("composerError").textContent = "Não identifiquei um valor. Experimente “Gastei 60 no mercado”.";
       $("composerError").hidden = false;
@@ -3589,15 +3601,24 @@
     resync: false,
     subscription: null
   };
-  var rememberSession = null;
+  var rememberSession = true;
+  var readReturnPreference = null;
   var sessionMemory = /* @__PURE__ */ new Map();
-  var rememberRedirectKey = "ff-auth-remember";
+  var isVerifier = (key) => key.endsWith("-code-verifier") && !key.endsWith("-flows-code-verifier");
+  var preferenceKey = (key) => key + "-ff-remember";
   var authStorage = {
     getItem(key) {
-      return sessionMemory.get(key) ?? localStorage.getItem(key);
+      const value = sessionMemory.get(key) ?? localStorage.getItem(key);
+      if (value && readReturnPreference && isVerifier(key)) {
+        readReturnPreference(localStorage.getItem(preferenceKey(key)));
+      }
+      return value;
     },
     setItem(key, value) {
-      if (key.endsWith("-code-verifier") || (rememberSession ?? localStorage.getItem(key) !== null)) {
+      if (isVerifier(key)) {
+        localStorage.setItem(preferenceKey(key), rememberSession ? "yes" : "no");
+      }
+      if (key.endsWith("-code-verifier") || rememberSession) {
         localStorage.setItem(key, value);
         sessionMemory.delete(key);
       } else {
@@ -3608,8 +3629,17 @@
     removeItem(key) {
       sessionMemory.delete(key);
       localStorage.removeItem(key);
+      if (isVerifier(key)) {
+        localStorage.removeItem(preferenceKey(key));
+      }
     }
   };
+  function rememberCloudSession() {
+    rememberSession = true;
+    for (const [key, value] of sessionMemory) {
+      authStorage.setItem(key, value);
+    }
+  }
   async function connectCloud() {
     if (!Cloud.configured || Cloud.client) {
       return Cloud.client;
@@ -3619,9 +3649,17 @@
         const config = readSupabaseConfig(window.FF_SUPABASE_CONFIG);
         const { createClient } = await deadline(
           import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/+esm")
-        );
+        ).catch(() => {
+          throw new Error("Não foi possível conectar ao login. Confira sua conexão e recarregue.");
+        });
         Cloud.client = createClient(config.url, config.publishableKey, {
-          auth: { storage: authStorage, detectSessionInUrl: false, flowType: "pkce" }
+          auth: {
+            storage: authStorage,
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false,
+            flowType: "pkce"
+          }
         });
         return Cloud.client;
       })().finally(() => {
@@ -3642,26 +3680,32 @@
         url.hash = "";
       }
       history.replaceState(null, "", url.href);
-      const keep = sessionStorage.getItem(rememberRedirectKey) === "yes";
-      sessionStorage.removeItem(rememberRedirectKey);
+      const legacyPreference = sessionStorage.getItem("ff-auth-remember");
+      sessionStorage.removeItem("ff-auth-remember");
       if (redirectError) {
         throw new Error("O link não pôde ser usado. Tente entrar ou solicite um novo link.");
       }
       rememberSession = false;
-      const { data: data2, error: error2 } = await deadline(
-        client.auth.exchangeCodeForSession(code, flowId ? { flowId } : void 0)
-      );
-      if (error2 || !data2.user || !data2.session) {
-        throw new Error("Link expirado ou aberto em outro navegador. Solicite um novo link.");
-      }
-      const recovery = data2.redirectType === "recovery";
-      if (!recovery && keep) {
-        rememberSession = true;
-        for (const [key, value] of [...sessionMemory]) {
-          authStorage.setItem(key, value);
+      let preference = null;
+      readReturnPreference = (value) => {
+        preference ??= value;
+      };
+      try {
+        const { data: data2, error: error2 } = await deadline(
+          client.auth.exchangeCodeForSession(code, flowId ? { flowId } : void 0)
+        );
+        if (error2 || !data2.user || !data2.session) {
+          throw new Error("Link expirado ou aberto em outro navegador. Solicite um novo link.");
         }
+        const recovery = data2.redirectType === "recovery";
+        const remember = preference === null ? recovery || legacyPreference !== "no" : preference === "yes";
+        if (!recovery && remember) {
+          rememberCloudSession();
+        }
+        return { user: data2.user, recovery, remember };
+      } finally {
+        readReturnPreference = null;
       }
-      return { user: data2.user, recovery };
     }
     const { data, error } = await deadline(client.auth.getSession());
     if (error) {
@@ -3688,12 +3732,11 @@
     }
     return data.user;
   }
-  function redirectToApp(remember) {
-    sessionStorage.setItem(rememberRedirectKey, remember ? "yes" : "no");
+  function redirectToApp() {
     return location.protocol === "file:" ? new URL("index.html", location.href).href : location.origin + "/";
   }
   function cloudAuthError(error, fallback) {
-    const messages = {
+    const messages2 = {
       signup_disabled: "O cadastro está fechado no momento. Entre com uma conta existente.",
       weak_password: "Escolha uma senha mais forte e tente novamente.",
       email_address_not_authorized: "O serviço de e-mail ainda não está disponível para este endereço.",
@@ -3704,7 +3747,7 @@
       current_password_required: "Informe a senha atual ou use a recuperação pelo e-mail.",
       reauthentication_needed: "Entre novamente na sua conta antes de alterar a senha."
     };
-    return new Error(Object.hasOwn(messages, error?.code) ? messages[error.code] : fallback);
+    return new Error(Object.hasOwn(messages2, error?.code) ? messages2[error.code] : fallback);
   }
   async function signUpCloud(email, password, name, remember) {
     const client = await connectCloud();
@@ -3712,17 +3755,18 @@
     const { data, error } = await client.auth.signUp({
       email,
       password,
-      options: { data: { display_name: name }, emailRedirectTo: redirectToApp(remember) }
+      options: { data: { display_name: name }, emailRedirectTo: redirectToApp() }
     });
     if (error) {
       throw cloudAuthError(error, "Não foi possível criar a conta agora. Tente novamente.");
     }
     return data.session ? data.user : null;
   }
-  async function sendCloudReset(email) {
+  async function sendCloudReset(email, remember) {
     const client = await connectCloud();
+    rememberSession = remember;
     const { error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectToApp(false)
+      redirectTo: redirectToApp()
     });
     if (error) {
       throw cloudAuthError(error, "Não foi possível enviar o link agora. Tente novamente.");
@@ -3736,9 +3780,10 @@
       throw new Error("Este método de entrada está indisponível.");
     }
     const client = await connectCloud();
+    rememberSession = remember;
     const { error } = await client.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: redirectToApp(remember) }
+      options: { redirectTo: redirectToApp() }
     });
     if (error) {
       throw new Error("Não foi possível abrir o login deste provedor. Tente novamente.");
@@ -4061,7 +4106,7 @@
       "Salvar senha"
     ]
   };
-  var recoveryOwner = null;
+  var recoverySession = null;
   var authBusy = false;
   function authMessage(message, success = false) {
     const alert = $("authAlert");
@@ -4220,10 +4265,14 @@
     $("authIdentifier").type = "email";
     $("authIdentifier").placeholder = "voce@exemplo.com";
     $("authStorageHint").hidden = true;
+    if (!navigator.onLine) {
+      authMessage("Você está sem conexão. Quando a internet voltar, recarregue para entrar.");
+      return;
+    }
     try {
-      const { user, recovery } = await resumeCloudUser();
+      const { user, recovery, remember } = await resumeCloudUser();
       if (user && recovery) {
-        recoveryOwner = user.id;
+        recoverySession = { owner: user.id, remember };
         switchAuthTab("reset");
       } else if (user) {
         await enterOnlineAccount(user);
@@ -4251,7 +4300,7 @@
     $("forgotPasswordForm").addEventListener("submit", (event) => {
       event.preventDefault();
       void runAuth($("btnSendReset"), async () => {
-        await sendCloudReset($("forgotEmail").value.trim());
+        await sendCloudReset($("forgotEmail").value.trim(), $("authRememberMe").checked);
         authMessage(
           "Se esse e-mail estiver cadastrado, você receberá um link. Abra-o neste mesmo navegador.",
           true
@@ -4261,12 +4310,15 @@
     $("resetPasswordForm").addEventListener("submit", (event) => {
       event.preventDefault();
       void runAuth($("btnResetPassword"), async () => {
-        if (!recoveryOwner) {
+        if (!recoverySession) {
           throw new Error("Solicite um novo link de recuperação.");
         }
         const password = validateNewPassword($("resetPassword").value, $("resetPasswordAgain").value);
-        const user = await updateCloudUser({ password }, recoveryOwner);
-        recoveryOwner = null;
+        const user = await updateCloudUser({ password }, recoverySession.owner);
+        if (recoverySession.remember) {
+          rememberCloudSession();
+        }
+        recoverySession = null;
         $("resetPasswordForm").reset();
         switchAuthTab("login");
         await enterOnlineAccount(user);
@@ -4276,7 +4328,7 @@
     $("btnCancelReset").addEventListener("click", () => {
       void runAuth($("btnCancelReset"), async () => {
         await signOutCloud();
-        recoveryOwner = null;
+        recoverySession = null;
         $("resetPasswordForm").reset();
         switchAuthTab("login");
         $("authIdentifier").focus();
@@ -4933,11 +4985,60 @@
         balanceSummary,
         forecastMonths
       },
-      FF_Planning: { addMonths, buildBills, parseAmount, isValidDate, parseGeneralInput },
+      FF_Planning: { addMonths, buildBills, parseAmount, isValidDate, parseGeneralInput: parseGeneralInput2 },
       FF_NLP: Object.assign(Voice, {
         parseNaturalLanguageInput: (text) => parseNaturalLanguageInput(text, selectedPeriod())
       })
     });
+  }
+
+  // src/js/ui/install-app.js
+  function initInstallApp() {
+    if (!document.querySelector('link[rel="manifest"]') || !("serviceWorker" in navigator)) {
+      return;
+    }
+    const panel = document.querySelector("[data-install-panel]");
+    const button = panel.querySelector("button");
+    const guide = panel.querySelector("[data-install-guide]");
+    const standalone = matchMedia("(display-mode: standalone)");
+    const appleMobile = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+    let installed = false;
+    let promptEvent = null;
+    function update() {
+      panel.hidden = installed || standalone.matches || navigator.standalone || !promptEvent && !appleMobile;
+    }
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      promptEvent = event;
+      update();
+    });
+    window.addEventListener("appinstalled", () => {
+      installed = true;
+      promptEvent = null;
+      update();
+    });
+    standalone.addEventListener("change", update);
+    button.addEventListener("click", async () => {
+      if (!promptEvent) {
+        guide.hidden = !guide.hidden;
+        button.setAttribute("aria-expanded", String(!guide.hidden));
+        return;
+      }
+      const event = promptEvent;
+      promptEvent = null;
+      button.disabled = true;
+      try {
+        const choice = await event.prompt();
+        installed = choice.outcome === "accepted";
+      } catch (error) {
+        console.warn("Não foi possível abrir a instalação:", error);
+      } finally {
+        button.disabled = false;
+        update();
+      }
+    });
+    update();
+    void navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch((error) => console.warn("Não foi possível preparar o acesso offline:", error));
   }
 
   // src/js/main.js
@@ -4952,6 +5053,7 @@
   if (window.__FF_ENABLE_TEST_API__ === true) {
     installTestAdapter();
   }
+  initInstallApp();
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
