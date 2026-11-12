@@ -63,7 +63,19 @@ async function test() {
     const tabIcons = await page
       .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-    const iconPaths = [...tabIcons, ...manifest.icons.map((icon) => icon.src)];
+    const appleTouchIcon = await page.locator('link[rel="apple-touch-icon"]').getAttribute('href');
+    assert.equal(appleTouchIcon, '/apple-touch-icon.png');
+    const touchResponse = await context.request.get(origin + appleTouchIcon);
+    assert.ok(touchResponse.ok());
+    assert.match(touchResponse.headers()['content-type'], /^image\/png/);
+    const touchImage = await touchResponse.body();
+    assert.deepEqual(touchImage.subarray(0, 8), Buffer.from('89504e470d0a1a0a', 'hex'));
+    assert.equal(touchImage.readUInt32BE(16), 180);
+    assert.equal(touchImage.readUInt32BE(20), 180);
+    const iconPaths = [
+      ...tabIcons.filter((path) => path !== appleTouchIcon),
+      ...manifest.icons.map((icon) => icon.src),
+    ];
     assert.equal(tabIcons.length, 3);
     assert.equal(manifest.icons.length, 3);
     for (const path of iconPaths) {
@@ -104,6 +116,7 @@ async function test() {
     });
     assert.ok(cached.includes(origin + '/login.html'));
     assert.ok(cached.includes(origin + '/assets/InterVariable.woff2'));
+    assert.ok(cached.includes(origin + appleTouchIcon));
     const iconUrls = new Set(iconPaths.map((path) => origin + '/' + path));
     assert.ok([...iconUrls].every((url) => cached.includes(url)));
     assert.ok(

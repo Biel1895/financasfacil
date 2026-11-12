@@ -43,11 +43,12 @@ const output = new URL('../dist/', import.meta.url);
 const assetOutput = new URL('assets/', output);
 const runtimeFiles = ['app.js', 'style.css', 'landing.css', 'landing.js', 'favicon.ico'];
 const pages = ['index.html', 'login.html'];
-const shell = [...pages, 'config.js', 'manifest.webmanifest', ...runtimeFiles];
+const appleTouchIcon = 'apple-touch-icon.png';
+const shell = [...pages, 'config.js', 'manifest.webmanifest', appleTouchIcon, ...runtimeFiles];
 const siteFiles = [...shell, 'service-worker.js'];
 const assets = [
   'favicon.svg',
-  'apple-touch-icon.png',
+  appleTouchIcon,
   'pwa-192.png',
   'pwa-512.png',
   'pwa-maskable-512.png',
@@ -55,7 +56,7 @@ const assets = [
   'compartilhar.jpg',
   'Inter-OFL.txt',
 ];
-const browserIcons = ['favicon.ico', 'assets/favicon.svg', 'assets/apple-touch-icon.png'];
+const browserIcons = ['favicon.ico', 'assets/favicon.svg'];
 const versionedBrowserIcons = await Promise.all(browserIcons.map(versionedAsset));
 await mkdir(output, { recursive: true });
 for (const entry of await readdir(output, { withFileTypes: true })) {
@@ -80,6 +81,8 @@ for (const file of runtimeFiles) {
 for (const asset of assets) {
   await copyFile(new URL('../assets/' + asset, import.meta.url), new URL(asset, assetOutput));
 }
+// O Safari também procura o ícone da Tela de Início diretamente na raiz.
+await copyFile(new URL(appleTouchIcon, assetOutput), new URL(appleTouchIcon, output));
 const shareMarker = '<!-- @share-url -->';
 const pwaMarker = '<!-- @pwa -->';
 for (const page of pages) {
@@ -88,6 +91,7 @@ for (const page of pages) {
     throw new Error(`${page} precisa do marcador do manifesto no cabeçalho.`);
   }
   html = html.replace(pwaMarker, '<link rel="manifest" href="manifest.webmanifest" />');
+  html = html.replace(`href="assets/${appleTouchIcon}"`, `href="/${appleTouchIcon}"`);
   for (const [index, icon] of browserIcons.entries()) {
     html = html.replace(`href="${icon}"`, `href="${versionedBrowserIcons[index]}"`);
   }
