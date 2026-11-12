@@ -57,7 +57,7 @@ const DB = {
       };
       request.onblocked = () => {
         publish('notice', [
-          'Feche outras abas do FinançasFácil para atualizar o armazenamento.',
+          'Feche outras abas do Logra Finance para atualizar o armazenamento.',
           'warning',
         ]);
       };

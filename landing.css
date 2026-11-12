@@ -1,24 +1,50 @@
 /* GERADO por npm run build. Fontes em src/css/. */
+/* src/css/brand.css */
+@font-face {
+  font-family: Inter;
+  src: url(./assets/InterVariable.woff2) format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --logra-indigo: #4f2bff;
+  --logra-violet: #7c4dff;
+  --logra-emerald: #00c281;
+  --logra-mint: #bff5de;
+  --logra-ink: #1f2542;
+  --logra-lavender: #e9ecf5;
+  --logra-night: #14132c;
+  --logra-green-ink: #007653;
+  --logra-font: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.brand-product {
+  color: var(--brand-accent, var(--logra-green-ink));
+}
+
 /* src/css/landing.css */
 :root {
-  --navy: #0c172c;
-  --navy-950: #0a1223;
-  --navy-900: #101c32;
-  --navy-800: #0f1a2e;
-  --royal: #2563eb;
-  --royal-dark: #1d4ed8;
-  --mint: #a7f1d5;
-  --ink: #f8fafc;
-  --soft: #94a3b8;
-  --faint: #9aaac2;
-  --income: #34d399;
+  --navy: var(--logra-night);
+  --navy-950: #0f0e22;
+  --navy-900: #1a1834;
+  --navy-800: #211d42;
+  --royal: var(--logra-indigo);
+  --royal-dark: #3d1fd1;
+  --violet-rgb: 124, 77, 255;
+  --mint-rgb: 191, 245, 222;
+  --mint: var(--logra-mint);
+  --ink: #f8f7ff;
+  --soft: #b4b3ca;
+  --faint: #a5a2bc;
+  --brand-accent: var(--logra-emerald);
+  --income: var(--logra-emerald);
   --expense: #f87171;
   --invest: #a78bfa;
   --amber: #fbbf24;
   --card: rgba(255, 255, 255, 0.03);
   --border: rgba(255, 255, 255, 0.1);
-  --display: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --display: var(--logra-font);
+  --sans: var(--logra-font);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 * {
@@ -156,7 +182,7 @@ button {
   transition: 0.2s;
 }
 .icon-btn:hover {
-  border-color: rgba(167, 241, 213, 0.4);
+  border-color: rgba(var(--mint-rgb), 0.4);
   color: var(--mint);
 }
 .btn-primary {
@@ -170,13 +196,13 @@ button {
   font-weight: 700;
   font-size: 14px;
   color: #fff;
-  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.45);
+  box-shadow: 0 4px 24px rgba(var(--violet-rgb), 0.45);
   transition: all 0.25s;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
   background: var(--royal-dark);
-  box-shadow: 0 8px 40px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 8px 40px rgba(var(--violet-rgb), 0.6);
 }
 .menu-btn {
   display: flex;
@@ -194,7 +220,7 @@ button {
 }
 .mobile-menu {
   backdrop-filter: blur(20px);
-  background: rgba(12, 23, 44, 0.98);
+  background: rgba(20, 19, 44, 0.98);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
@@ -212,6 +238,7 @@ button {
   position: relative;
   overflow: hidden;
   padding: 128px 0 80px;
+  background: radial-gradient(ellipse at 8% 0%, #281269, transparent 65%);
 }
 @media (min-width: 768px) {
   .hero {
@@ -221,7 +248,7 @@ button {
 .ledger {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(167, 241, 213, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(var(--mint-rgb), 0.05) 1px, transparent 1px);
   background-size: 100% 46px;
   -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, black, transparent);
   mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, black, transparent);
@@ -237,14 +264,14 @@ button {
   left: -128px;
   height: 448px;
   width: 448px;
-  background: rgba(37, 99, 235, 0.25);
+  background: rgba(var(--violet-rgb), 0.25);
 }
 .blob-2 {
   top: 256px;
   right: 0;
   height: 320px;
   width: 320px;
-  background: rgba(167, 241, 213, 0.1);
+  background: rgba(var(--mint-rgb), 0.1);
 }
 .hero-grid {
   position: relative;
@@ -275,8 +302,8 @@ button {
   align-items: center;
   gap: 10px;
   border-radius: 9999px;
-  border: 1px solid rgba(167, 241, 213, 0.25);
-  background: rgba(167, 241, 213, 0.08);
+  border: 1px solid rgba(var(--mint-rgb), 0.25);
+  background: rgba(var(--mint-rgb), 0.08);
   padding: 6px 16px;
   font-size: 13px;
   font-weight: 600;
@@ -425,7 +452,7 @@ button {
   border-radius: 16px;
   border: 1px solid var(--border);
   backdrop-filter: blur(20px);
-  background: rgba(6, 11, 22, 0.78);
+  background: rgba(11, 9, 27, 0.78);
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -476,7 +503,7 @@ button {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(10, 17, 32, 0.8);
+  background: rgba(15, 14, 34, 0.8);
   padding: 10px 16px;
 }
 .dash-brand {
@@ -537,7 +564,7 @@ button {
   flex-direction: column;
   justify-content: space-between;
   border-right: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(10, 17, 32, 0.5);
+  background: rgba(15, 14, 34, 0.5);
   padding: 12px;
 }
 @media (min-width: 640px) {
@@ -566,9 +593,9 @@ button {
   color: var(--soft);
 }
 .side-item.active {
-  background: rgba(37, 99, 235, 0.15);
+  background: linear-gradient(100deg, #007653, #005e42);
   font-weight: 600;
-  color: var(--royal);
+  color: #fff;
 }
 .side-item .cnt {
   margin-left: auto;
@@ -619,7 +646,7 @@ button {
   align-items: center;
   gap: 4px;
   border-radius: 9999px;
-  background: var(--royal);
+  background: var(--logra-green-ink);
   padding: 6px 10px;
   font-size: 9px;
   font-weight: 700;
@@ -649,13 +676,13 @@ button {
   background: var(--card);
   padding: 12px;
 }
-.stat.blue {
+.stat.balance {
   grid-column: span 2;
-  background: var(--royal);
+  background: linear-gradient(125deg, #005e42, #104539);
   border-color: transparent;
 }
 @media (min-width: 640px) {
-  .stat.blue {
+  .stat.balance {
     grid-column: span 1;
   }
 }
@@ -667,7 +694,7 @@ button {
   font-weight: 500;
   color: var(--soft);
 }
-.stat.blue .stat-label {
+.stat.balance .stat-label {
   color: rgba(255, 255, 255, 0.8);
 }
 .stat-ico {
@@ -679,7 +706,7 @@ button {
   border-radius: 8px;
 }
 .i-income {
-  background: rgba(52, 211, 153, 0.15);
+  background: rgba(0, 194, 129, 0.15);
   color: var(--income);
 }
 .i-expense {
@@ -700,7 +727,7 @@ button {
   font-weight: 800;
   letter-spacing: -0.02em;
 }
-.stat.blue .stat-value {
+.stat.balance .stat-value {
   font-size: 20px;
   color: #fff;
 }
@@ -713,7 +740,7 @@ button {
   line-height: 1.4;
   color: var(--faint);
 }
-.stat.blue .stat-note {
+.stat.balance .stat-note {
   color: rgba(255, 255, 255, 0.7);
 }
 .dash-balance {
@@ -790,12 +817,12 @@ button {
   color: var(--amber);
 }
 .tag-green {
-  background: rgba(52, 211, 153, 0.15);
+  background: rgba(0, 194, 129, 0.15);
   color: var(--income);
 }
 .tag-blue {
-  background: rgba(37, 99, 235, 0.15);
-  color: #93b4fd;
+  background: rgba(var(--violet-rgb), 0.15);
+  color: #c5b7ff;
 }
 .tag-purple {
   background: rgba(167, 139, 250, 0.15);
@@ -808,8 +835,8 @@ button {
   gap: 8px;
   margin-top: 8px;
   border-radius: 12px;
-  border: 1px solid rgba(37, 99, 235, 0.25);
-  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(var(--violet-rgb), 0.25);
+  background: rgba(var(--violet-rgb), 0.1);
   padding: 10px;
 }
 .dash-banner p {
@@ -826,7 +853,7 @@ button {
   gap: 4px;
   font-size: 9px;
   font-weight: 700;
-  color: #5b8def;
+  color: #bca8ff;
 }
 .dash-caption {
   padding: 8px 0;
@@ -850,8 +877,8 @@ button {
   align-items: center;
   gap: 8px;
   border-radius: 9999px;
-  border: 1px solid rgba(167, 241, 213, 0.25);
-  background: rgba(167, 241, 213, 0.08);
+  border: 1px solid rgba(var(--mint-rgb), 0.25);
+  background: rgba(var(--mint-rgb), 0.08);
   padding: 6px 16px;
   font-size: 12px;
   font-weight: 600;
@@ -928,7 +955,7 @@ h2 .mint {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: rgba(167, 241, 213, 0.15);
+  background: rgba(var(--mint-rgb), 0.15);
 }
 .mic-note {
   margin-top: 24px;
@@ -941,7 +968,7 @@ h2 .mint {
   border-radius: 28px;
   border: 1px solid var(--border);
   backdrop-filter: blur(20px);
-  background: rgba(6, 11, 22, 0.78);
+  background: rgba(11, 9, 27, 0.78);
   padding: 20px;
   box-shadow: 0 40px 120px rgba(0, 0, 0, 0.45);
 }
@@ -1040,8 +1067,8 @@ h2 .mint {
   padding: 16px;
 }
 .month-card.current {
-  border-color: rgba(37, 99, 235, 0.4);
-  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(var(--violet-rgb), 0.4);
+  background: rgba(var(--violet-rgb), 0.08);
 }
 .month-card h4 {
   font-family: var(--display);
@@ -1220,7 +1247,7 @@ h2 .mint {
   width: 100%;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(4, 8, 15, 0.6);
+  background: rgba(8, 6, 20, 0.6);
   padding: 10px 12px 10px 36px;
   font-family: inherit;
   font-size: 14px;
@@ -1231,7 +1258,7 @@ h2 .mint {
 }
 .extrato-search input:focus {
   outline: none;
-  border-color: rgba(167, 241, 213, 0.5);
+  border-color: rgba(var(--mint-rgb), 0.5);
 }
 .extrato-search svg {
   position: absolute;
@@ -1339,7 +1366,7 @@ h2 .mint {
   width: min(384px, 100%);
   transform: translateX(-50%);
   border-radius: 9999px;
-  background: rgba(37, 99, 235, 0.15);
+  background: rgba(var(--violet-rgb), 0.15);
   filter: blur(140px);
   pointer-events: none;
 }
@@ -1373,9 +1400,9 @@ h2 .mint {
   border-color: rgba(255, 255, 255, 0.25);
 }
 .plan.highlight {
-  border-color: rgba(167, 241, 213, 0.6);
-  background: linear-gradient(180deg, rgba(167, 241, 213, 0.09), transparent);
-  box-shadow: 0 0 60px rgba(167, 241, 213, 0.12);
+  border-color: rgba(var(--mint-rgb), 0.6);
+  background: linear-gradient(180deg, rgba(var(--mint-rgb), 0.09), transparent);
+  box-shadow: 0 0 60px rgba(var(--mint-rgb), 0.12);
 }
 .plan-badge {
   position: absolute;
@@ -1443,7 +1470,7 @@ h2 .mint {
   color: var(--mint);
 }
 .plan .plan-features svg {
-  color: var(--royal);
+  color: #bca8ff;
 }
 .pricing-foot {
   margin-top: 40px;
@@ -1499,7 +1526,7 @@ h2 .mint {
   position: relative;
   overflow: hidden;
   border-radius: 40px;
-  border: 1px solid rgba(37, 99, 235, 0.4);
+  border: 1px solid rgba(var(--violet-rgb), 0.4);
   background: linear-gradient(135deg, var(--royal), var(--royal-dark), var(--navy-800));
   padding: 64px 24px;
   text-align: center;
@@ -1520,14 +1547,14 @@ h2 .mint {
   left: -80px;
   height: 288px;
   width: 288px;
-  background: rgba(167, 241, 213, 0.2);
+  background: rgba(var(--mint-rgb), 0.2);
 }
 .fg-2 {
   bottom: -96px;
   right: -64px;
   height: 288px;
   width: 288px;
-  background: rgba(167, 241, 213, 0.1);
+  background: rgba(var(--mint-rgb), 0.1);
 }
 .final h2 {
   position: relative;
@@ -1677,7 +1704,7 @@ button:disabled {
   clip-path: none;
 }
 .navbar {
-  background: #0c172cf5;
+  background: #14132cf5;
   border-bottom-color: var(--border);
 }
 .login-link {
@@ -1726,7 +1753,7 @@ button:disabled {
   position: relative;
   border-block: 1px solid var(--border);
   background: var(--card);
-  color: #b5c4d9;
+  color: #c2bfd6;
   font-family: var(--display);
   font-size: clamp(0.9rem, 1.18vw, 1.125rem);
   font-weight: 700;
@@ -1958,7 +1985,7 @@ button:disabled {
 .demo-mic:hover,
 .demo-mic[aria-pressed="true"] {
   border-color: var(--mint);
-  background: #a7f1d513;
+  background: #bff5de13;
 }
 .demo-status {
   color: var(--soft);
@@ -2128,7 +2155,7 @@ button:disabled {
 .report-month:hover {
   border-bottom-color: var(--mint);
   color: var(--ink);
-  background: #a7f1d512;
+  background: #bff5de12;
 }
 .report-bars {
   display: flex;

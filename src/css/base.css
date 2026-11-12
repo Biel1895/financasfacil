@@ -1,46 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 :root {
   color-scheme: light;
-  --bg: #f5f7fb;
+  --bg: #f4f5fa;
   --surface: #fff;
-  --surface-subtle: #f8fafc;
-  --text: #192338;
-  --muted: #64748b;
-  --border: #e7ecf3;
-  --primary: #2563eb;
-  --primary-soft: #eef4ff;
-  --green: #087e60;
-  --green-soft: #e8f6f0;
+  --surface-subtle: #f7f8fc;
+  --text: var(--logra-ink);
+  --muted: #5d637b;
+  --border: var(--logra-lavender);
+  --primary: var(--logra-green-ink);
+  --primary-soft: #e5f8ef;
+  --action: var(--logra-green-ink);
+  --action-hover: #005e42;
+  --focus: var(--logra-violet);
+  --green: var(--logra-green-ink);
+  --green-soft: #e5f8ef;
   --red: #c34452;
   --red-soft: #fff0f1;
-  --purple: #7651c9;
-  --purple-soft: #f3eefc;
+  --purple: #643ac8;
+  --purple-soft: #f0ebff;
   --amber: #936715;
   --amber-soft: #fff8e9;
-  --shadow: 0 5px 24px #1e355007;
+  --shadow: 0 5px 24px #1f25420b;
   --radius: 20px;
-  font-family:
-    'DM Sans',
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  font-family: var(--logra-font);
   font-size: 16px;
 }
 [data-theme='dark'] {
   color-scheme: dark;
-  --bg: #101722;
-  --surface: #192230;
-  --surface-subtle: #141d29;
-  --text: #edf2fa;
-  --muted: #a2b0c5;
-  --border: #2b374a;
-  --primary: #8eafff;
-  --primary-soft: #25334e;
-  --green: #75d6b5;
-  --green-soft: #193a33;
+  --bg: #141326;
+  --surface: #201f37;
+  --surface-subtle: #19182e;
+  --text: #f2f1fb;
+  --muted: #b7b6cb;
+  --border: #353551;
+  --primary: #7be6b6;
+  --primary-soft: #1b3c36;
+  --focus: #ac92ff;
+  --green: #7be6b6;
+  --green-soft: #1b3c36;
+  --brand-accent: var(--logra-emerald);
   --red: #ff9ca8;
   --red-soft: #402830;
   --purple: #c1a5ff;
@@ -95,7 +92,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #729cff;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 [hidden] {
@@ -112,7 +109,7 @@ h2,
 h3,
 .brand,
 .metric-value {
-  font-family: Manrope, system-ui, sans-serif;
+  font-family: var(--logra-font);
 }
 h1 {
   font-size: clamp(1.8rem, 3vw, 2.3rem);
@@ -207,12 +204,12 @@ span[data-icon] {
   transform: translateY(-1px);
 }
 .button.primary {
-  background: #2563eb;
+  background: var(--action);
   color: #fff;
-  box-shadow: 0 4px 10px #2563eb18;
+  box-shadow: 0 4px 10px #00765324;
 }
 .button.primary:hover {
-  background: #1d4ed8;
+  background: var(--action-hover);
 }
 .button.secondary {
   background: var(--surface);

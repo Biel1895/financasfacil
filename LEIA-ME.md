@@ -1,4 +1,4 @@
-# FinançasFácil — versão atualizada
+# Logra Finance — versão atualizada
 
 Abra `index.html` e clique em **Entrar** para acessar sua conta. Você também pode abrir `login.html` diretamente. Mantenha os arquivos do projeto juntos e use o mesmo navegador e a mesma conta para acessar seus lançamentos.
 

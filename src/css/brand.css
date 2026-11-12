@@ -1,0 +1,23 @@
+@font-face {
+  font-family: Inter;
+  src: url('./assets/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --logra-indigo: #4f2bff;
+  --logra-violet: #7c4dff;
+  --logra-emerald: #00c281;
+  --logra-mint: #bff5de;
+  --logra-ink: #1f2542;
+  --logra-lavender: #e9ecf5;
+  --logra-night: #14132c;
+  --logra-green-ink: #007653;
+  --logra-font: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.brand-product {
+  color: var(--brand-accent, var(--logra-green-ink));
+}

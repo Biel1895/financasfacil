@@ -30,6 +30,7 @@ const cssResult = await build({
   absWorkingDir: root,
   entryPoints: { style: 'src/css/main.css', landing: 'src/css/landing.css' },
   outdir: '.',
+  external: ['./assets/*'],
   bundle: true,
   write: false,
   minify: false,

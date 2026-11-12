@@ -1,4 +1,4 @@
-# FinançasFácil IA
+# Logra Finance
 
 Controle financeiro pessoal em JavaScript, HTML e CSS. Inclui lançamentos por texto, voz ou formulário, parcelas, recorrências, estornos, previsão e relatórios.
 

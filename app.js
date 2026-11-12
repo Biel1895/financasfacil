@@ -209,7 +209,7 @@
         };
         request.onblocked = () => {
           publish("notice", [
-            "Feche outras abas do FinançasFácil para atualizar o armazenamento.",
+            "Feche outras abas do Logra Finance para atualizar o armazenamento.",
             "warning"
           ]);
         };
@@ -4197,7 +4197,7 @@
     $("authScreen").hidden = true;
     $("appWrapper").hidden = false;
     $("skipContentLink").href = "#mainContent";
-    document.title = "Painel | FinançasFácil";
+    document.title = "Painel | Logra Finance";
     $("bootMessage").hidden = true;
     setView(location.hash.slice(1) || "inicio", false);
     render();
@@ -4250,7 +4250,7 @@
     $("appWrapper").hidden = true;
     $("authScreen").hidden = false;
     $("skipContentLink").href = "#authTitle";
-    document.title = "Entrar | FinançasFácil";
+    document.title = "Entrar | Logra Finance";
     switchAuthTab("login");
     history.replaceState(null, "", location.pathname + location.search);
     $("authIdentifier").focus();

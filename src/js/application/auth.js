@@ -139,7 +139,7 @@ async function enterAccount() {
   $('authScreen').hidden = true;
   $('appWrapper').hidden = false;
   $('skipContentLink').href = '#mainContent';
-  document.title = 'Painel | FinançasFácil';
+  document.title = 'Painel | Logra Finance';
   $('bootMessage').hidden = true;
   setView(location.hash.slice(1) || 'inicio', false);
   render();
@@ -194,7 +194,7 @@ async function clearAccount() {
   $('appWrapper').hidden = true;
   $('authScreen').hidden = false;
   $('skipContentLink').href = '#authTitle';
-  document.title = 'Entrar | FinançasFácil';
+  document.title = 'Entrar | Logra Finance';
   switchAuthTab('login');
   history.replaceState(null, '', location.pathname + location.search);
   $('authIdentifier').focus();

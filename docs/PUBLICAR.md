@@ -1,11 +1,11 @@
-# FinançasFácil no GitHub e no Vercel
+# Logra Finance no GitHub e no Vercel
 
-Use o plano Free do Supabase. Crie um projeto chamado `financasfacil` na sua conta para separar esses lançamentos dos outros projetos. O plano inclui 500 MB de banco por projeto e pode pausar após uma semana de pouca atividade. [Plano gratuito do Supabase](https://supabase.com/pricing).
+Use o plano Free do Supabase. Crie um projeto chamado `logra-finances` na sua conta para separar esses lançamentos dos outros projetos. O plano inclui 500 MB de banco por projeto e pode pausar após uma semana de pouca atividade. [Plano gratuito do Supabase](https://supabase.com/pricing).
 
 ## Criar o banco e o seu acesso
 
 1. No painel do Supabase, crie o projeto e abra **SQL Editor → New query**.
-2. Cole o conteúdo inteiro de [`supabase/schema.sql`](../supabase/schema.sql) e clique em **Run**. O script cria a tabela do FinançasFácil e limita leitura e gravação ao dono de cada registro. [Regras de acesso por linha](https://supabase.com/docs/guides/database/postgres/row-level-security).
+2. Cole o conteúdo inteiro de [`supabase/schema.sql`](../supabase/schema.sql) e clique em **Run**. O script cria a tabela do Logra Finance e limita leitura e gravação ao dono de cada registro. [Regras de acesso por linha](https://supabase.com/docs/guides/database/postgres/row-level-security).
 3. Em **Authentication → Users**, crie seu primeiro usuário com e-mail e senha e confirme o usuário no painel. Mantenha **Email** habilitado. **Allow new users to sign up** controla se o formulário **Criar conta** aceita novos usuários. Mantenha a entrada anônima desativada. [Configuração de autenticação](https://supabase.com/docs/guides/auth/general-configuration).
 4. Em **Connect** ou **Settings → API Keys**, copie a URL do projeto e a chave **Publishable**, que começa com `sb_publishable_`. Guarde senha, chave Secret e `service_role` fora do código e do GitHub. [Chaves públicas e privadas do Supabase](https://supabase.com/docs/guides/getting-started/api-keys).
 
@@ -24,7 +24,7 @@ O ícone da aba e a capa de compartilhamento estão em `assets/`. A publicação
 
 O site sincroniza ao entrar, ao gravar, quando a conexão volta e quando você retorna à aba. Em **Configurações**, **Tentar sincronizar** força uma atualização. Com a sessão aberta, alterações feitas sem conexão ficam na fila deste aparelho. Use o endereço publicado e a mesma conta em cada aparelho.
 
-## Instalar o FinançasFácil
+## Instalar o Logra Finance
 
 Abra o endereço HTTPS publicado. Em navegadores que oferecem a instalação, use **Instalar aplicativo** perto do fim da página inicial ou em **Configurações**, dentro do painel. No iPhone, abra o site no Safari, escolha **Compartilhar → Adicionar à Tela de Início** e, se aparecer, ative **Abrir como App da Web**. O ícone abre a área de acesso. Com uma sessão salva e válida, o painel abre após a verificação no Supabase.
 
@@ -34,7 +34,7 @@ O Vercel gera uma versão nova do cache quando os arquivos publicados mudam. Se 
 
 ## Ativar cadastro, e-mails e login social
 
-Em **Authentication → URL Configuration** do Supabase, coloque a página inicial de produção em **Site URL** e **Redirect URLs**. Use o endereço completo com HTTPS e a barra final, como `https://financasfacil.vercel.app/`. Abra os links de confirmação e recuperação no mesmo navegador em que você iniciou o pedido. [URLs de retorno do Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
+Em **Authentication → URL Configuration** do Supabase, coloque a página inicial de produção em **Site URL** e **Redirect URLs**. Use o endereço completo com HTTPS e a barra final, como `https://seu-projeto.vercel.app/`. Abra os links de confirmação e recuperação no mesmo navegador em que você iniciou o pedido. [URLs de retorno do Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
 
 A página inicial apresenta os recursos, o relatório com dados fictícios da conta Daniel e os planos previstos de R$ 9,00 por mês e R$ 90,00 por ano. **Entrar** abre `login.html`. Os retornos do Supabase continuam usando o endereço inicial e são encaminhados para a tela de acesso. Os cartões de planos são informativos.
 

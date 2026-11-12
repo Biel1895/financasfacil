@@ -20,7 +20,7 @@ if (siteUrl.protocol !== 'https:' || siteUrl.href !== siteUrl.origin + '/') {
   throw new Error('FF_SITE_URL deve ser a URL HTTPS da página inicial, sem caminho ou parâmetros.');
 }
 const shareImage = new URL('assets/compartilhar.jpg', siteUrl).href;
-const shareDescription = 'FinançasFácil com gráfico ilustrativo de entradas e saídas';
+const shareDescription = 'Logra Finance — Suas finanças pessoais, organizadas';
 const shareTags = [
   `<link rel="canonical" href="${siteUrl.href}" />`,
   `<meta property="og:url" content="${siteUrl.href}" />`,
@@ -39,14 +39,15 @@ const runtimeFiles = ['app.js', 'style.css', 'landing.css', 'landing.js'];
 const pages = ['index.html', 'login.html'];
 const shell = [...pages, 'config.js', 'manifest.webmanifest', ...runtimeFiles];
 const siteFiles = [...shell, 'service-worker.js'];
-const iconFiles = [
+const shellAssets = [
   'favicon.svg',
   'apple-touch-icon.png',
   'pwa-192.png',
   'pwa-512.png',
   'pwa-maskable-512.png',
+  'InterVariable.woff2',
 ];
-const assets = [...iconFiles, 'compartilhar.jpg'];
+const assets = [...shellAssets, 'compartilhar.jpg', 'Inter-OFL.txt'];
 await mkdir(output, { recursive: true });
 for (const entry of await readdir(output, { withFileTypes: true })) {
   if (entry.name === 'assets' && entry.isDirectory()) {
@@ -95,7 +96,7 @@ await copyFile(
   new URL('manifest.webmanifest', output),
 );
 const worker = await readFile(new URL('../src/pwa/service-worker.js', import.meta.url), 'utf8');
-const files = [...shell, ...iconFiles.map((file) => 'assets/' + file)];
+const files = [...shell, ...shellAssets.map((file) => 'assets/' + file)];
 const hash = createHash('sha256').update(worker);
 for (const file of files) {
   hash.update(file).update(await readFile(new URL(file, output)));

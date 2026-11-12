@@ -335,9 +335,9 @@
     height: 54px;
     border: 0;
     border-radius: 17px;
-    background: #2563eb;
+    background: var(--action);
     color: #fff;
-    box-shadow: 0 7px 21px #2563eb45;
+    box-shadow: 0 7px 21px #00765345;
     z-index: 45;
   }
   .mobile-fab .icon {

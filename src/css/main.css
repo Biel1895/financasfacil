@@ -1,4 +1,5 @@
 /* A ordem preserva a cascata da versão anterior. Veja docs/ARQUITETURA.md. */
+@import './brand.css';
 @import './base.css';
 @import './shell.css';
 @import './records.css';

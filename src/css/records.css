@@ -169,7 +169,7 @@
 }
 .mini-card strong {
   display: block;
-  font-family: Manrope, sans-serif;
+  font-family: var(--logra-font);
   font-size: 1.5rem;
   letter-spacing: -0.04em;
   margin-top: 5px;

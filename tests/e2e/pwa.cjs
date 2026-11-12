@@ -13,6 +13,7 @@ const contentTypes = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.webmanifest': 'application/manifest+json',
+  '.woff2': 'font/woff2',
 };
 const server = createServer(async (request, response) => {
   const { pathname } = new URL(request.url, 'http://localhost');
@@ -54,6 +55,7 @@ async function test() {
     const installability = await devtools.send('Page.getInstallabilityErrors');
     assert.deepEqual(installability.installabilityErrors, []);
     const manifest = await (await context.request.get(origin + '/manifest.webmanifest')).json();
+    assert.equal(manifest.name, 'Logra Finance');
     assert.equal(new URL(manifest.start_url, origin).pathname, '/login.html');
     assert.equal(manifest.display, 'standalone');
 
@@ -82,6 +84,7 @@ async function test() {
       return (await (await caches.open(keys[0])).keys()).map((request) => request.url);
     });
     assert.ok(cached.includes(origin + '/login.html'));
+    assert.ok(cached.includes(origin + '/assets/InterVariable.woff2'));
     assert.ok(cached.every((url) => url.startsWith(origin + '/') && !new URL(url).search));
     assert.deepEqual(errors, []);
     console.log('OK Instalação, abertura offline e proteção dos parâmetros de autenticação.');

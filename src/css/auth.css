@@ -1,3 +1,8 @@
+body:has(.auth-screen:not([hidden])) {
+  background:
+    radial-gradient(ellipse at 20% 0%, var(--primary-soft), transparent 50%),
+    radial-gradient(ellipse at 96% 100%, var(--purple-soft), transparent 52%), var(--bg);
+}
 .auth-screen {
   min-height: 100svh;
   display: grid;
@@ -13,7 +18,7 @@
   justify-content: center;
   gap: 10px;
   font-size: 1.25rem;
-  font-weight: 750;
+  font-weight: 800;
   letter-spacing: -0.045em;
 }
 .auth-card {
@@ -23,7 +28,7 @@
   border: 1px solid var(--border);
   border-radius: 27px;
   position: relative;
-  box-shadow: var(--shadow);
+  box-shadow: 0 16px 54px #1f254216;
 }
 .auth-card h1 {
   padding-right: 30px;
