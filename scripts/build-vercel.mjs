@@ -2,6 +2,12 @@ import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { readSupabaseConfig } from '../src/js/services/cloud-config.js';
 
+async function versionedAsset(path) {
+  const bytes = await readFile(new URL('../' + path, import.meta.url));
+  const revision = createHash('sha256').update(bytes).digest('hex').slice(0, 12);
+  return `${path}?v=${revision}`;
+}
+
 const config = readSupabaseConfig({
   url: process.env.FF_SUPABASE_URL,
   publishableKey: process.env.FF_SUPABASE_PUBLISHABLE_KEY,
@@ -19,7 +25,7 @@ const siteUrl = new URL(address);
 if (siteUrl.protocol !== 'https:' || siteUrl.href !== siteUrl.origin + '/') {
   throw new Error('FF_SITE_URL deve ser a URL HTTPS da página inicial, sem caminho ou parâmetros.');
 }
-const shareImage = new URL('assets/compartilhar.jpg', siteUrl).href;
+const shareImage = new URL(await versionedAsset('assets/compartilhar.jpg'), siteUrl).href;
 const shareDescription = 'Logra Finance — Suas finanças pessoais, organizadas';
 const shareTags = [
   `<link rel="canonical" href="${siteUrl.href}" />`,
@@ -35,19 +41,22 @@ const shareTags = [
 
 const output = new URL('../dist/', import.meta.url);
 const assetOutput = new URL('assets/', output);
-const runtimeFiles = ['app.js', 'style.css', 'landing.css', 'landing.js'];
+const runtimeFiles = ['app.js', 'style.css', 'landing.css', 'landing.js', 'favicon.ico'];
 const pages = ['index.html', 'login.html'];
 const shell = [...pages, 'config.js', 'manifest.webmanifest', ...runtimeFiles];
 const siteFiles = [...shell, 'service-worker.js'];
-const shellAssets = [
+const assets = [
   'favicon.svg',
   'apple-touch-icon.png',
   'pwa-192.png',
   'pwa-512.png',
   'pwa-maskable-512.png',
   'InterVariable.woff2',
+  'compartilhar.jpg',
+  'Inter-OFL.txt',
 ];
-const assets = [...shellAssets, 'compartilhar.jpg', 'Inter-OFL.txt'];
+const browserIcons = ['favicon.ico', 'assets/favicon.svg', 'assets/apple-touch-icon.png'];
+const versionedBrowserIcons = await Promise.all(browserIcons.map(versionedAsset));
 await mkdir(output, { recursive: true });
 for (const entry of await readdir(output, { withFileTypes: true })) {
   if (entry.name === 'assets' && entry.isDirectory()) {
@@ -79,6 +88,9 @@ for (const page of pages) {
     throw new Error(`${page} precisa do marcador do manifesto no cabeçalho.`);
   }
   html = html.replace(pwaMarker, '<link rel="manifest" href="manifest.webmanifest" />');
+  for (const [index, icon] of browserIcons.entries()) {
+    html = html.replace(`href="${icon}"`, `href="${versionedBrowserIcons[index]}"`);
+  }
   if (page === 'index.html') {
     if (!html.includes(shareMarker)) {
       throw new Error('O HTML precisa do marcador de compartilhamento no cabeçalho.');
@@ -91,15 +103,26 @@ await writeFile(
   new URL('config.js', output),
   'window.FF_SUPABASE_CONFIG = ' + JSON.stringify(config) + ';\n',
 );
-await copyFile(
-  new URL('../src/pwa/manifest.webmanifest', import.meta.url),
-  new URL('manifest.webmanifest', output),
+const manifest = JSON.parse(
+  await readFile(new URL('../src/pwa/manifest.webmanifest', import.meta.url), 'utf8'),
 );
+for (const icon of manifest.icons) {
+  icon.src = await versionedAsset(icon.src);
+}
+await writeFile(new URL('manifest.webmanifest', output), JSON.stringify(manifest, null, 2) + '\n');
 const worker = await readFile(new URL('../src/pwa/service-worker.js', import.meta.url), 'utf8');
-const files = [...shell, ...shellAssets.map((file) => 'assets/' + file)];
+const files = [
+  ...shell,
+  'assets/favicon.svg',
+  'assets/InterVariable.woff2',
+  ...versionedBrowserIcons,
+  ...manifest.icons.map((icon) => icon.src),
+];
 const hash = createHash('sha256').update(worker);
 for (const file of files) {
-  hash.update(file).update(await readFile(new URL(file, output)));
+  const url = new URL(file, output);
+  url.search = '';
+  hash.update(file).update(await readFile(url));
 }
 const release = { version: hash.digest('hex').slice(0, 16), files };
 await writeFile(

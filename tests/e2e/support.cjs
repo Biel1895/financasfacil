@@ -15,6 +15,7 @@ function prepareSuite(name) {
     'app.js',
     'style.css',
     'config.js',
+    'favicon.ico',
   ];
   for (const file of files) {
     fs.copyFileSync(path.join(projectRoot, file), path.join(siteDir, file));

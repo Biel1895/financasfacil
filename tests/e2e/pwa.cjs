@@ -9,6 +9,8 @@ const { launchBrowser, projectRoot } = require('./support.cjs');
 const contentTypes = {
   '.css': 'text/css',
   '.html': 'text/html; charset=utf-8',
+  '.ico': 'image/x-icon',
+  '.jpg': 'image/jpeg',
   '.js': 'text/javascript',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
@@ -58,6 +60,23 @@ async function test() {
     assert.equal(manifest.name, 'Logra Finance');
     assert.equal(new URL(manifest.start_url, origin).pathname, '/login.html');
     assert.equal(manifest.display, 'standalone');
+    const tabIcons = await page
+      .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    const iconPaths = [...tabIcons, ...manifest.icons.map((icon) => icon.src)];
+    assert.equal(tabIcons.length, 3);
+    assert.equal(manifest.icons.length, 3);
+    for (const path of iconPaths) {
+      assert.match(path, /\?v=[a-f0-9]{12}$/);
+      assert.ok((await context.request.get(origin + '/' + path)).ok(), path);
+    }
+    const favicon = await context.request.get(origin + '/favicon.ico');
+    assert.ok(favicon.ok());
+    assert.deepEqual((await favicon.body()).subarray(0, 6), Buffer.from([0, 0, 1, 0, 3, 0]));
+    assert.match(
+      await page.locator('meta[property="og:image"]').getAttribute('content'),
+      /\/assets\/compartilhar\.jpg\?v=[a-f0-9]{12}$/,
+    );
 
     const install = page.getByRole('button', { name: 'Instalar aplicativo' });
     await page.evaluate(() => {
@@ -85,7 +104,17 @@ async function test() {
     });
     assert.ok(cached.includes(origin + '/login.html'));
     assert.ok(cached.includes(origin + '/assets/InterVariable.woff2'));
-    assert.ok(cached.every((url) => url.startsWith(origin + '/') && !new URL(url).search));
+    const iconUrls = new Set(iconPaths.map((path) => origin + '/' + path));
+    assert.ok([...iconUrls].every((url) => cached.includes(url)));
+    assert.ok(
+      cached.every(
+        (url) => url.startsWith(origin + '/') && (!new URL(url).search || iconUrls.has(url)),
+      ),
+    );
+    const loginIcons = await page
+      .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    assert.deepEqual(loginIcons, tabIcons);
     assert.deepEqual(errors, []);
     console.log('OK Instalação, abertura offline e proteção dos parâmetros de autenticação.');
   } finally {
